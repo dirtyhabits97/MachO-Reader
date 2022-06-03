@@ -60,15 +60,7 @@ extension CPUType: CLIOutput {
         return "\(readable.padding(toLength: 7, withPad: " ", startingAt: 0)) (\(rawValue))"
     }
 
-    var cliCompact: String {
-        switch self {
-        case .x86: return "x86"
-        case .x86_64: return "x86_64"
-        case .arm: return "ARM"
-        case .arm_64: return "ARM64"
-        default: return String(rawValue)
-        }
-    }
+    var cliCompact: String { readableValue }
 }
 
 extension Magic: CLIOutput {

@@ -10,6 +10,9 @@ struct Reader: ParsableCommand {
     // @Flag(name: [.customShort("h"), .customLong("header")], help: "Only print the mach-o header.")
     // var onlyHeader: Bool = false
 
+    @Option(help: "The arch of the mach-o header to read.")
+    var arch: String?
+
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
@@ -18,7 +21,7 @@ struct Reader: ParsableCommand {
             print("Could not create url for \(pathToBinary)")
             return
         }
-        let file = try MachOFile(from: url)
+        let file = try MachOFile(from: url, arch: arch)
 
         if let fatHeader = file.fatHeader {
             CLIFormatter.print(fatHeader)

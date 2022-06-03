@@ -11,15 +11,15 @@ struct MachOFile {
 
     // MARK: - Lifecycle
 
-    init(from url: URL) throws {
-        self.init(from: try Data(contentsOf: url))
+    init(from url: URL, arch: String?) throws {
+        self.init(from: try Data(contentsOf: url), arch: arch)
     }
 
-    init(from data: Data) {
+    init(from data: Data, arch: String?) {
         fatHeader = FatHeader(from: data)
 
         var data = data
-        if let offset = fatHeader?.offset(for: .arm_64) {
+        if let offset = fatHeader?.offset(for: CPUType(from: arch)) {
             data = data.advanced(by: Int(offset))
         }
 
