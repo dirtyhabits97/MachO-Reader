@@ -16,46 +16,44 @@ enum LoadCommandType {
     case unspecified
 
     init(from loadCommand: LoadCommand) {
-        if loadCommand.isOfType(LC_BUILD_VERSION) {
+        if loadCommand.cmd.isBuildVersionCommand {
             self = BuildVersionCommand.build(from: loadCommand)
             return
         }
-        if loadCommand.isOfType(LC_SEGMENT, LC_SEGMENT_64) {
-            self = SegmentCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.isOfType(LC_UUID) {
-            self = UUIDCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.isOfType(LC_SYMTAB) {
-            self = SymtabCommand.build(from: loadCommand)
-            return
-        }
-        // swiftlint:disable:next line_length
-        if loadCommand.isOfType(LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE, LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT) || loadCommand.isOfType(LC_DYLD_EXPORTS_TRIE, LC_DYLD_CHAINED_FIXUPS) {
-            self = LinkedItDataCommand.build(from: loadCommand)
-            return
-        }
-        // swiftlint:disable:next line_length
-        if loadCommand.isOfType(LC_ID_DYLIB, LC_LOAD_DYLIB) || loadCommand.isOfType(LC_LOAD_WEAK_DYLIB, LC_REEXPORT_DYLIB) {
+        if loadCommand.cmd.isDylibCommand {
             self = DylibCommand.build(from: loadCommand)
             return
         }
-        if loadCommand.isOfType(LC_ID_DYLINKER, LC_LOAD_DYLINKER, LC_DYLD_ENVIRONMENT) {
+        if loadCommand.cmd.isDylinkerCommand {
             self = DylinkerCommand.build(from: loadCommand)
             return
         }
-        if loadCommand.isOfType(LC_DYSYMTAB) {
+        if loadCommand.cmd.isDysymtabCommand {
             self = DysymtabCommand.build(from: loadCommand)
             return
         }
-        if loadCommand.isOfType(LC_SOURCE_VERSION) {
+        if loadCommand.cmd.isEntryPointCommand {
+            self = EntryPointCommand.build(from: loadCommand)
+            return
+        }
+        if loadCommand.cmd.isLinkedItDataCommand {
+            self = LinkedItDataCommand.build(from: loadCommand)
+            return
+        }
+        if loadCommand.cmd.isSegmentCommand {
+            self = SegmentCommand.build(from: loadCommand)
+            return
+        }
+        if loadCommand.cmd.isSourceVersionCommand {
             self = SourceVersionCommand.build(from: loadCommand)
             return
         }
-        if loadCommand.isOfType(LC_MAIN) {
-            self = EntryPointCommand.build(from: loadCommand)
+        if loadCommand.cmd.isSymtabCommand {
+            self = SymtabCommand.build(from: loadCommand)
+            return
+        }
+        if loadCommand.cmd.isUUIDCommand {
+            self = UUIDCommand.build(from: loadCommand)
             return
         }
         self = .unspecified
