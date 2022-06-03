@@ -41,7 +41,7 @@ extension FatHeader.Architecture: CLIOutput {
         str += "cpusubtype: \(String(cpuSubtype).padding(toLength: 15, withPad: " ", startingAt: 0))"
         str += "offset: \(String(offset).padding(toLength: 10, withPad: " ", startingAt: 0))"
         str += "size: \(String(size).padding(toLength: 10, withPad: " ", startingAt: 0))"
-        str += "alignt: 2^\(align)"
+        str += "align: 2^\(align)"
         return str
     }
 }
