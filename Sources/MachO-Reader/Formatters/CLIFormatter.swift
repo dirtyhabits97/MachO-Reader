@@ -9,14 +9,20 @@ enum CLIFormatter {
 
 protocol CLIOutput {
 
-    var cli: String { get  }
+    var cli: String { get }
+    var cliCompact: String { get }
+}
+
+extension CLIOutput {
+
+    var cliCompact: String { cli }
 }
 
 extension FatHeader: CLIOutput {
 
     var cli: String {
         var str = "FAT HEADER".padding(toLength: 20, withPad: " ", startingAt: 0)
-        str += "magic: \(magic.description.padding(toLength: 25, withPad: " ", startingAt: 0))"
+        str += "magic: \(magic.cli.padding(toLength: 25, withPad: " ", startingAt: 0))"
         str += "nfat_archs: \(archs.count)"
 
         for (idx, arch) in archs.enumerated() {
@@ -52,5 +58,53 @@ extension CPUType: CLIOutput {
         default: return String(rawValue)
         }
         return "\(readable.padding(toLength: 7, withPad: " ", startingAt: 0)) (\(rawValue))"
+    }
+
+    var cliCompact: String {
+        switch self {
+        case .x86: return "x86"
+        case .x86_64: return "x86_64"
+        case .arm: return "ARM"
+        case .arm_64: return "ARM64"
+        default: return String(rawValue)
+        }
+    }
+}
+
+extension Magic: CLIOutput {
+
+    var cli: String {
+        let pretty: String
+        switch self {
+        case .fatMagic: pretty = "FAT_MAGIC"
+        case .fatCigam: pretty = "FAT_CIGAM"
+        case .fatMagic64: pretty = "FAT_MAGIC_64"
+        case .fatCigam64: pretty = "FAT_CIGAM_64"
+        case .magic: pretty = "MH_MAGIC"
+        case .cigam: pretty = "MH_CIGAM"
+        case .magic64: pretty = "MH_MAGIC_64"
+        case .cigam64: pretty = "MH_CIGAM_64"
+        default: return String.magic(rawValue)
+        }
+        return "\(pretty) (\(String.magic(rawValue)))"
+    }
+}
+
+extension MachOHeader: CLIOutput {
+
+    var cli: String {
+        var str = "MACH_HEADER".padding(toLength: 20, withPad: " ", startingAt: 0)
+        str += "magic: \(magic.cli)"
+        str += "   "
+        str += "cputype: \(cputype.cliCompact)"
+        str += "   "
+        str += "filetype: \(filetype.description)"
+        str += "   "
+        str += "ncmds: \(ncmds)"
+        str += "   "
+        str += "sizeofcmds: \(sizeofcmds)"
+        str += "\n".padding(toLength: 21, withPad: " ", startingAt: 0)
+        str += "flags: \(String.flags(flags))"
+        return str
     }
 }

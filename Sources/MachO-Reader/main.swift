@@ -3,8 +3,12 @@ import ArgumentParser
 
 struct Reader: ParsableCommand {
 
-    @Flag(name: [.customShort("f"), .customLong("fat")], help: "Only print the fat header.")
-    var onlyFatHeader: Bool = false
+    // TODO: figure out what to do with these
+    // @Flag(name: [.customShort("f"), .customLong("fat")], help: "Only print the fat header.")
+    // var onlyFatHeader: Bool = false
+
+    // @Flag(name: [.customShort("h"), .customLong("header")], help: "Only print the mach-o header.")
+    // var onlyHeader: Bool = false
 
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
@@ -15,12 +19,12 @@ struct Reader: ParsableCommand {
             return
         }
         let file = try MachOFile(from: url)
-        if onlyFatHeader {
-            if let fatHeader = file.fatHeader {
-                CLIFormatter.print(fatHeader)
-            }
-            return
+
+        if let fatHeader = file.fatHeader {
+            CLIFormatter.print(fatHeader)
         }
+        print("") // padding
+        CLIFormatter.print(file.header)
         // CLIFormatter.output(file: try MachOFile(from: url))
     }
 }
