@@ -72,11 +72,11 @@ protocol LoadCommandTypeRepresentable {
 private extension LoadCommand {
 
     func isOfType(_ types: Int32...) -> Bool {
-        types.map(Int.init).contains(Int(self.cmd))
+        types.map(Int.init).contains(Int(self.cmd.rawValue))
     }
 
     func isOfType(_ types: UInt32...) -> Bool {
-        types.contains(self.cmd)
+        types.contains(self.cmd.rawValue)
     }
 }
 

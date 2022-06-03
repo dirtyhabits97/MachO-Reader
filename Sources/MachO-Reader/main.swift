@@ -22,12 +22,8 @@ struct Reader: ParsableCommand {
             return
         }
         let file = try MachOFile(from: url, arch: arch)
+        CLIFormatter.print(file)
 
-        if let fatHeader = file.fatHeader {
-            CLIFormatter.print(fatHeader)
-        }
-        print("") // padding
-        CLIFormatter.print(file.header)
         // CLIFormatter.output(file: try MachOFile(from: url))
     }
 }

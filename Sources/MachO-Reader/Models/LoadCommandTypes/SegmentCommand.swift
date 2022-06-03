@@ -25,7 +25,7 @@ struct SegmentCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
-        if loadCommand.cmd == LC_SEGMENT_64 {
+        if loadCommand.cmd == .segment64 {
             var segmentCommand = loadCommand.data.extract(segment_command_64.self)
             if loadCommand.isSwapped {
                 swap_segment_command_64(&segmentCommand, kByteSwapOrder)

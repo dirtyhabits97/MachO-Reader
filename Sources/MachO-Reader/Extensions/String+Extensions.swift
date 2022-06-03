@@ -28,6 +28,10 @@ extension String {
         self.init("0x" + String(format: "%08llx", hex))
     }
 
+    static func cmd(_ cmd: UInt32) -> String {
+        self.init("0x" + String(format: "%08llx", cmd))
+    }
+
     static func magic(_ magic: UInt32) -> String {
         self.init("0x" + String(format: "%08llx", magic))
     }

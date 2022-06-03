@@ -100,3 +100,27 @@ extension MachOHeader: CLIOutput {
         return str
     }
 }
+
+extension MachOFile: CLIOutput {
+
+    var cli: String {
+        var str = ""
+        if let fatHeader = fatHeader {
+            str += fatHeader.cli
+            str += "\n"
+            str += "\n"
+        }
+
+        str += header.cli
+        str += "\n"
+
+        for command in commands {
+            str += "\n"
+            str += command.cmd.readableValue.padding(toLength: 30, withPad: " ", startingAt: 0)
+            str += "cmdsize: \(command.cmdsize)".padding(toLength: 20, withPad: " ", startingAt: 0)
+            str += command.commandType().description
+        }
+
+        return str
+    }
+}
