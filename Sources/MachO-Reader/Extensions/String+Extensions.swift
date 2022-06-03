@@ -28,10 +28,6 @@ extension String {
         self.init("0x" + String(format: "%08llx", hex))
     }
 
-    static func cputype(_ cpuType: cpu_type_t) -> String {
-        String("0x" + String(format: "%08llx", cpuType))
-    }
-
     static func magic(_ magic: UInt32) -> String {
         self.init("0x" + String(format: "%08llx", magic))
     }

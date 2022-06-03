@@ -3,6 +3,9 @@ import ArgumentParser
 
 struct Reader: ParsableCommand {
 
+    @Flag(name: [.customShort("f"), .customLong("fat")], help: "Only print the fat header.")
+    var onlyFatHeader: Bool = false
+
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
@@ -11,7 +14,14 @@ struct Reader: ParsableCommand {
             print("Could not create url for \(pathToBinary)")
             return
         }
-        CLIFormatter.output(file: try MachOFile(from: url))
+        let file = try MachOFile(from: url)
+        if onlyFatHeader {
+            if let fatHeader = file.fatHeader {
+                CLIFormatter.print(fatHeader)
+            }
+            return
+        }
+        // CLIFormatter.output(file: try MachOFile(from: url))
     }
 }
 

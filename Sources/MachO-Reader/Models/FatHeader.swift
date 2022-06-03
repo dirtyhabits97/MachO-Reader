@@ -62,8 +62,8 @@ struct FatHeader {
         self.archs = archs
     }
 
-    func offset(for cpuType: CPUType? = nil) -> UInt64 {
-        archs.first(where: { $0.cpuType == cpuType })?.offset
+    func offset(for cputype: CPUType? = nil) -> UInt64 {
+        archs.first(where: { $0.cputype == cputype })?.offset
             ?? archs.first?.offset
             ?? 0
     }
@@ -74,8 +74,8 @@ extension FatHeader {
     // Source: .../usr/include/mach-o/fat.h
     struct Architecture {
 
-        let cpuType: CPUType
-        let cpuSubType: cpu_subtype_t
+        let cputype: CPUType
+        let cpuSubtype: cpu_subtype_t
         let offset: UInt64
         let size: UInt64
         let align: UInt32
@@ -89,8 +89,8 @@ extension FatHeader {
         //   uint32_t	align;		/* alignment as a power of 2 */
         // };
         init(_ rawValue: fat_arch) {
-            cpuType = CPUType(rawValue.cputype)
-            cpuSubType = rawValue.cpusubtype
+            cputype = CPUType(rawValue.cputype)
+            cpuSubtype = rawValue.cpusubtype
             offset = UInt64(rawValue.offset)
             size = UInt64(rawValue.size)
             align = rawValue.align
@@ -106,8 +106,8 @@ extension FatHeader {
         //   uint32_t	reserved;	/* reserved */
         // };
         init(_ rawValue: fat_arch_64) {
-            cpuType = CPUType(rawValue.cputype)
-            cpuSubType = rawValue.cpusubtype
+            cputype = CPUType(rawValue.cputype)
+            cpuSubtype = rawValue.cpusubtype
             offset = UInt64(rawValue.offset)
             size = UInt64(rawValue.size)
             align = rawValue.align

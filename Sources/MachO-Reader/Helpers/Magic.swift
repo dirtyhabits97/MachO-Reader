@@ -50,16 +50,18 @@ struct Magic: RawRepresentable, Equatable {
 extension Magic: CustomStringConvertible {
 
     var description: String {
+        let pretty: String
         switch self {
-        case .fatMagic: return "FAT_MAGIC"
-        case .fatCigam: return "FAT_CIGAM"
-        case .fatMagic64: return "FAT_MAGIC_64"
-        case .fatCigam64: return "FAT_CIGAM_64"
-        case .magic: return "MH_MAGIC"
-        case .cigam: return "MH_CIGAM"
-        case .magic64: return "MH_MAGIC_64"
-        case .cigam64: return "MH_CIGAM_64"
+        case .fatMagic: pretty = "FAT_MAGIC"
+        case .fatCigam: pretty = "FAT_CIGAM"
+        case .fatMagic64: pretty = "FAT_MAGIC_64"
+        case .fatCigam64: pretty = "FAT_CIGAM_64"
+        case .magic: pretty = "MH_MAGIC"
+        case .cigam: pretty = "MH_CIGAM"
+        case .magic64: pretty = "MH_MAGIC_64"
+        case .cigam64: pretty = "MH_CIGAM_64"
         default: return String.magic(rawValue)
         }
+        return "\(pretty) (\(String.magic(rawValue)))"
     }
 }

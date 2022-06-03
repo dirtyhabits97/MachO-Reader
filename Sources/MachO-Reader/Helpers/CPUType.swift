@@ -25,16 +25,3 @@ struct CPUType: RawRepresentable, Equatable {
     // swiftlint:disable:next identifier_name
     static let arm_64 = CPUType(rawValue: CPU_TYPE_ARM64)
 }
-
-extension CPUType: CustomStringConvertible {
-
-    var description: String {
-        switch self {
-        case .x86: return "x86"
-        case .x86_64: return "x86_64"
-        case .arm: return "ARM"
-        case .arm_64: return "ARM64"
-        default: return .cputype(rawValue)
-        }
-    }
-}
