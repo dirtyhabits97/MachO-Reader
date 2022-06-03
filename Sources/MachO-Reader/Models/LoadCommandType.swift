@@ -11,6 +11,7 @@ enum LoadCommandType {
     case segmentCommand(SegmentCommand)
     case sourceVersionCommand(SourceVersionCommand)
     case symtabCommand(SymtabCommand)
+    case threadCommand(ThreadCommand)
     case uuidCommand(UUIDCommand)
 
     case unspecified
@@ -52,6 +53,10 @@ enum LoadCommandType {
             self = SymtabCommand.build(from: loadCommand)
             return
         }
+        if loadCommand.cmd.isThreadCommand {
+            self = ThreadCommand.build(from: loadCommand)
+            return
+        }
         if loadCommand.cmd.isUUIDCommand {
             self = UUIDCommand.build(from: loadCommand)
             return
@@ -66,17 +71,6 @@ protocol LoadCommandTypeRepresentable {
 }
 
 // MARK: - Helpers
-
-private extension LoadCommand {
-
-    func isOfType(_ types: Int32...) -> Bool {
-        types.map(Int.init).contains(Int(self.cmd.rawValue))
-    }
-
-    func isOfType(_ types: UInt32...) -> Bool {
-        types.contains(self.cmd.rawValue)
-    }
-}
 
 extension LoadCommandType: CustomStringConvertible {
 
@@ -100,6 +94,8 @@ extension LoadCommandType: CustomStringConvertible {
             return command.description
         case .sourceVersionCommand(let command):
             return command.description
+        case .threadCommand:
+            return ""
         case .uuidCommand(let command):
             return command.description
         case .unspecified:

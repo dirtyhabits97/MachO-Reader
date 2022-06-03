@@ -44,6 +44,8 @@ struct Cmd: RawRepresentable, Equatable {
     static let segment64 = Cmd(LC_SEGMENT_64)
     static let sourceVersion = Cmd(LC_SOURCE_VERSION)
     static let symtab = Cmd(LC_SYMTAB)
+    static let thread = Cmd(LC_THREAD)
+    static let unixthread = Cmd(LC_UNIXTHREAD)
     static let uuid = Cmd(LC_UUID)
 }
 
@@ -70,8 +72,11 @@ extension Cmd {
         case .reexportDylib: return "LC_REEXPORT_DYLIB"
         case .segment: return "LC_SEGMENT"
         case .segment64: return "LC_SEGMENT_64"
+        case .segmentSplitInfo: return "LC_SEGMENT_SPLIT_INFO"
         case .sourceVersion: return "LC_SOURCE_VERSION"
         case .symtab: return "LC_SYMTAB"
+        case .thread: return "LC_THREAD"
+        case .unixthread: return "LC_UNIXTHREAD"
         case .uuid: return "LC_UUID"
         default: return .cmd(rawValue)
         }
@@ -126,6 +131,10 @@ extension Cmd {
 
     var isSymtabCommand: Bool {
         self == .symtab
+    }
+
+    var isThreadCommand: Bool {
+        [.thread, .unixthread].contains(self)
     }
 
     var isUUIDCommand: Bool {
