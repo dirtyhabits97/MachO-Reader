@@ -21,12 +21,12 @@ extension CLIOutput {
 extension FatHeader: CLIOutput {
 
     var cli: String {
-        var str = "FAT HEADER".padding(toLength: 20, withPad: " ", startingAt: 0)
+        var str = "FAT_HEADER".padding(toLength: 20, withPad: " ", startingAt: 0)
         str += "magic: \(magic.cli.padding(toLength: 25, withPad: " ", startingAt: 0))"
         str += "nfat_archs: \(archs.count)"
 
         for (idx, arch) in archs.enumerated() {
-            str += "\n[\(idx)] \(arch.cli)"
+            str += "\n    [\(idx)] \(arch.cli)"
         }
 
         return str

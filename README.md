@@ -2,6 +2,13 @@
 
 Playground project to learn more about the Mach-O file format.
 
+## How to run
+
+`swift run MachO-Reader <path-to-binary>`
+
+You should see a similar output:
+![image](./images/example.png)
+
 ## Sources
 
 1. [Parsing Mach-O Files](https://lowlevelbits.org/parsing-mach-o-files/)
