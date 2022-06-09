@@ -2,46 +2,47 @@ import XCTest
 import class Foundation.Bundle
 
 final class MachO_ReaderTests: XCTestCase {
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
 
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            return
-        }
+    // func testExample() throws {
+    //     // This is an example of a functional test case.
+    //     // Use XCTAssert and related functions to verify your tests produce the correct
+    //     // results.
 
-        // Mac Catalyst won't have `Process`, but it is supported for executables.
-        #if !targetEnvironment(macCatalyst)
+    //     // Some of the APIs that we use below are available in macOS 10.13 and above.
+    //     guard #available(macOS 10.13, *) else {
+    //         return
+    //     }
 
-        let fooBinary = productsDirectory.appendingPathComponent("MachO-Reader")
+    //     // Mac Catalyst won't have `Process`, but it is supported for executables.
+    //     #if !targetEnvironment(macCatalyst)
 
-        let process = Process()
-        process.executableURL = fooBinary
+    //     let fooBinary = productsDirectory.appendingPathComponent("MachO-Reader")
 
-        let pipe = Pipe()
-        process.standardOutput = pipe
+    //     let process = Process()
+    //     process.executableURL = fooBinary
 
-        try process.run()
-        process.waitUntilExit()
+    //     let pipe = Pipe()
+    //     process.standardOutput = pipe
 
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
+    //     try process.run()
+    //     process.waitUntilExit()
 
-        XCTAssertEqual(output, "Hello, world!\n")
-        #endif
-    }
+    //     let data = pipe.fileHandleForReading.readDataToEndOfFile()
+    //     let output = String(data: data, encoding: .utf8)
 
-    /// Returns path to the built products directory.
-    var productsDirectory: URL {
-      #if os(macOS)
-        for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-            return bundle.bundleURL.deletingLastPathComponent()
-        }
-        fatalError("couldn't find the products directory")
-      #else
-        return Bundle.main.bundleURL
-      #endif
-    }
+    //     XCTAssertEqual(output, "Hello, world!\n")
+    //     #endif
+    // }
+
+    // /// Returns path to the built products directory.
+    // var productsDirectory: URL {
+    //   #if os(macOS)
+    //     for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
+    //         return bundle.bundleURL.deletingLastPathComponent()
+    //     }
+    //     fatalError("couldn't find the products directory")
+    //   #else
+    //     return Bundle.main.bundleURL
+    //   #endif
+    // }
 }
