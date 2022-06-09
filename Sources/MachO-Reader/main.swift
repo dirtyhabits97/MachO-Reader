@@ -13,6 +13,9 @@ struct Reader: ParsableCommand {
     @Option(help: "The arch of the mach-o header to read.")
     var arch: String?
 
+    @Flag(help: "Only outputs information for the segment commands.")
+    var segments: Bool = false
+
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
@@ -22,9 +25,19 @@ struct Reader: ParsableCommand {
             return
         }
         let file = try MachOFile(from: url, arch: arch)
+        // if only print segments
+        if segments {
+            file.commands
+                .compactMap({ (loadCommand: LoadCommand) -> SegmentCommand? in
+                    guard case .segmentCommand(let segmentCommand) = loadCommand.commandType() else { return nil }
+                    return segmentCommand
+                })
+                .forEach({ segmentCommand in
+                    CLIFormatter.print(segmentCommand)
+                })
+            return
+        }
         CLIFormatter.print(file)
-
-        // CLIFormatter.output(file: try MachOFile(from: url))
     }
 }
 
