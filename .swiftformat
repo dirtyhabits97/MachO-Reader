@@ -1,0 +1,2 @@
+# rules
+--disable blankLinesAtStartOfScope, redundantParens
