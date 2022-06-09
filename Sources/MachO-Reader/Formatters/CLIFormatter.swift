@@ -124,3 +124,43 @@ extension MachOFile: CLIOutput {
         return str
     }
 }
+
+extension SegmentCommand: CLIOutput {
+
+    var cliCompact: String {
+        var str = "segname: \(self.segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
+        switch underlyingValue {
+        case .segment(let command):
+            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
+            str += "   "
+            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
+            str += "   "
+            str += "prot: \(command.initprot)/\(command.maxprot)"
+        case .segment64(let command):
+            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
+            str += "   "
+            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
+            str += "   "
+            str += "prot: \(command.initprot)/\(command.maxprot)"
+        }
+        return str
+    }
+
+    var cli: String {
+        var str = cliCompact
+
+        for (idx, section)in sections.enumerated() {
+            str += "\n    [\(idx)] "
+            str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
+            str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
+            str += "   "
+            str += "flags: \(String.flags(section.flags))"
+            str += "   "
+            str += "align: 2^\(section.align) (\(2 << section.align))"
+            str += "   "
+            str += "offset: \(section.offset)"
+        }
+
+        return str
+    }
+}

@@ -18,7 +18,8 @@ struct SegmentCommand {
 
     // MARK: - Properties
 
-    private let underlyingValue: UnderlyingValue
+    // TODO: map this to direct properties
+    let underlyingValue: UnderlyingValue
 
     private(set) var sections: [Section] = []
 
@@ -88,7 +89,7 @@ extension SegmentCommand: LoadCommandTypeRepresentable {
 extension SegmentCommand {
 
     // Source:
-    // /Applications/Xcode.13.3.0.13E113.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/mach-o/loader.h
+    // /Applications/Xcode.13.3.0.13E113.app/...Developer/SDKs/iPhoneOS.sdk/usr/include/mach-o/loader.h
     enum UnderlyingValue {
         // struct segment_command { /* for 32-bit architectures */
         //   uint32_t	cmd;		/* LC_SEGMENT */
@@ -156,29 +157,20 @@ extension SegmentCommand {
     */
     struct Section {
 
-        private let underlyingValue: UnderlyingValue
-        /// Name of this section
         let sectname: String
-        /// Segment this section goes int
         let segname: String
 
-        init(_ section: section) {
-            sectname = String(char16: section.sectname)
-            segname = String(char16: section.segname)
-            underlyingValue = .section(section)
-        }
+        let addr: UInt64
+        let size: UInt64
 
-        init(_ section: section_64) {
-            sectname = String(char16: section.sectname)
-            segname = String(char16: section.segname)
-            underlyingValue = .section64(section)
-        }
-    }
-}
-
-extension SegmentCommand.Section {
-
-    enum UnderlyingValue {
+        let offset: UInt32
+        let align: UInt32
+        let reloff: UInt32
+        let nreloc: UInt32
+        let flags: UInt32
+        let reserved1: UInt32
+        let reserved2: UInt32
+        let reserved3: UInt32?
 
         // struct section { /* for 32-bit architectures */
         //   char		sectname[16];	/* name of this section */
@@ -193,7 +185,21 @@ extension SegmentCommand.Section {
         //   uint32_t	reserved1;	/* reserved (for offset or index) */
         //   uint32_t	reserved2;	/* reserved (for count or sizeof) */
         // };
-        case section(section)
+        init(_ section: section) {
+            sectname = String(char16: section.sectname)
+            segname = String(char16: section.segname)
+            addr = UInt64(section.addr)
+            size = UInt64(section.size)
+            offset = section.offset
+            align = section.align
+            reloff = section.reloff
+            nreloc = section.nreloc
+            flags = section.flags
+            reserved1 = section.reserved1
+            reserved2 = section.reserved2
+            reserved3 = nil
+        }
+
         // struct section_64 { /* for 64-bit architectures */
         //   char		sectname[16];	/* name of this section */
         //   char		segname[16];	/* segment this section goes in */
@@ -208,7 +214,20 @@ extension SegmentCommand.Section {
         //   uint32_t	reserved2;	/* reserved (for count or sizeof) */
         //   uint32_t	reserved3;	/* reserved */
         // };
-        case section64(section_64)
+        init(_ section: section_64) {
+            sectname = String(char16: section.sectname)
+            segname = String(char16: section.segname)
+            addr = section.addr
+            size = section.size
+            offset = section.offset
+            align = section.align
+            reloff = section.reloff
+            nreloc = section.nreloc
+            flags = section.flags
+            reserved1 = section.reserved1
+            reserved2 = section.reserved2
+            reserved3 = section.reserved3
+        }
     }
 }
 
