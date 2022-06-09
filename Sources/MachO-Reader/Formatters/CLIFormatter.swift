@@ -129,20 +129,11 @@ extension SegmentCommand: CLIOutput {
 
     var cliCompact: String {
         var str = "segname: \(self.segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
-        switch underlyingValue {
-        case .segment(let command):
-            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
-            str += "   "
-            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
-            str += "   "
-            str += "prot: \(command.initprot)/\(command.maxprot)"
-        case .segment64(let command):
-            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
-            str += "   "
-            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
-            str += "   "
-            str += "prot: \(command.initprot)/\(command.maxprot)"
-        }
+        str += "file: \(String(hex: fileoff))-\(String(hex: fileoff + filesize))"
+        str += "   "
+        str += "vm: \(String(hex: vmaddr))-\(String(hex: vmaddr + vmsize))"
+        str += "   "
+        str += "prot: \(initprot)/\(maxprot)"
         return str
     }
 

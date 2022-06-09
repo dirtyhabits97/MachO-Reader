@@ -1,6 +1,9 @@
 import Foundation
 import MachO
 
+// Source:
+// /Applications/Xcode.13.3.0.13E113.app/...Developer/SDKs/iPhoneOS.sdk/usr/include/mach-o/loader.h
+
 /**
  * The segment load command indicates that a part of this file is to be
  * mapped into the task's address space.  The size of this segment in memory,
@@ -13,13 +16,28 @@ import MachO
  * section structures directly follow the segment command and their size is
  * reflected in cmdsize.
  */
-@dynamicMemberLookup
 struct SegmentCommand {
 
     // MARK: - Properties
 
-    // TODO: map this to direct properties
-    let underlyingValue: UnderlyingValue
+    // TODO: consider making this into a protocol to easily convert between SegmentCommand
+    // and LoadCommand. Something like LoadCommandBuildable.asLoadCommand() -> LoadCommand
+    // TODO: consider storing the data in a class to avoid copying it all the time
+    private let loadCommand: LoadCommand
+
+    var cmd: Cmd { loadCommand.cmd }
+    var cmdsize: UInt32 { loadCommand.cmdsize }
+
+    let segname: String
+
+    let vmaddr: UInt64
+    let vmsize: UInt64
+    let fileoff: UInt64
+    let filesize: UInt64
+    let maxprot: vm_prot_t
+    let initprot: vm_prot_t
+    let nsects: UInt32
+    let flags: UInt32
 
     private(set) var sections: [Section] = []
 
@@ -31,51 +49,90 @@ struct SegmentCommand {
             if loadCommand.isSwapped {
                 swap_segment_command_64(&segmentCommand, kByteSwapOrder)
             }
-            underlyingValue = .segment64(segmentCommand)
+            self.init(segmentCommand, loadCommand: loadCommand)
         } else {
             var segmentCommand = loadCommand.data.extract(segment_command.self)
             if loadCommand.isSwapped {
                 swap_segment_command(&segmentCommand, kByteSwapOrder)
             }
-            underlyingValue = .segment(segmentCommand)
+            self.init(segmentCommand, loadCommand: loadCommand)
         }
-
-        sections = buildSections(with: loadCommand.data)
     }
 
-    // MARK: - Methods
+    // struct segment_command { /* for 32-bit architectures */
+    //   uint32_t	cmd;		/* LC_SEGMENT */
+    //   uint32_t	cmdsize;	/* includes sizeof section structs */
+    //   char		segname[16];	/* segment name */
+    //   uint32_t	vmaddr;		/* memory address of this segment */
+    //   uint32_t	vmsize;		/* memory size of this segment */
+    //   uint32_t	fileoff;	/* file offset of this segment */
+    //   uint32_t	filesize;	/* amount to map from the file */
+    //   vm_prot_t	maxprot;	/* maximum VM protection */
+    //   vm_prot_t	initprot;	/* initial VM protection */
+    //   uint32_t	nsects;		/* number of sections in segment */
+    //   uint32_t	flags;		/* flags */
+    // };
+    private init(_ segmentCommand: segment_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
 
-    private func buildSections(with data: Data) -> [Section] {
-        var sections: [Section] = []
+        segname = String(char16: segmentCommand.segname)
+        vmaddr = UInt64(segmentCommand.vmaddr)
+        vmsize = UInt64(segmentCommand.vmsize)
+        fileoff = UInt64(segmentCommand.fileoff)
+        filesize = UInt64(segmentCommand.filesize)
+        maxprot = segmentCommand.maxprot
+        initprot = segmentCommand.initprot
+        nsects = segmentCommand.nsects
+        flags = segmentCommand.flags
 
-        switch underlyingValue {
-        case .segment(let command):
-            sections.reserveCapacity(Int(command.nsects))
+        // build sections
+        sections.reserveCapacity(Int(segmentCommand.nsects))
 
-            var offset = MemoryLayout.size(ofValue: command)
-            for _ in 0..<command.nsects {
-                let data = data.advanced(by: offset)
-                let section = Section(data.extract(section.self))
-                sections.append(section)
-                offset += MemoryLayout<section>.size
-            }
-        case .segment64(let command):
-            sections.reserveCapacity(Int(command.nsects))
-
-            var offset = MemoryLayout.size(ofValue: command)
-            for _ in 0..<command.nsects {
-                let data = data.advanced(by: offset)
-                let section = Section(data.extract(section_64.self))
-                sections.append(section)
-                offset += MemoryLayout<section_64>.size
-            }
+        var offset = MemoryLayout.size(ofValue: segmentCommand)
+        for _ in 0..<segmentCommand.nsects {
+            let data = loadCommand.data.advanced(by: offset)
+            let section = Section(data.extract(section.self))
+            sections.append(section)
+            offset += MemoryLayout<section>.size
         }
-
-        return sections
     }
 
-    subscript<T>(dynamicMember keyPath: KeyPath<UnderlyingValue, T>) -> T {
-        underlyingValue[keyPath: keyPath]
+    // struct segment_command_64 { /* for 64-bit architectures */
+    //   uint32_t	cmd;		/* LC_SEGMENT_64 */
+    //   uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+    //   char		segname[16];	/* segment name */
+    //   uint64_t	vmaddr;		/* memory address of this segment */
+    //   uint64_t	vmsize;		/* memory size of this segment */
+    //   uint64_t	fileoff;	/* file offset of this segment */
+    //   uint64_t	filesize;	/* amount to map from the file */
+    //   vm_prot_t	maxprot;	/* maximum VM protection */
+    //   vm_prot_t	initprot;	/* initial VM protection */
+    //   uint32_t	nsects;		/* number of sections in segment */
+    //   uint32_t	flags;		/* flags */
+    // };
+    private init(_ segmentCommand: segment_command_64, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
+
+        segname = String(char16: segmentCommand.segname)
+        vmaddr = segmentCommand.vmaddr
+        vmsize = segmentCommand.vmsize
+        fileoff = segmentCommand.fileoff
+        filesize = segmentCommand.filesize
+        maxprot = segmentCommand.maxprot
+        initprot = segmentCommand.initprot
+        nsects = segmentCommand.nsects
+        flags = segmentCommand.flags
+
+        // build sections
+        sections.reserveCapacity(Int(segmentCommand.nsects))
+
+        var offset = MemoryLayout.size(ofValue: segmentCommand)
+        for _ in 0..<segmentCommand.nsects {
+            let data = loadCommand.data.advanced(by: offset)
+            let section = Section(data.extract(section_64.self))
+            sections.append(section)
+            offset += MemoryLayout<section_64>.size
+        }
     }
 }
 
@@ -87,46 +144,6 @@ extension SegmentCommand: LoadCommandTypeRepresentable {
 }
 
 extension SegmentCommand {
-
-    // Source:
-    // /Applications/Xcode.13.3.0.13E113.app/...Developer/SDKs/iPhoneOS.sdk/usr/include/mach-o/loader.h
-    enum UnderlyingValue {
-        // struct segment_command { /* for 32-bit architectures */
-        //   uint32_t	cmd;		/* LC_SEGMENT */
-        //   uint32_t	cmdsize;	/* includes sizeof section structs */
-        //   char		segname[16];	/* segment name */
-        //   uint32_t	vmaddr;		/* memory address of this segment */
-        //   uint32_t	vmsize;		/* memory size of this segment */
-        //   uint32_t	fileoff;	/* file offset of this segment */
-        //   uint32_t	filesize;	/* amount to map from the file */
-        //   vm_prot_t	maxprot;	/* maximum VM protection */
-        //   vm_prot_t	initprot;	/* initial VM protection */
-        //   uint32_t	nsects;		/* number of sections in segment */
-        //   uint32_t	flags;		/* flags */
-        // };
-        case segment(segment_command)
-        // struct segment_command_64 { /* for 64-bit architectures */
-        //   uint32_t	cmd;		/* LC_SEGMENT_64 */
-        //   uint32_t	cmdsize;	/* includes sizeof section_64 structs */
-        //   char		segname[16];	/* segment name */
-        //   uint64_t	vmaddr;		/* memory address of this segment */
-        //   uint64_t	vmsize;		/* memory size of this segment */
-        //   uint64_t	fileoff;	/* file offset of this segment */
-        //   uint64_t	filesize;	/* amount to map from the file */
-        //   vm_prot_t	maxprot;	/* maximum VM protection */
-        //   vm_prot_t	initprot;	/* initial VM protection */
-        //   uint32_t	nsects;		/* number of sections in segment */
-        //   uint32_t	flags;		/* flags */
-        // };
-        case segment64(segment_command_64)
-
-        var segname: String {
-            switch self {
-            case .segment(let command): return String(char16: command.segname)
-            case .segment64(let command): return String(char16: command.segname)
-            }
-        }
-    }
 
    /**
     * A segment is made up of zero or more sections.  Non-MH_OBJECT files have
@@ -233,22 +250,14 @@ extension SegmentCommand {
 
 extension SegmentCommand: CustomStringConvertible {
 
+    // TODO: replace this with cli
     var description: String {
         var str = "segname: \(self.segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
-        switch underlyingValue {
-        case .segment(let command):
-            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
-            str += "   "
-            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
-            str += "   "
-            str += "prot: \(command.initprot)/\(command.maxprot)"
-        case .segment64(let command):
-            str += "file: \(String(hex: command.fileoff))-\(String(hex: command.fileoff + command.filesize))"
-            str += "   "
-            str += "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))"
-            str += "   "
-            str += "prot: \(command.initprot)/\(command.maxprot)"
-        }
+        str += "file: \(String(hex: fileoff))-\(String(hex: fileoff + filesize))"
+        str += "   "
+        str += "vm: \(String(hex: vmaddr))-\(String(hex: vmaddr + vmsize))"
+        str += "   "
+        str += "prot: \(initprot)/\(maxprot)"
         return str
     }
 }
