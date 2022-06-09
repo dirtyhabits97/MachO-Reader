@@ -1,6 +1,5 @@
-import XCTest
-import class Foundation.Bundle
 @testable import MachO_Reader
+import XCTest
 
 final class FatHeaderTests: XCTestCase {
 
