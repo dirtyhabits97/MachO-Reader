@@ -9,10 +9,11 @@ on:
 jobs:
   macos:
     name: macOS
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
-      - name: Build
-        run: swift build -v
+      # Uncomment this when decoupling
+      #- name: Build
+      #  run: swift build -v
       - name: Run tests
         run: swift test -v
