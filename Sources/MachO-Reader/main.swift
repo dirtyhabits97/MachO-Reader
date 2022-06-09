@@ -3,6 +3,8 @@ import ArgumentParser
 
 struct Reader: ParsableCommand {
 
+    // MARK: - Properties
+
     @Option(help: "The arch of the mach-o header to read.")
     var arch: String?
 
@@ -17,6 +19,8 @@ struct Reader: ParsableCommand {
 
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
+
+    // MARK: - Methods
 
     func run() throws {
         guard let url = URL(string: "file://\(pathToBinary)") else {
@@ -46,6 +50,7 @@ struct Reader: ParsableCommand {
                 })
             return
         }
+        // print default information
         CLIFormatter.print(file)
     }
 }
