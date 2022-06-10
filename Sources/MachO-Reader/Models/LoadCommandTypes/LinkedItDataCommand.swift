@@ -3,7 +3,7 @@ import MachO
 
 /**
  * The linkedit_data_command contains the offsets and sizes of a blob
- * of data in the __LINKEDIT segment.  
+ * of data in the __LINKEDIT segment.
  */
 @dynamicMemberLookup
 struct LinkedItDataCommand {

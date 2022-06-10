@@ -11,7 +11,7 @@ import MachO
  * into three groups of symbols:
  *	local symbols (static and debugging symbols) - grouped by module
  *	defined external symbols - grouped by module (sorted by name if not lib)
- *	undefined external symbols (sorted by name if MH_BINDATLOAD is not set, 
+ *	undefined external symbols (sorted by name if MH_BINDATLOAD is not set,
  *  and in order the were seen by the static linker if MH_BINDATLOAD is set)
  * In this load command there are offsets and counts to each of the three groups
  * of symbols.

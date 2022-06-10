@@ -76,27 +76,27 @@ extension LoadCommandType: CustomStringConvertible {
 
     var description: String {
         switch self {
-        case .buildVersionCommand(let command):
+        case let .buildVersionCommand(command):
             return command.description
-        case .dylibCommand(let command):
+        case let .dylibCommand(command):
             return command.description
-        case .dylinkerCommand(let command):
+        case let .dylinkerCommand(command):
             return command.description
-        case .dysymtabCommand(let command):
+        case let .dysymtabCommand(command):
             return command.description
-        case .entryPointCommand(let command):
+        case let .entryPointCommand(command):
             return command.description
-        case .linkedItDataCommand(let command):
+        case let .linkedItDataCommand(command):
             return command.description
-        case .segmentCommand(let command):
+        case let .segmentCommand(command):
             return command.description
-        case .symtabCommand(let command):
+        case let .symtabCommand(command):
             return command.description
-        case .sourceVersionCommand(let command):
+        case let .sourceVersionCommand(command):
             return command.description
         case .threadCommand:
             return ""
-        case .uuidCommand(let command):
+        case let .uuidCommand(command):
             return command.description
         case .unspecified:
             return ""
