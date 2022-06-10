@@ -15,3 +15,11 @@ jobs:
         uses: norio-nomura/action-swiftlint@3.2.1
         env:
           DIFF_BASE: ${{ github.base_ref }}
+
+  SwiftFormat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: swift-format-lint
+        uses: Iron-Ham/swift-format-linter-action@v5
+
