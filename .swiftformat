@@ -1,2 +1,1 @@
-# rules
---disable blankLinesAtStartOfScope, redundantParens
+--disable blankLinesAtStartOfScope, redundantParens, trailingCommas

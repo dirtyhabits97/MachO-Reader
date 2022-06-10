@@ -16,6 +16,7 @@ enum LoadCommandType {
 
     case unspecified
 
+    // swiftlint:disable:next cyclomatic_complexity
     init(from loadCommand: LoadCommand) {
         if loadCommand.cmd.isBuildVersionCommand {
             self = BuildVersionCommand.build(from: loadCommand)

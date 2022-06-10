@@ -139,7 +139,7 @@ struct SegmentCommand {
 extension SegmentCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        return .segmentCommand(SegmentCommand(from: loadCommand))
+        .segmentCommand(SegmentCommand(from: loadCommand))
     }
 }
 
