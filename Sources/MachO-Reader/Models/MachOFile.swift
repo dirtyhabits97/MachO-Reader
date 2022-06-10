@@ -28,7 +28,7 @@ struct MachOFile {
         var commands = [LoadCommand]()
         var offset = header.size
 
-        for _ in 0..<header.ncmds {
+        for _ in 0 ..< header.ncmds {
             let data = data.advanced(by: offset)
             let loadCommand = LoadCommand(from: data, isSwapped: header.magic.isSwapped)
             commands.append(loadCommand)

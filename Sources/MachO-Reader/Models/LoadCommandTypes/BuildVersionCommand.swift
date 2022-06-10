@@ -2,7 +2,7 @@ import Foundation
 import MachO
 
 /**
- * The build_version_command contains the min OS version on which this 
+ * The build_version_command contains the min OS version on which this
  * binary was built to run for its platform.  The list of known platforms and
  * tool values following it.
  */

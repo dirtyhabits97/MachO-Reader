@@ -1,5 +1,5 @@
-import Foundation
 import ArgumentParser
+import Foundation
 
 struct Reader: ParsableCommand {
 
@@ -41,13 +41,13 @@ struct Reader: ParsableCommand {
         // only print segments
         if segments {
             file.commands
-                .compactMap({ (loadCommand: LoadCommand) -> SegmentCommand? in
-                    guard case .segmentCommand(let segmentCommand) = loadCommand.commandType() else { return nil }
+                .compactMap { (loadCommand: LoadCommand) -> SegmentCommand? in
+                    guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
                     return segmentCommand
-                })
-                .forEach({ segmentCommand in
+                }
+                .forEach { segmentCommand in
                     CLIFormatter.print(segmentCommand)
-                })
+                }
             return
         }
         // print default information

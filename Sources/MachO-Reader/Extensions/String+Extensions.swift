@@ -9,11 +9,11 @@ extension String {
         var copy = rawCString
         let size = MemoryLayout.size(ofValue: copy)
 
-        self.init(withUnsafePointer(to: &copy, {
-            $0.withMemoryRebound(to: CChar.self, capacity: size, {
+        self.init(withUnsafePointer(to: &copy) {
+            $0.withMemoryRebound(to: CChar.self, capacity: size) {
                 String(cString: $0)
-            })
-        }))
+            }
+        })
     }
 
     init(hex: UInt64) {

@@ -18,7 +18,7 @@ struct MachOHeader {
     // MARK: - Lifecycle
 
     init(from data: Data) {
-        let magic = Magic(peak: data)
+        let magic = Magic(peek: data)
 
         if magic.isMagic64 {
             var header = data.extract(mach_header_64.self)

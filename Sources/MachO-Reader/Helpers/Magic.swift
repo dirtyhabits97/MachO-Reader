@@ -21,8 +21,8 @@ struct Magic: RawRepresentable, Equatable {
 
     // MARK: - Lifecycle
 
-    init(peak data: Data) {
-        self.rawValue = data.extract(UInt32.self)
+    init(peek data: Data) {
+        rawValue = data.extract(UInt32.self)
     }
 
     init(_ rawValue: UInt32) {
@@ -34,6 +34,7 @@ struct Magic: RawRepresentable, Equatable {
     }
 
     // MARK: - Constants
+
     // Fat headers
     static let fatMagic = Magic(FAT_MAGIC)
     static let fatCigam = Magic(FAT_CIGAM)

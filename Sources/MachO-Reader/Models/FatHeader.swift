@@ -27,7 +27,7 @@ struct FatHeader {
     let archs: [Architecture]
 
     init?(from data: Data) {
-        magic = Magic(peak: data)
+        magic = Magic(peek: data)
 
         guard magic.isFat else { return nil }
 
@@ -41,7 +41,7 @@ struct FatHeader {
         var archs: [Architecture] = []
         var offset = MemoryLayout.size(ofValue: underlyingValue)
 
-        for _ in 0..<underlyingValue.nfat_arch {
+        for _ in 0 ..< underlyingValue.nfat_arch {
             if magic.isMagic64 {
                 var fatArch = data.advanced(by: offset).extract(fat_arch_64.self)
                 if magic.isSwapped {

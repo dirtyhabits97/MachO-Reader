@@ -128,7 +128,7 @@ extension MachOFile: CLIOutput {
 extension SegmentCommand: CLIOutput {
 
     var cliCompact: String {
-        var str = "segname: \(self.segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
+        var str = "segname: \(segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
         str += "file: \(String(hex: fileoff))-\(String(hex: fileoff + filesize))"
         str += "   "
         str += "vm: \(String(hex: vmaddr))-\(String(hex: vmaddr + vmsize))"
@@ -140,7 +140,7 @@ extension SegmentCommand: CLIOutput {
     var cli: String {
         var str = cliCompact
 
-        for (idx, section)in sections.enumerated() {
+        for (idx, section) in sections.enumerated() {
             str += "\n    [\(idx)] "
             str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
             str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
