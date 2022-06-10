@@ -16,10 +16,10 @@ jobs:
         env:
           DIFF_BASE: ${{ github.base_ref }}
 
-  SwiftFormat:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: swift-format-lint
-        uses: Iron-Ham/swift-format-linter-action@v5
+  #SwiftFormat:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: swift-format-lint
+  #      uses: Iron-Ham/swift-format-linter-action@v5
 
