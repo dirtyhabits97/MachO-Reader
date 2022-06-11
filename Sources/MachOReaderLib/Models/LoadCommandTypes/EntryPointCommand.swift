@@ -8,7 +8,7 @@ import MachO
  * field will contain the stack size need for the main thread.
  */
 @dynamicMemberLookup
-struct EntryPointCommand {
+public struct EntryPointCommand {
 
     // MARK: - Properties
 
@@ -34,7 +34,7 @@ struct EntryPointCommand {
 
     // MARK: - Methods
 
-    subscript<T>(dynamicMember keyPath: KeyPath<entry_point_command, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: KeyPath<entry_point_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
 }
@@ -48,7 +48,8 @@ extension EntryPointCommand: LoadCommandTypeRepresentable {
 
 extension EntryPointCommand: CustomStringConvertible {
 
-    var description: String {
+    // TODO: delete this
+    public var description: String {
         "entryoff: \(String(hex: self.entryoff)) (\(self.entryoff))   stacksize: \(self.stacksize)"
     }
 }

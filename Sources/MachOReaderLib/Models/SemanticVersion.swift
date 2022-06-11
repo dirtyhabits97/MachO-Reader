@@ -1,14 +1,10 @@
 import Foundation
 
-struct SemanticVersion: CustomStringConvertible {
+public struct SemanticVersion {
 
     let major: Int
     let minor: Int
     let patch: Int
-
-    var description: String {
-        "\(major).\(minor).\(patch)"
-    }
 
     init(_ value: UInt32) {
         let mask: UInt32 = 0b1111
@@ -18,5 +14,14 @@ struct SemanticVersion: CustomStringConvertible {
         minor = Int((value >> 8) & mask)
         // get bytes 17-32
         major = Int((value >> 16))
+    }
+}
+
+// MARK: - CustomStringConvertible
+
+extension SemanticVersion: CustomStringConvertible {
+
+    public var description: String {
+        "\(major).\(minor).\(patch)"
     }
 }

@@ -5,7 +5,7 @@ import MachO
  * The uuid load command contains a single 128-bit unique random number that
  * identifies an object produced by the static link editor.
  */
-struct UUIDCommand {
+public struct UUIDCommand {
 
     // MARK: - Properties
 
@@ -16,7 +16,7 @@ struct UUIDCommand {
     // };
     private let underlyingValue: uuid_command
 
-    var uuid: UUID { UUID(uuid: underlyingValue.uuid) }
+    public var uuid: UUID { UUID(uuid: underlyingValue.uuid) }
 
     // MARK: - Lifecycle
 
@@ -40,5 +40,6 @@ extension UUIDCommand: LoadCommandTypeRepresentable {
 
 extension UUIDCommand: CustomStringConvertible {
 
-    var description: String { uuid.uuidString }
+    // TODO: delete this
+    public var description: String { uuid.uuidString }
 }

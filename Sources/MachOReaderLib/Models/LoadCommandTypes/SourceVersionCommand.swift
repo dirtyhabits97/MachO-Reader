@@ -5,7 +5,7 @@ import MachO
  * The source_version_command is an optional load command containing
  * the version of the sources used to build the binary.
  */
-struct SourceVersionCommand {
+public struct SourceVersionCommand {
 
     // MARK: - Properties
 
@@ -38,7 +38,7 @@ extension SourceVersionCommand: LoadCommandTypeRepresentable {
 
 // MARK: - Helpers
 
-extension SourceVersionCommand {
+public extension SourceVersionCommand {
 
     typealias SourceVersion = (
         A: Int,
@@ -63,7 +63,8 @@ extension SourceVersionCommand {
 
 extension SourceVersionCommand: CustomStringConvertible {
 
-    var description: String {
+    // TODO: delete this
+    public var description: String {
         "\(version.A).\(version.B).\(version.C).\(version.D).\(version.E)"
     }
 }

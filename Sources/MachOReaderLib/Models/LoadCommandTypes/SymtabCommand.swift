@@ -7,7 +7,7 @@ import MachO
  * <nlist.h> and <stab.h>.
  */
 @dynamicMemberLookup
-struct SymtabCommand {
+public struct SymtabCommand {
 
     // MARK: - Properties
 
@@ -35,7 +35,7 @@ struct SymtabCommand {
 
     // MARK: - Methods
 
-    subscript<T>(dynamicMember keyPath: KeyPath<symtab_command, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: KeyPath<symtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
 }
@@ -53,7 +53,8 @@ extension SymtabCommand: CustomStringConvertible {
     //   uint32_t	nsyms;		/* number of symbol table entries */
     //   uint32_t	stroff;		/* string table offset */
     //   uint32_t	strsize;	/* string table size in bytes */
-    var description: String {
+    // TODO: delete this
+    public var description: String {
         "symoff: \(self.symoff)   nsyms: \(self.nsyms)   stroff: \(self.stroff)   strsize: \(self.strsize)"
     }
 }

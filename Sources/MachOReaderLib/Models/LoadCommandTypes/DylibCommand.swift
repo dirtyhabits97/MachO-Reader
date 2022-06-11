@@ -8,7 +8,7 @@ import MachO
  * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
  * LC_REEXPORT_DYLIB) for each library it uses.
  */
-struct DylibCommand {
+public struct DylibCommand {
 
     // MARK: - Properties
 
@@ -20,7 +20,7 @@ struct DylibCommand {
     // };
     private let underlyingValue: dylib_command
 
-    let dylib: Dylib
+    public let dylib: Dylib
 
     // MARK: - Init
 
@@ -45,7 +45,7 @@ extension DylibCommand: LoadCommandTypeRepresentable {
 
 // MARK: - Helpers
 
-extension DylibCommand {
+public extension DylibCommand {
 
     /**
      * Dynamicly linked shared libraries are identified by two things. The
@@ -58,7 +58,7 @@ extension DylibCommand {
      */
     struct Dylib {
 
-        let name: String
+        public let name: String
         let timestamp: Date
         let currentVersion: SemanticVersion
         let compatibilityVersion: SemanticVersion
@@ -86,5 +86,6 @@ extension DylibCommand {
 
 extension DylibCommand: CustomStringConvertible {
 
-    var description: String { dylib.name }
+    // TODO: delete this
+    public var description: String { dylib.name }
 }

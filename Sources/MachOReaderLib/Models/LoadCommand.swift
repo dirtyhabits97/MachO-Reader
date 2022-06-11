@@ -52,7 +52,7 @@ public struct LoadCommand {
 
     // MARK: - Methods
 
-    func commandType() -> LoadCommandType {
+    public func commandType() -> LoadCommandType {
         LoadCommandType(from: self)
     }
 }

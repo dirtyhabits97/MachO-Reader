@@ -6,24 +6,13 @@ import MachO
  * binary was built to run for its platform.  The list of known platforms and
  * tool values following it.
  */
-struct BuildVersionCommand {
+public struct BuildVersionCommand {
 
     // MARK: - Properties
 
-    // struct build_version_command {
-    //     uint32_t	cmd;		/* LC_BUILD_VERSION */
-    //     uint32_t	cmdsize;	/* sizeof(struct build_version_command) plus */
-    //         /* ntools * sizeof(struct build_tool_version) */
-    //     uint32_t	platform;	/* platform */
-    //     uint32_t	minos;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
-    //     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
-    //     uint32_t	ntools;		/* number of tool entries following this */
-    // };
-    private let underlyingValue: build_version_command
-
-    var platform: Platform? { Platform(rawValue: Int(underlyingValue.platform)) }
-    var minOS: SemanticVersion { SemanticVersion(underlyingValue.minos) }
-    var sdk: SemanticVersion { SemanticVersion(underlyingValue.sdk) }
+    public let platform: Platform
+    public let minOS: SemanticVersion
+    public let sdk: SemanticVersion
 
     // MARK: - Lifecycle
 
@@ -34,7 +23,22 @@ struct BuildVersionCommand {
             swap_build_version_command(&buildVersionCommand, kByteSwapOrder)
         }
 
-        underlyingValue = buildVersionCommand
+        self.init(buildVersionCommand)
+    }
+
+    // struct build_version_command {
+    //     uint32_t	cmd;		/* LC_BUILD_VERSION */
+    //     uint32_t	cmdsize;	/* sizeof(struct build_version_command) plus */
+    //         /* ntools * sizeof(struct build_tool_version) */
+    //     uint32_t	platform;	/* platform */
+    //     uint32_t	minos;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+    //     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+    //     uint32_t	ntools;		/* number of tool entries following this */
+    // };
+    private init(_ buildVersionCommand: build_version_command) {
+        platform = Platform(buildVersionCommand.platform)
+        minOS = SemanticVersion(buildVersionCommand.minos)
+        sdk = SemanticVersion(buildVersionCommand.sdk)
     }
 }
 
@@ -45,53 +49,10 @@ extension BuildVersionCommand: LoadCommandTypeRepresentable {
     }
 }
 
-// MARK: - Helpers
-
-extension BuildVersionCommand {
-
-    // #define PLATFORM_MACOS 1
-    // #define PLATFORM_IOS 2
-    // #define PLATFORM_TVOS 3
-    // #define PLATFORM_WATCHOS 4
-    // #define PLATFORM_BRIDGEOS 5
-    // #define PLATFORM_MACCATALYST 6
-    // #define PLATFORM_IOSSIMULATOR 7
-    // #define PLATFORM_TVOSSIMULATOR 8
-    // #define PLATFORM_WATCHOSSIMULATOR 9
-    // #define PLATFORM_DRIVERKIT 10
-    enum Platform: Int, CustomStringConvertible {
-        case macOS = 1
-        case iOS
-        case watchOS
-        case bridgeOS
-        case macCatalyst
-        case iOSSimulator
-        case tvOSSimulator
-        case watchOSSimulator
-        case driverKit
-
-        var description: String {
-            switch self {
-            case .macOS: return "macOS"
-            case .iOS: return "iOS"
-            case .watchOS: return "watchOS"
-            case .bridgeOS: return "bridgeOS"
-            case .macCatalyst: return "macCatalyst"
-            case .iOSSimulator: return "iOSSimulator"
-            case .tvOSSimulator: return "tvOSSimulator"
-            case .watchOSSimulator: return "watchOSSimulator"
-            case .driverKit: return "driverKit"
-            }
-        }
-    }
-}
-
 extension BuildVersionCommand: CustomStringConvertible {
 
-    var description: String {
-        if let platform = platform {
-            return "platform: \(platform.description)   minos: \(minOS)   sdk: \(sdk)"
-        }
-        return "minOS: \(minOS)   sdk: \(sdk)"
+    // TODO: delete this
+    public var description: String {
+        ""
     }
 }

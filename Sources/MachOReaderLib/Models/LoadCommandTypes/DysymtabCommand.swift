@@ -40,7 +40,7 @@ import MachO
  * off the section structures.
  */
 @dynamicMemberLookup
-struct DysymtabCommand {
+public struct DysymtabCommand {
 
     // MARK: - Properties
 
@@ -60,7 +60,7 @@ struct DysymtabCommand {
 
     // MARK: - Methods
 
-    subscript<T>(dynamicMember keyPath: KeyPath<dysymtab_command, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: KeyPath<dysymtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
 }
@@ -74,8 +74,8 @@ extension DysymtabCommand: LoadCommandTypeRepresentable {
 
 extension DysymtabCommand: CustomStringConvertible {
 
-    var description: String {
-        // swiftlint:disable:next line_length
-        "nlocalsym: \(self.nlocalsym)  nextdefsym: \(self.nextdefsym)   nundefsym: \(self.nundefsym)   nindirectsyms: \(self.nindirectsyms)"
+    // TODO: delete this
+    public var description: String {
+        ""
     }
 }

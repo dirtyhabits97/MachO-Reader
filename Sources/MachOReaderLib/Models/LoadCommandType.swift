@@ -1,6 +1,6 @@
 import Foundation
 
-enum LoadCommandType {
+public enum LoadCommandType {
 
     case buildVersionCommand(BuildVersionCommand)
     case dylibCommand(DylibCommand)
@@ -69,38 +69,4 @@ enum LoadCommandType {
 protocol LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType
-}
-
-// MARK: - Helpers
-
-extension LoadCommandType: CustomStringConvertible {
-
-    var description: String {
-        switch self {
-        case let .buildVersionCommand(command):
-            return command.description
-        case let .dylibCommand(command):
-            return command.description
-        case let .dylinkerCommand(command):
-            return command.description
-        case let .dysymtabCommand(command):
-            return command.description
-        case let .entryPointCommand(command):
-            return command.description
-        case let .linkedItDataCommand(command):
-            return command.description
-        case let .segmentCommand(command):
-            return ""
-        case let .symtabCommand(command):
-            return command.description
-        case let .sourceVersionCommand(command):
-            return command.description
-        case .threadCommand:
-            return ""
-        case let .uuidCommand(command):
-            return command.description
-        case .unspecified:
-            return ""
-        }
-    }
 }

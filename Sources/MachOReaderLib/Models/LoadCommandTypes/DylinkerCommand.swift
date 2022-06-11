@@ -9,7 +9,7 @@ import MachO
  * This struct is also used for the LC_DYLD_ENVIRONMENT load command and
  * contains string for dyld to treat like environment variable.
  */
-struct DylinkerCommand {
+public struct DylinkerCommand {
 
     // MARK: - Properties
 
@@ -21,7 +21,7 @@ struct DylinkerCommand {
     // };
     private let underlyingValue: dylinker_command
 
-    let name: String
+    public let name: String
 
     // MARK: - Lifecycle
 
@@ -52,5 +52,6 @@ extension DylinkerCommand: LoadCommandTypeRepresentable {
 
 extension DylinkerCommand: CustomStringConvertible {
 
-    var description: String { name }
+    // TODO: delete this
+    public var description: String { name }
 }

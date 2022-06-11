@@ -22,7 +22,7 @@ import Foundation
  * and environment variables are copied onto that stack.
  */
 // TODO: get more info from this
-struct ThreadCommand {
+public struct ThreadCommand {
 
     // MARK: - Properties
 

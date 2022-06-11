@@ -2,6 +2,14 @@ import Foundation
 
 extension String {
 
+    init(hex: UInt32) {
+        self.init("0x" + String(format: "%08llx", hex))
+    }
+
+    init(hex: Int32) {
+        self.init("0x" + String(format: "%08llx", hex))
+    }
+
     init(hex: UInt64) {
         self.init("0x" + String(format: "%09llx", hex))
     }

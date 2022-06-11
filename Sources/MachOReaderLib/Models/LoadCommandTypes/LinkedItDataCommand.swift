@@ -6,7 +6,7 @@ import MachO
  * of data in the __LINKEDIT segment.
  */
 @dynamicMemberLookup
-struct LinkedItDataCommand {
+public struct LinkedItDataCommand {
 
     // MARK: - Properties
 
@@ -37,7 +37,7 @@ struct LinkedItDataCommand {
 
     // MARK: - Methods
 
-    subscript<T>(dynamicMember keyPath: KeyPath<linkedit_data_command, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: KeyPath<linkedit_data_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
 }
@@ -51,7 +51,8 @@ extension LinkedItDataCommand: LoadCommandTypeRepresentable {
 
 extension LinkedItDataCommand: CustomStringConvertible {
 
-    var description: String {
+    // TODO: delete this
+    public var description: String {
         "dataoff: \(String(hex: self.dataoff)) (\(self.dataoff))   datasize: \(self.datasize)"
     }
 }
