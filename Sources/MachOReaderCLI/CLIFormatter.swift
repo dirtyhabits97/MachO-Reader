@@ -76,6 +76,13 @@ extension FileType: CLIOutput {
     }
 }
 
+extension MachOHeader.Flags: CLIOutput {
+
+    var cli: String {
+        readableValue ?? .flags(rawValue)
+    }
+}
+
 extension MachOHeader: CLIOutput {
 
     var cli: String {
@@ -90,7 +97,7 @@ extension MachOHeader: CLIOutput {
         str += "   "
         str += "sizeofcmds: \(sizeofcmds)"
         str += "\n".padding(toLength: 21, withPad: " ", startingAt: 0)
-        str += "flags: \(String.flags(flags))"
+        str += "flags: \(flags.cli)"
         return str
     }
 }

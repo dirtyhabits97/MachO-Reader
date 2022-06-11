@@ -6,20 +6,20 @@ public extension MachOHeader {
 
         // MARK: - Properties
 
-        public let rawValue: Int32
+        public let rawValue: UInt32
 
         // MARK: - Lifecycle
 
-        public init(_ rawValue: Int32) {
+        public init(rawValue: UInt32) {
             self.rawValue = rawValue
         }
 
         public init(_ rawValue: UInt32) {
-            self.rawValue = Int32(rawValue)
+            self.rawValue = rawValue
         }
 
-        public init(rawValue: Int32) {
-            self.rawValue = rawValue
+        public init(_ rawValue: Int32) {
+            self.rawValue = UInt32(rawValue)
         }
 
         // MARK: - Constants
