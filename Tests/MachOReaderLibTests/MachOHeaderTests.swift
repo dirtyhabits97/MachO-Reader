@@ -1,4 +1,4 @@
-@testable import MachO_Reader
+@testable import MachOReaderLib
 import XCTest
 
 final class MachOHeaderTests: XCTestCase {

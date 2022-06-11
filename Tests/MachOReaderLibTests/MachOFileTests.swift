@@ -1,6 +1,6 @@
 // swiftlint:disable line_length
 
-@testable import MachO_Reader
+@testable import MachOReaderLib
 import XCTest
 
 // MACH_HEADER         magic: MH_MAGIC_64 (0xfeedfacf)   cputype: ARM64   filetype: MH_EXECUTE   ncmds: 27   sizeofcmds: 2024
