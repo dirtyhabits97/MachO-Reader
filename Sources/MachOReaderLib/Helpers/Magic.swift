@@ -1,11 +1,11 @@
 import Foundation
 import MachO
 
-struct Magic: RawRepresentable, Equatable {
+public struct Magic: RawRepresentable, Equatable {
 
     // MARK: - Properties
 
-    let rawValue: UInt32
+    public let rawValue: UInt32
 
     var isFat: Bool {
         [.fatMagic, .fatMagic64, .fatCigam, .fatCigam64].contains(self)
@@ -29,7 +29,7 @@ struct Magic: RawRepresentable, Equatable {
         self.rawValue = rawValue
     }
 
-    init(rawValue: UInt32) {
+    public init(rawValue: UInt32) {
         self.rawValue = rawValue
     }
 

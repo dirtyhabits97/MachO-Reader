@@ -15,15 +15,11 @@ import MachO
  * All structures defined here are always written and read to/from disk
  * in big-endian order.
  */
-struct FatHeader {
-
-    // struct fat_header {
-    //   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
-    //   uint32_t	nfat_arch;	/* number of structs that follow */
-    // };
-    private let underlyingValue: fat_header
+public struct FatHeader {
 
     let magic: Magic
+    // swiftlint:disable:next identifier_name
+    let nfat_arc: UInt32
     let archs: [Architecture]
 
     init?(from data: Data) {
@@ -31,17 +27,19 @@ struct FatHeader {
 
         guard magic.isFat else { return nil }
 
+        // struct fat_header {
+        //   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
+        //   uint32_t	nfat_arch;	/* number of structs that follow */
+        // };
         var fatHeader = data.extract(fat_header.self)
         if magic.isSwapped {
             swap_fat_header(&fatHeader, kByteSwapOrder)
         }
 
-        underlyingValue = fatHeader
-
         var archs: [Architecture] = []
-        var offset = MemoryLayout.size(ofValue: underlyingValue)
+        var offset = MemoryLayout.size(ofValue: fatHeader)
 
-        for _ in 0 ..< underlyingValue.nfat_arch {
+        for _ in 0 ..< fatHeader.nfat_arch {
             if magic.isMagic64 {
                 var fatArch = data.advanced(by: offset).extract(fat_arch_64.self)
                 if magic.isSwapped {
@@ -59,6 +57,7 @@ struct FatHeader {
             }
         }
 
+        nfat_arc = fatHeader.nfat_arch
         self.archs = archs
     }
 
@@ -69,7 +68,7 @@ struct FatHeader {
     }
 }
 
-extension FatHeader {
+public extension FatHeader {
 
     // Source: .../usr/include/mach-o/fat.h
     struct Architecture {

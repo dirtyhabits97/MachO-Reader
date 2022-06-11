@@ -1,7 +1,7 @@
 import Foundation
 import MachO
 
-struct MachOFile {
+public struct MachOFile {
 
     // MARK: - Properties
 
@@ -11,11 +11,11 @@ struct MachOFile {
 
     // MARK: - Lifecycle
 
-    init(from url: URL, arch: String?) throws {
+    public init(from url: URL, arch: String?) throws {
         self.init(from: try Data(contentsOf: url), arch: arch)
     }
 
-    init(from data: Data, arch: String?) {
+    public init(from data: Data, arch: String?) {
         fatHeader = FatHeader(from: data)
 
         var data = data
