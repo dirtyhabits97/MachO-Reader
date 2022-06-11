@@ -45,11 +45,3 @@ extension EntryPointCommand: LoadCommandTypeRepresentable {
         .entryPointCommand(EntryPointCommand(from: loadCommand))
     }
 }
-
-extension EntryPointCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String {
-        "entryoff: \(String(hex: self.entryoff)) (\(self.entryoff))   stacksize: \(self.stacksize)"
-    }
-}

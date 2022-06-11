@@ -49,9 +49,3 @@ extension DylinkerCommand: LoadCommandTypeRepresentable {
         .dylinkerCommand(DylinkerCommand(from: loadCommand))
     }
 }
-
-extension DylinkerCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String { name }
-}

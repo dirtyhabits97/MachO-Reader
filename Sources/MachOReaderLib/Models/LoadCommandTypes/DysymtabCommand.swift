@@ -71,11 +71,3 @@ extension DysymtabCommand: LoadCommandTypeRepresentable {
         .dysymtabCommand(DysymtabCommand(from: loadCommand))
     }
 }
-
-extension DysymtabCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String {
-        ""
-    }
-}

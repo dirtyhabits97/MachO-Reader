@@ -48,11 +48,3 @@ extension LinkedItDataCommand: LoadCommandTypeRepresentable {
         .linkedItDataCommand(LinkedItDataCommand(from: loadCommand))
     }
 }
-
-extension LinkedItDataCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String {
-        "dataoff: \(String(hex: self.dataoff)) (\(self.dataoff))   datasize: \(self.datasize)"
-    }
-}

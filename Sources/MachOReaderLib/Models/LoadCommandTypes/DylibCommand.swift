@@ -83,9 +83,3 @@ public extension DylibCommand {
         }
     }
 }
-
-extension DylibCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String { dylib.name }
-}

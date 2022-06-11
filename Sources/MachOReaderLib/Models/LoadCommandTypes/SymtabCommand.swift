@@ -46,15 +46,3 @@ extension SymtabCommand: LoadCommandTypeRepresentable {
         .symtabCommand(SymtabCommand(from: loadCommand))
     }
 }
-
-extension SymtabCommand: CustomStringConvertible {
-
-    //   uint32_t	symoff;		/* symbol table offset */
-    //   uint32_t	nsyms;		/* number of symbol table entries */
-    //   uint32_t	stroff;		/* string table offset */
-    //   uint32_t	strsize;	/* string table size in bytes */
-    // TODO: delete this
-    public var description: String {
-        "symoff: \(self.symoff)   nsyms: \(self.nsyms)   stroff: \(self.stroff)   strsize: \(self.strsize)"
-    }
-}

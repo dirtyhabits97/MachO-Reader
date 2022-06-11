@@ -37,9 +37,3 @@ extension UUIDCommand: LoadCommandTypeRepresentable {
         .uuidCommand(UUIDCommand(from: loadCommand))
     }
 }
-
-extension UUIDCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String { uuid.uuidString }
-}

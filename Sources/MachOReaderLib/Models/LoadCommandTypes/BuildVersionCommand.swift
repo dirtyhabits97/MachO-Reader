@@ -48,11 +48,3 @@ extension BuildVersionCommand: LoadCommandTypeRepresentable {
         .buildVersionCommand(BuildVersionCommand(from: loadCommand))
     }
 }
-
-extension BuildVersionCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String {
-        ""
-    }
-}

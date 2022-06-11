@@ -60,11 +60,3 @@ public extension SourceVersionCommand {
         )
     }
 }
-
-extension SourceVersionCommand: CustomStringConvertible {
-
-    // TODO: delete this
-    public var description: String {
-        "\(version.A).\(version.B).\(version.C).\(version.D).\(version.E)"
-    }
-}
