@@ -3,3 +3,4 @@ included:
   - Tests
 disabled_rules:
   - todo
+  - trailing_comma
