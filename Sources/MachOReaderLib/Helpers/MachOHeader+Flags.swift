@@ -118,6 +118,65 @@ public extension MachOHeader {
 extension MachOHeader.Flags: Readable {
 
     public var readableValue: String? {
-        nil
+        let readableValues = reduce(into: [String]()) { result, option in
+            switch option {
+            case .noUndefs: result.append("MH_NOUNDEFS")
+            case .incrLink: result.append("MH_INCRLINK")
+            case .dyldLink: result.append("MH_DYLDLINK")
+            case .binDatLoad: result.append("MH_BINDATLOAD")
+            case .preBound: result.append("MH_PREBOUND")
+            case .splitSegs: result.append("MH_SPLIT_SEGS")
+            case .lazyInit: result.append("MH_LAZY_INIT")
+            case .twoLevel: result.append("MH_TWOLEVEL")
+            case .forceFlat: result.append("MH_FORCE_FLAT")
+            case .noMultiDefs: result.append("MH_NOMULTIDEFS")
+            case .noFixPreBinding: result.append("MH_NOFIXPREBINDING")
+            case .preBindable: result.append("MH_PREBINDABLE")
+            case .allModsBound: result.append("MH_ALLMODSBOUND")
+            case .subsectionsViaSymbols: result.append("MH_SUBSECTIONS_VIA_SYMBOLS")
+            case .canonical: result.append("MH_CANONICAL")
+            case .weakDefines: result.append("MH_WEAK_DEFINES")
+            case .bindsToWeak: result.append("MH_BINDS_TO_WEAK")
+            case .allowStackExecution: result.append("MH_ALLOW_STACK_EXECUTION")
+            case .rootSafe: result.append("MH_ROOT_SAFE")
+            case .setUidSafe: result.append("MH_SETUID_SAFE")
+            case .noReExportedDylibs: result.append("MH_NO_REEXPORTED_DYLIBS")
+            case .pie: result.append("MH_PIE")
+            case .deadStrippableDylib: result.append("MH_DEAD_STRIPPABLE_DYLIB")
+            case .hasTlvDescriptors: result.append("MH_HAS_TLV_DESCRIPTORS")
+            case .noHeapExecution: result.append("MH_NO_HEAP_EXECUTION")
+            case .appExtensionSafe: result.append("MH_APP_EXTENSION_SAFE")
+            case .nListOutOfSyncWithDylidInfo: result.append("MH_NLIST_OUTOFSYNC_WITH_DYLDINFO")
+            case .simSupport: result.append("MH_SIM_SUPPORT")
+            case .dylibInCache: result.append("MH_DYLIB_IN_CACHE")
+            default: break
+            }
+        }
+
+        if readableValues.isEmpty { return nil }
+        return readableValues.joined(separator: ", ")
+    }
+}
+
+// MARK: - Helper
+
+private extension OptionSet where RawValue: BinaryInteger, Element == Self {
+
+    func reduce<Result>(
+        into initialResult: Result,
+        _ update: (inout Result, Self.Element) throws -> Void
+    ) rethrows -> Result {
+        var result = initialResult
+        var maskIdx = 0
+
+        while maskIdx < rawValue.bitWidth {
+            let option = Self(rawValue: rawValue & (1 << maskIdx))
+            if contains(option) {
+                try update(&result, option)
+            }
+            maskIdx += 1
+        }
+
+        return result
     }
 }
