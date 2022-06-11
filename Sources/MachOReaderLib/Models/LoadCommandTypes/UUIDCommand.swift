@@ -5,7 +5,7 @@ import MachO
  * The uuid load command contains a single 128-bit unique random number that
  * identifies an object produced by the static link editor.
  */
-public struct UUIDCommand {
+public struct UUIDCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -21,6 +21,9 @@ public struct UUIDCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(UUIDCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(UUIDCommand.allowedCmds)")
+
         var uuidCommand = loadCommand.data.extract(uuid_command.self)
 
         if loadCommand.isSwapped {
@@ -29,9 +32,10 @@ public struct UUIDCommand {
 
         underlyingValue = uuidCommand
     }
-}
 
-extension UUIDCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.uuid] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .uuidCommand(UUIDCommand(from: loadCommand))

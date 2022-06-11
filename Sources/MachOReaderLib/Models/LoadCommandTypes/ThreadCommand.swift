@@ -22,7 +22,7 @@ import Foundation
  * and environment variables are copied onto that stack.
  */
 // TODO: get more info from this
-public struct ThreadCommand {
+public struct ThreadCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -39,6 +39,9 @@ public struct ThreadCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(ThreadCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(ThreadCommand.allowedCmds)")
+
         var threadCommand = loadCommand.data.extract(thread_command.self)
 
         if loadCommand.isSwapped {
@@ -47,9 +50,10 @@ public struct ThreadCommand {
 
         underlyingValue = threadCommand
     }
-}
 
-extension ThreadCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.thread, .unixthread] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .threadCommand(ThreadCommand(from: loadCommand))

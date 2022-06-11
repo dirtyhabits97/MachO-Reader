@@ -8,7 +8,7 @@ import MachO
  * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
  * LC_REEXPORT_DYLIB) for each library it uses.
  */
-public struct DylibCommand {
+public struct DylibCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -25,6 +25,9 @@ public struct DylibCommand {
     // MARK: - Init
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(DylibCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(DylibCommand.allowedCmds)")
+
         var dylibCommand = loadCommand.data.extract(dylib_command.self)
 
         if loadCommand.isSwapped {
@@ -34,9 +37,12 @@ public struct DylibCommand {
         underlyingValue = dylibCommand
         dylib = Dylib(command: dylibCommand, data: loadCommand.data)
     }
-}
 
-extension DylibCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> {
+        [.idDylib, .loadDylib, .loadWeakDylib, .reexportDylib]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dylibCommand(DylibCommand(from: loadCommand))

@@ -8,7 +8,7 @@ import MachO
  * field will contain the stack size need for the main thread.
  */
 @dynamicMemberLookup
-public struct EntryPointCommand {
+public struct EntryPointCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -23,6 +23,9 @@ public struct EntryPointCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(EntryPointCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(EntryPointCommand.allowedCmds)")
+
         var entryPointCommand = loadCommand.data.extract(entry_point_command.self)
 
         if loadCommand.isSwapped {
@@ -37,9 +40,10 @@ public struct EntryPointCommand {
     public subscript<T>(dynamicMember keyPath: KeyPath<entry_point_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
-}
 
-extension EntryPointCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.main] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .entryPointCommand(EntryPointCommand(from: loadCommand))

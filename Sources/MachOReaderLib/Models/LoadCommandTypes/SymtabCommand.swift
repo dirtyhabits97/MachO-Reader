@@ -7,7 +7,7 @@ import MachO
  * <nlist.h> and <stab.h>.
  */
 @dynamicMemberLookup
-public struct SymtabCommand {
+public struct SymtabCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -24,6 +24,9 @@ public struct SymtabCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(SymtabCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(SymtabCommand.allowedCmds)")
+
         var symtabCommand = loadCommand.data.extract(symtab_command.self)
 
         if loadCommand.isSwapped {
@@ -38,9 +41,10 @@ public struct SymtabCommand {
     public subscript<T>(dynamicMember keyPath: KeyPath<symtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
-}
 
-extension SymtabCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.symtab] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .symtabCommand(SymtabCommand(from: loadCommand))

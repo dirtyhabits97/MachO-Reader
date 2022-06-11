@@ -5,7 +5,7 @@ import MachO
  * The source_version_command is an optional load command containing
  * the version of the sources used to build the binary.
  */
-public struct SourceVersionCommand {
+public struct SourceVersionCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -19,6 +19,9 @@ public struct SourceVersionCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(SourceVersionCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(SourceVersionCommand.allowedCmds)")
+
         var sourceVersionCommand = loadCommand.data.extract(source_version_command.self)
 
         if loadCommand.isSwapped {
@@ -27,9 +30,10 @@ public struct SourceVersionCommand {
 
         underlyingValue = sourceVersionCommand
     }
-}
 
-extension SourceVersionCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.sourceVersion] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .sourceVersionCommand(SourceVersionCommand(from: loadCommand))

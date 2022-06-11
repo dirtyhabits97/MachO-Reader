@@ -40,7 +40,7 @@ import MachO
  * off the section structures.
  */
 @dynamicMemberLookup
-public struct DysymtabCommand {
+public struct DysymtabCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -49,6 +49,9 @@ public struct DysymtabCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(DysymtabCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(DysymtabCommand.allowedCmds)")
+
         var dysymtabCommand = loadCommand.data.extract(dysymtab_command.self)
 
         if loadCommand.isSwapped {
@@ -63,9 +66,10 @@ public struct DysymtabCommand {
     public subscript<T>(dynamicMember keyPath: KeyPath<dysymtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
-}
 
-extension DysymtabCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.dysymtab] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dysymtabCommand(DysymtabCommand(from: loadCommand))
