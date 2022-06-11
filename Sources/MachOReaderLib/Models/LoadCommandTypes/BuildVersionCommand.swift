@@ -6,7 +6,7 @@ import MachO
  * binary was built to run for its platform.  The list of known platforms and
  * tool values following it.
  */
-public struct BuildVersionCommand {
+public struct BuildVersionCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -17,6 +17,9 @@ public struct BuildVersionCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(BuildVersionCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(BuildVersionCommand.allowedCmds)")
+
         var buildVersionCommand = loadCommand.data.extract(build_version_command.self)
 
         if loadCommand.isSwapped {
@@ -40,9 +43,10 @@ public struct BuildVersionCommand {
         minOS = SemanticVersion(buildVersionCommand.minos)
         sdk = SemanticVersion(buildVersionCommand.sdk)
     }
-}
 
-extension BuildVersionCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.buildVersion] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .buildVersionCommand(BuildVersionCommand(from: loadCommand))

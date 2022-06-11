@@ -16,7 +16,7 @@ import MachO
  * section structures directly follow the segment command and their size is
  * reflected in cmdsize.
  */
-public struct SegmentCommand {
+public struct SegmentCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -44,19 +44,23 @@ public struct SegmentCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(SegmentCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(SegmentCommand.allowedCmds)")
+
         if loadCommand.cmd == .segment64 {
             var segmentCommand = loadCommand.data.extract(segment_command_64.self)
             if loadCommand.isSwapped {
                 swap_segment_command_64(&segmentCommand, kByteSwapOrder)
             }
             self.init(segmentCommand, loadCommand: loadCommand)
-        } else {
-            var segmentCommand = loadCommand.data.extract(segment_command.self)
-            if loadCommand.isSwapped {
-                swap_segment_command(&segmentCommand, kByteSwapOrder)
-            }
-            self.init(segmentCommand, loadCommand: loadCommand)
+            return
         }
+
+        var segmentCommand = loadCommand.data.extract(segment_command.self)
+        if loadCommand.isSwapped {
+            swap_segment_command(&segmentCommand, kByteSwapOrder)
+        }
+        self.init(segmentCommand, loadCommand: loadCommand)
     }
 
     // struct segment_command { /* for 32-bit architectures */
@@ -140,9 +144,10 @@ public struct SegmentCommand {
 
         self.sections = sections
     }
-}
 
-extension SegmentCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> { [.segment, .segment64] }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .segmentCommand(SegmentCommand(from: loadCommand))

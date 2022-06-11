@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Cmd: RawRepresentable, Equatable {
+public struct Cmd: RawRepresentable, Equatable, Hashable {
 
     // MARK: - Properties
 
@@ -82,64 +82,5 @@ extension Cmd: Readable {
         case .uuid: return "LC_UUID"
         default: return nil
         }
-    }
-}
-
-// MARK: - Helpers
-
-extension Cmd {
-
-    var isBuildVersionCommand: Bool {
-        self == .buildVersion
-    }
-
-    var isDylibCommand: Bool {
-        [.idDylib, .loadDylib, .loadWeakDylib, .reexportDylib].contains(self)
-    }
-
-    var isDylinkerCommand: Bool {
-        [.idDylinker, .loadDylinker, .dyldEnvironment].contains(self)
-    }
-
-    var isDysymtabCommand: Bool {
-        self == .dysymtab
-    }
-
-    var isEntryPointCommand: Bool {
-        self == .main
-    }
-
-    var isLinkedItDataCommand: Bool {
-        [
-            .codeSignature,
-            .segmentSplitInfo,
-            .functionStarts,
-            .dataInCode,
-            .dylibCodeSignDrs,
-            .linkerOptimizationHint,
-            .dyldExportsTrie,
-            .dyldChainedFixups,
-        ]
-        .contains(self)
-    }
-
-    var isSegmentCommand: Bool {
-        [.segment, .segment64].contains(self)
-    }
-
-    var isSourceVersionCommand: Bool {
-        self == .sourceVersion
-    }
-
-    var isSymtabCommand: Bool {
-        self == .symtab
-    }
-
-    var isThreadCommand: Bool {
-        [.thread, .unixthread].contains(self)
-    }
-
-    var isUUIDCommand: Bool {
-        self == .uuid
     }
 }

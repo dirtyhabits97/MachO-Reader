@@ -6,7 +6,7 @@ import MachO
  * of data in the __LINKEDIT segment.
  */
 @dynamicMemberLookup
-public struct LinkedItDataCommand {
+public struct LinkedItDataCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
@@ -26,6 +26,9 @@ public struct LinkedItDataCommand {
     // MARK: - Lifecycle
 
     init(from loadCommand: LoadCommand) {
+        assert(loadCommand.is(LinkedItDataCommand.self),
+               "\(loadCommand.cmd) doesn't match any of \(LinkedItDataCommand.allowedCmds)")
+
         var linkedItDataCommand = loadCommand.data.extract(linkedit_data_command.self)
 
         if loadCommand.isSwapped {
@@ -40,9 +43,21 @@ public struct LinkedItDataCommand {
     public subscript<T>(dynamicMember keyPath: KeyPath<linkedit_data_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
     }
-}
 
-extension LinkedItDataCommand: LoadCommandTypeRepresentable {
+    // MARK: - LoadCommandTypeRepresentable
+
+    static var allowedCmds: Set<Cmd> {
+        [
+            .codeSignature,
+            .segmentSplitInfo,
+            .functionStarts,
+            .dataInCode,
+            .dylibCodeSignDrs,
+            .linkerOptimizationHint,
+            .dyldExportsTrie,
+            .dyldChainedFixups,
+        ]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .linkedItDataCommand(LinkedItDataCommand(from: loadCommand))

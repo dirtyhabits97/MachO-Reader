@@ -16,57 +16,26 @@ public enum LoadCommandType {
 
     case unspecified
 
-    // swiftlint:disable:next cyclomatic_complexity
     init(from loadCommand: LoadCommand) {
-        if loadCommand.cmd.isBuildVersionCommand {
-            self = BuildVersionCommand.build(from: loadCommand)
+        let commandTypes: [LoadCommandTypeRepresentable.Type] = [
+            BuildVersionCommand.self,
+            DylibCommand.self,
+            DylinkerCommand.self,
+            DysymtabCommand.self,
+            EntryPointCommand.self,
+            LinkedItDataCommand.self,
+            SegmentCommand.self,
+            SourceVersionCommand.self,
+            SymtabCommand.self,
+            ThreadCommand.self,
+            UUIDCommand.self,
+        ]
+
+        for commandType in commandTypes where loadCommand.is(commandType) {
+            self = commandType.build(from: loadCommand)
             return
         }
-        if loadCommand.cmd.isDylibCommand {
-            self = DylibCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isDylinkerCommand {
-            self = DylinkerCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isDysymtabCommand {
-            self = DysymtabCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isEntryPointCommand {
-            self = EntryPointCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isLinkedItDataCommand {
-            self = LinkedItDataCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isSegmentCommand {
-            self = SegmentCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isSourceVersionCommand {
-            self = SourceVersionCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isSymtabCommand {
-            self = SymtabCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isThreadCommand {
-            self = ThreadCommand.build(from: loadCommand)
-            return
-        }
-        if loadCommand.cmd.isUUIDCommand {
-            self = UUIDCommand.build(from: loadCommand)
-            return
-        }
+
         self = .unspecified
     }
-}
-
-protocol LoadCommandTypeRepresentable {
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType
 }
