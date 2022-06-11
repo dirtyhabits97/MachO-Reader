@@ -63,9 +63,16 @@ extension Magic: CLIOutput {
 
     var cli: String {
         if let readableValue = readableValue {
-            return "\(readableValue) \(.magic(rawValue))"
+            return "\(readableValue) \(String.magic(rawValue))"
         }
         return .magic(rawValue)
+    }
+}
+
+extension FileType: CLIOutput {
+
+    var cli: String {
+        readableValue ?? .filetype(rawValue)
     }
 }
 
@@ -77,7 +84,7 @@ extension MachOHeader: CLIOutput {
         str += "   "
         str += "cputype: \(cputype.cliCompact)"
         str += "   "
-        str += "filetype: \(filetype.description)"
+        str += "filetype: \(filetype.cliCompact)"
         str += "   "
         str += "ncmds: \(ncmds)"
         str += "   "
@@ -85,6 +92,13 @@ extension MachOHeader: CLIOutput {
         str += "\n".padding(toLength: 21, withPad: " ", startingAt: 0)
         str += "flags: \(String.flags(flags))"
         return str
+    }
+}
+
+extension Cmd: CLIOutput {
+
+    var cli: String {
+        readableValue ?? .cmd(rawValue)
     }
 }
 

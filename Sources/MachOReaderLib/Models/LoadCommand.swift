@@ -20,12 +20,12 @@ let kByteSwapOrder = NXByteOrder(0)
  * to these tables will not work well or at all on some machines.  With all
  * padding zeroed like objects will compare byte for byte.
  */
-struct LoadCommand {
+public struct LoadCommand {
 
     // MARK: - Properties
 
-    let cmd: Cmd
-    let cmdsize: UInt32
+    public let cmd: Cmd
+    public let cmdsize: UInt32
 
     let data: Data
     let isSwapped: Bool

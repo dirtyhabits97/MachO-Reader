@@ -27,16 +27,4 @@ extension String {
     init(hex: Int32) {
         self.init("0x" + String(format: "%08llx", hex))
     }
-
-    static func cmd(_ cmd: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", cmd))
-    }
-
-    static func flags(_ flags: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", flags))
-    }
-
-    static func filetype(_ filetype: Int) -> String {
-        self.init("0x" + String(format: "%08llx", filetype))
-    }
 }

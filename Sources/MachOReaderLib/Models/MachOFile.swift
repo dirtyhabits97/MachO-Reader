@@ -5,17 +5,17 @@ public struct MachOFile {
 
     // MARK: - Properties
 
-    let fatHeader: FatHeader?
-    let header: MachOHeader
-    var commands: [LoadCommand]
+    public let fatHeader: FatHeader?
+    public let header: MachOHeader
+    public private(set) var commands: [LoadCommand]
 
     // MARK: - Lifecycle
 
-    public init(from url: URL, arch: String?) throws {
+    init(from url: URL, arch: String?) throws {
         self.init(from: try Data(contentsOf: url), arch: arch)
     }
 
-    public init(from data: Data, arch: String?) {
+    init(from data: Data, arch: String?) {
         fatHeader = FatHeader(from: data)
 
         var data = data

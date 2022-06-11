@@ -2,18 +2,18 @@ import Foundation
 
 // Source:
 // /Applications/Xcode.13.3.0.13E113.app/.../usr/include/mach-o/loader.h
-struct MachOHeader {
+public struct MachOHeader {
 
     // MARK: - Properties
 
     let size: Int
 
-    let magic: Magic
-    let cputype: CPUType
-    let filetype: FileType
-    let ncmds: UInt32
-    let sizeofcmds: UInt32
-    let flags: UInt32
+    public let magic: Magic
+    public let cputype: CPUType
+    public let filetype: FileType
+    public let ncmds: UInt32
+    public let sizeofcmds: UInt32
+    public let flags: UInt32
 
     // MARK: - Lifecycle
 
@@ -48,7 +48,7 @@ struct MachOHeader {
     //     uint32_t	sizeofcmds;	/* the size of all the load commands */
     //     uint32_t	flags;		/* flags */
     // };
-    init(_ rawValue: mach_header, magic: Magic) {
+    private init(_ rawValue: mach_header, magic: Magic) {
         self.magic = magic
         size = MemoryLayout.size(ofValue: rawValue)
         cputype = CPUType(rawValue.cputype)
@@ -68,7 +68,7 @@ struct MachOHeader {
     //     uint32_t	flags;		/* flags */
     //     uint32_t	reserved;	/* reserved */
     // };
-    init(_ rawValue: mach_header_64, magic: Magic) {
+    private init(_ rawValue: mach_header_64, magic: Magic) {
         self.magic = magic
         size = MemoryLayout.size(ofValue: rawValue)
         cputype = CPUType(rawValue.cputype)

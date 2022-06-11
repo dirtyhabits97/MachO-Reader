@@ -1,22 +1,22 @@
 import Foundation
 
-struct FileType: RawRepresentable, Equatable {
+public struct FileType: RawRepresentable, Equatable {
 
     // MARK: - Properties
 
-    let rawValue: Int
+    public let rawValue: Int
 
     // MARK: - Lifecycle
 
-    init(_ rawValue: Int32) {
+    public init(_ rawValue: Int32) {
         self.rawValue = Int(rawValue)
     }
 
-    init(_ rawValue: UInt32) {
+    public init(_ rawValue: UInt32) {
         self.rawValue = Int(rawValue)
     }
 
-    init(rawValue: Int) {
+    public init(rawValue: Int) {
         self.rawValue = rawValue
     }
 
@@ -30,9 +30,11 @@ struct FileType: RawRepresentable, Equatable {
     static let dsym = FileType(MH_DSYM)
 }
 
-extension FileType: CustomStringConvertible {
+// MARK: - Readable
 
-    var description: String {
+extension FileType: Readable {
+
+    public var readableValue: String? {
         switch self {
         case .object: return "MH_OBJECT"
         case .execute: return "MH_EXECUTE"
@@ -40,7 +42,7 @@ extension FileType: CustomStringConvertible {
         case .dylinker: return "MH_DYLINKER"
         case .bundle: return "MH_BUNDLE"
         case .dsym: return "MH_DSYM"
-        default: return String.filetype(rawValue)
+        default: return nil
         }
     }
 }

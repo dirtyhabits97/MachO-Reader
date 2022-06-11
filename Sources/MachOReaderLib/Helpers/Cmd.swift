@@ -1,22 +1,22 @@
 import Foundation
 
-struct Cmd: RawRepresentable, Equatable {
+public struct Cmd: RawRepresentable, Equatable {
 
     // MARK: - Properties
 
-    let rawValue: UInt32
+    public let rawValue: UInt32
 
     // MARK: - Lifecycle
 
-    init(_ rawValue: Int32) {
+    public init(_ rawValue: Int32) {
         self.rawValue = UInt32(rawValue)
     }
 
-    init(_ rawValue: UInt32) {
+    public init(_ rawValue: UInt32) {
         self.rawValue = rawValue
     }
 
-    init(rawValue: UInt32) {
+    public init(rawValue: UInt32) {
         self.rawValue = rawValue
     }
 
@@ -49,9 +49,11 @@ struct Cmd: RawRepresentable, Equatable {
     static let uuid = Cmd(LC_UUID)
 }
 
-extension Cmd {
+// MARK: Readable
 
-    var readableValue: String {
+extension Cmd: Readable {
+
+    public var readableValue: String? {
         switch self {
         case .buildVersion: return "LC_BUILD_VERSION"
         case .codeSignature: return "LC_CODE_SIGNATURE"
@@ -78,7 +80,7 @@ extension Cmd {
         case .thread: return "LC_THREAD"
         case .unixthread: return "LC_UNIXTHREAD"
         case .uuid: return "LC_UUID"
-        default: return .cmd(rawValue)
+        default: return nil
         }
     }
 }
@@ -116,7 +118,7 @@ extension Cmd {
             .dylibCodeSignDrs,
             .linkerOptimizationHint,
             .dyldExportsTrie,
-            .dyldChainedFixups
+            .dyldChainedFixups,
         ]
         .contains(self)
     }
