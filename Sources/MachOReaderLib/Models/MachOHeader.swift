@@ -13,7 +13,7 @@ public struct MachOHeader {
     public let filetype: FileType
     public let ncmds: UInt32
     public let sizeofcmds: UInt32
-    public let flags: UInt32
+    public let flags: Flags
 
     // MARK: - Lifecycle
 
@@ -55,7 +55,7 @@ public struct MachOHeader {
         filetype = FileType(rawValue.filetype)
         ncmds = rawValue.ncmds
         sizeofcmds = rawValue.sizeofcmds
-        flags = rawValue.flags
+        flags = Flags(rawValue.flags)
     }
 
     // struct mach_header_64 {
@@ -75,6 +75,6 @@ public struct MachOHeader {
         filetype = FileType(rawValue.filetype)
         ncmds = rawValue.ncmds
         sizeofcmds = rawValue.sizeofcmds
-        flags = rawValue.flags
+        flags = Flags(rawValue.flags)
     }
 }
