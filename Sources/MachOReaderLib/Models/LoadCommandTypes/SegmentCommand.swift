@@ -16,7 +16,7 @@ import MachO
  * section structures directly follow the segment command and their size is
  * reflected in cmdsize.
  */
-struct SegmentCommand {
+public struct SegmentCommand {
 
     // MARK: - Properties
 
@@ -28,18 +28,18 @@ struct SegmentCommand {
     var cmd: Cmd { loadCommand.cmd }
     var cmdsize: UInt32 { loadCommand.cmdsize }
 
-    let segname: String
+    public let segname: String
 
-    let vmaddr: UInt64
-    let vmsize: UInt64
-    let fileoff: UInt64
-    let filesize: UInt64
-    let maxprot: vm_prot_t
-    let initprot: vm_prot_t
-    let nsects: UInt32
-    let flags: UInt32
+    public let vmaddr: UInt64
+    public let vmsize: UInt64
+    public let fileoff: UInt64
+    public let filesize: UInt64
+    public let maxprot: vm_prot_t
+    public let initprot: vm_prot_t
+    public let nsects: UInt32
+    public let flags: UInt32
 
-    private(set) var sections: [Section] = []
+    public private(set) var sections: [Section]
 
     // MARK: - Lifecycle
 
@@ -86,6 +86,7 @@ struct SegmentCommand {
         flags = segmentCommand.flags
 
         // build sections
+        var sections: [Section] = []
         sections.reserveCapacity(Int(segmentCommand.nsects))
 
         var offset = MemoryLayout.size(ofValue: segmentCommand)
@@ -95,6 +96,8 @@ struct SegmentCommand {
             sections.append(section)
             offset += MemoryLayout<section>.size
         }
+
+        self.sections = sections
     }
 
     // struct segment_command_64 { /* for 64-bit architectures */
@@ -124,6 +127,7 @@ struct SegmentCommand {
         flags = segmentCommand.flags
 
         // build sections
+        var sections: [Section] = []
         sections.reserveCapacity(Int(segmentCommand.nsects))
 
         var offset = MemoryLayout.size(ofValue: segmentCommand)
@@ -133,6 +137,8 @@ struct SegmentCommand {
             sections.append(section)
             offset += MemoryLayout<section_64>.size
         }
+
+        self.sections = sections
     }
 }
 
@@ -143,7 +149,7 @@ extension SegmentCommand: LoadCommandTypeRepresentable {
     }
 }
 
-extension SegmentCommand {
+public extension SegmentCommand {
 
     /**
      * A segment is made up of zero or more sections.  Non-MH_OBJECT files have
@@ -174,20 +180,20 @@ extension SegmentCommand {
      */
     struct Section {
 
-        let sectname: String
-        let segname: String
+        public let sectname: String
+        public let segname: String
 
-        let addr: UInt64
-        let size: UInt64
+        public let addr: UInt64
+        public let size: UInt64
 
-        let offset: UInt32
-        let align: UInt32
-        let reloff: UInt32
-        let nreloc: UInt32
-        let flags: UInt32
-        let reserved1: UInt32
-        let reserved2: UInt32
-        let reserved3: UInt32?
+        public let offset: UInt32
+        public let align: UInt32
+        public let reloff: UInt32
+        public let nreloc: UInt32
+        public let flags: UInt32
+        public let reserved1: UInt32
+        public let reserved2: UInt32
+        public let reserved3: UInt32?
 
         // struct section { /* for 32-bit architectures */
         //   char		sectname[16];	/* name of this section */
@@ -245,19 +251,5 @@ extension SegmentCommand {
             reserved2 = section.reserved2
             reserved3 = section.reserved3
         }
-    }
-}
-
-extension SegmentCommand: CustomStringConvertible {
-
-    // TODO: replace this with cli
-    var description: String {
-        var str = "segname: \(segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
-        str += "file: \(String(hex: fileoff))-\(String(hex: fileoff + filesize))"
-        str += "   "
-        str += "vm: \(String(hex: vmaddr))-\(String(hex: vmaddr + vmsize))"
-        str += "   "
-        str += "prot: \(initprot)/\(maxprot)"
-        return str
     }
 }

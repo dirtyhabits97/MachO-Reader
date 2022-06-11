@@ -11,7 +11,7 @@ public struct MachOFile {
 
     // MARK: - Lifecycle
 
-    init(from url: URL, arch: String?) throws {
+    public init(from url: URL, arch: String?) throws {
         self.init(from: try Data(contentsOf: url), arch: arch)
     }
 

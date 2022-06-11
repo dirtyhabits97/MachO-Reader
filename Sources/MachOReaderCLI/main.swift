@@ -40,17 +40,18 @@ struct Reader: ParsableCommand {
             return
         }
         // only print segments
-        if segments {
-            file.commands
-                .compactMap { (loadCommand: LoadCommand) -> SegmentCommand? in
-                    guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
-                    return segmentCommand
-                }
-                .forEach { segmentCommand in
-                    CLIFormatter.print(segmentCommand)
-                }
-            return
-        }
+        // TODO: uncomment this
+        // if segments {
+        //     file.commands
+        //         .compactMap { (loadCommand: LoadCommand) -> SegmentCommand? in
+        //             guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
+        //             return segmentCommand
+        //         }
+        //         .forEach { segmentCommand in
+        //             CLIFormatter.print(segmentCommand)
+        //         }
+        //     return
+        // }
         // print default information
         CLIFormatter.print(file)
     }

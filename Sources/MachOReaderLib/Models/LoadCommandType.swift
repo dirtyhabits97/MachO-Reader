@@ -90,7 +90,7 @@ extension LoadCommandType: CustomStringConvertible {
         case let .linkedItDataCommand(command):
             return command.description
         case let .segmentCommand(command):
-            return command.description
+            return ""
         case let .symtabCommand(command):
             return command.description
         case let .sourceVersionCommand(command):
