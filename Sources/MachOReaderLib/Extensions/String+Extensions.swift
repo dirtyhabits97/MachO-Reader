@@ -32,10 +32,6 @@ extension String {
         self.init("0x" + String(format: "%08llx", cmd))
     }
 
-    static func magic(_ magic: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", magic))
-    }
-
     static func flags(_ flags: UInt32) -> String {
         self.init("0x" + String(format: "%08llx", flags))
     }

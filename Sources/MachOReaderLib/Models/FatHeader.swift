@@ -17,25 +17,37 @@ import MachO
  */
 public struct FatHeader {
 
-    let magic: Magic
+    // MARK: - Properties
+
+    public let magic: Magic
     // swiftlint:disable:next identifier_name
-    let nfat_arc: UInt32
-    let archs: [Architecture]
+    public let nfat_arc: UInt32
+    public let archs: [Architecture]
+
+    // MARK: - Lifecycle
 
     init?(from data: Data) {
-        magic = Magic(peek: data)
+        let magic = Magic(peek: data)
 
         guard magic.isFat else { return nil }
 
-        // struct fat_header {
-        //   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
-        //   uint32_t	nfat_arch;	/* number of structs that follow */
-        // };
         var fatHeader = data.extract(fat_header.self)
         if magic.isSwapped {
             swap_fat_header(&fatHeader, kByteSwapOrder)
         }
 
+        self.init(fatHeader: fatHeader, magic: magic, data: data)
+    }
+
+    // struct fat_header {
+    //   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
+    //   uint32_t	nfat_arch;	/* number of structs that follow */
+    // };
+    private init(fatHeader: fat_header, magic: Magic, data: Data) {
+        self.magic = magic
+        nfat_arc = fatHeader.nfat_arch
+
+        // build arch array
         var archs: [Architecture] = []
         var offset = MemoryLayout.size(ofValue: fatHeader)
 
@@ -57,9 +69,10 @@ public struct FatHeader {
             }
         }
 
-        nfat_arc = fatHeader.nfat_arch
         self.archs = archs
     }
+
+    // MARK: - Methods
 
     func offset(for cputype: CPUType? = nil) -> UInt64 {
         archs.first(where: { $0.cputype == cputype })?.offset
@@ -73,12 +86,12 @@ public extension FatHeader {
     // Source: .../usr/include/mach-o/fat.h
     struct Architecture {
 
-        let cputype: CPUType
-        let cpuSubtype: cpu_subtype_t
-        let offset: UInt64
-        let size: UInt64
-        let align: UInt32
-        let reserved: UInt32?
+        public let cputype: CPUType
+        public let cpuSubtype: cpu_subtype_t
+        public let offset: UInt64
+        public let size: UInt64
+        public let align: UInt32
+        public let reserved: UInt32?
 
         // struct fat_arch {
         //   cpu_type_t	cputype;	/* cpu specifier (int) */

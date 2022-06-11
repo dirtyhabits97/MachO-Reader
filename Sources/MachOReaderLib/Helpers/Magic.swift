@@ -21,11 +21,11 @@ public struct Magic: RawRepresentable, Equatable {
 
     // MARK: - Lifecycle
 
-    init(peek data: Data) {
+    public init(peek data: Data) {
         rawValue = data.extract(UInt32.self)
     }
 
-    init(_ rawValue: UInt32) {
+    public init(_ rawValue: UInt32) {
         self.rawValue = rawValue
     }
 
@@ -46,4 +46,23 @@ public struct Magic: RawRepresentable, Equatable {
     static let cigam = Magic(MH_CIGAM)
     static let magic64 = Magic(MH_MAGIC_64)
     static let cigam64 = Magic(MH_CIGAM_64)
+}
+
+// MARK: - Readable
+
+extension Magic: Readable {
+
+    public var readableValue: String? {
+        switch self {
+        case .fatMagic: return "FAT_MAGIC"
+        case .fatCigam: return "FAT_CIGAM"
+        case .fatMagic64: return "FAT_MAGIC_64"
+        case .fatCigam64: return "FAT_CIGAM_64"
+        case .magic: return "MH_MAGIC"
+        case .cigam: return "MH_CIGAM"
+        case .magic64: return "MH_MAGIC_64"
+        case .cigam64: return "MH_CIGAM_64"
+        default: return nil
+        }
+    }
 }

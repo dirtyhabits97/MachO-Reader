@@ -1,18 +1,18 @@
 import Foundation
 
-struct CPUType: RawRepresentable, Equatable {
+public struct CPUType: RawRepresentable, Equatable {
 
     // MARK: - Properties
 
-    let rawValue: cpu_type_t
+    public let rawValue: cpu_type_t
 
     // MARK: - Lifecycle
 
-    init(_ rawValue: cpu_type_t) {
+    public init(_ rawValue: cpu_type_t) {
         self.rawValue = rawValue
     }
 
-    init(rawValue: cpu_type_t) {
+    public init(rawValue: cpu_type_t) {
         self.rawValue = rawValue
     }
 
@@ -26,19 +26,21 @@ struct CPUType: RawRepresentable, Equatable {
     static let arm_64 = CPUType(rawValue: CPU_TYPE_ARM64)
 }
 
-extension CPUType {
+// MARK: - Readable
 
-    var readableValue: String {
+extension CPUType: Readable {
+
+    public var readableValue: String? {
         switch self {
         case .x86: return "x86"
         case .x86_64: return "x86_64"
         case .arm: return "ARM"
         case .arm_64: return "ARM64"
-        default: return String(rawValue)
+        default: return nil
         }
     }
 
-    init?(from readableValue: String?) {
+    internal init?(from readableValue: String?) {
         guard let readableValue = readableValue else { return nil }
         switch readableValue.lowercased() {
         case "x86": self = .x86
