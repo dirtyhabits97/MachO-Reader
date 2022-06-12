@@ -11,7 +11,6 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
     // MARK: - Properties
 
     private let loadCommand: LoadCommand
-    public var cmd: Cmd { loadCommand.cmd }
 
     public let platform: Platform
     public let minOS: SemanticVersion
