@@ -62,10 +62,6 @@ extension MachOFile: CLIOutput {
 
         for command in commands {
             str += "\n\(command.commandType().cliCompact)"
-            // TODO: delete this
-            // str += command.cmd.cliCompact.padding(toLength: 30, withPad: " ", startingAt: 0)
-            // str += "cmdsize: \(command.cmdsize)".padding(toLength: 20, withPad: " ", startingAt: 0)
-            // str += command.commandType().cliCompact
         }
 
         return str
