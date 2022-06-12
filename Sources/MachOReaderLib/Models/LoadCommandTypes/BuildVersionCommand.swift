@@ -10,9 +10,15 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
+    private let loadCommand: LoadCommand
+    public var cmd: Cmd { loadCommand.cmd }
+
     public let platform: Platform
     public let minOS: SemanticVersion
     public let sdk: SemanticVersion
+    public let ntools: UInt32
+
+    public let buildToolVersions: [BuildToolVersion]
 
     // MARK: - Lifecycle
 
@@ -26,7 +32,7 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable {
             swap_build_version_command(&buildVersionCommand, kByteSwapOrder)
         }
 
-        self.init(buildVersionCommand)
+        self.init(buildVersionCommand, loadCommand: loadCommand)
     }
 
     // struct build_version_command {
@@ -38,10 +44,27 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable {
     //     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
     //     uint32_t	ntools;		/* number of tool entries following this */
     // };
-    private init(_ buildVersionCommand: build_version_command) {
+    private init(_ buildVersionCommand: build_version_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
+
         platform = Platform(buildVersionCommand.platform)
         minOS = SemanticVersion(buildVersionCommand.minos)
         sdk = SemanticVersion(buildVersionCommand.sdk)
+
+        ntools = buildVersionCommand.ntools
+
+        var buildToolVersions: [BuildToolVersion] = []
+        buildToolVersions.reserveCapacity(Int(ntools))
+
+        var offset = MemoryLayout.size(ofValue: buildVersionCommand)
+        for _ in 0 ..< ntools {
+            let data = loadCommand.data.advanced(by: offset)
+            let buildToolVersion = BuildToolVersion(data.extract(build_tool_version.self))
+            buildToolVersions.append(buildToolVersion)
+            offset += MemoryLayout<build_tool_version>.size
+        }
+
+        self.buildToolVersions = buildToolVersions
     }
 
     // MARK: - LoadCommandTypeRepresentable
@@ -50,5 +73,56 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .buildVersionCommand(BuildVersionCommand(from: loadCommand))
+    }
+}
+
+public extension BuildVersionCommand {
+
+    struct BuildToolVersion {
+
+        public let tool: Tool
+        public let version: SemanticVersion
+
+        // struct build_tool_version {
+        //     uint32_t	tool;		/* enum for the tool */
+        //     uint32_t	version;	/* version number of the tool */
+        // };
+        init(_ rawValue: build_tool_version) {
+            tool = Tool(rawValue.tool)
+            version = SemanticVersion(rawValue.version)
+        }
+    }
+
+    struct Tool: RawRepresentable, Equatable, Readable {
+
+        public var rawValue: UInt32
+
+        public init(rawValue: UInt32) {
+            self.rawValue = rawValue
+        }
+
+        public init(_ rawValue: UInt32) {
+            self.rawValue = rawValue
+        }
+
+        public init(_ rawValue: Int32) {
+            self.rawValue = UInt32(rawValue)
+        }
+
+        static let clang = Tool(TOOL_CLANG)
+        static let swift = Tool(TOOL_SWIFT)
+        // swiftlint:disable:next identifier_name
+        static let ld = Tool(TOOL_LD)
+        static let lld = Tool(TOOL_LLD)
+
+        public var readableValue: String? {
+            switch self {
+            case .clang: return "TOOL_CLANG"
+            case .swift: return "TOOL_SWIFT"
+            case .ld: return "TOOL_LD"
+            case .lld: return "TOOL_LLD"
+            default: return nil
+            }
+        }
     }
 }

@@ -25,8 +25,7 @@ public struct SegmentCommand: LoadCommandTypeRepresentable {
     // TODO: consider storing the data in a class to avoid copying it all the time
     private let loadCommand: LoadCommand
 
-    var cmd: Cmd { loadCommand.cmd }
-    var cmdsize: UInt32 { loadCommand.cmdsize }
+    public var cmd: Cmd { loadCommand.cmd }
 
     public let segname: String
 

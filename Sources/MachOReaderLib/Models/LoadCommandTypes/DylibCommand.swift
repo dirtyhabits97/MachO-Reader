@@ -12,13 +12,9 @@ public struct DylibCommand: LoadCommandTypeRepresentable {
 
     // MARK: - Properties
 
-    // struct dylib_command {
-    //   uint32_t	cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,
-    //              LC_REEXPORT_DYLIB */
-    //   uint32_t	cmdsize;	/* includes pathname string */
-    //   struct dylib	dylib;		/* the library identification */
-    // };
-    private let underlyingValue: dylib_command
+    private let loadCommand: LoadCommand
+
+    public var cmd: Cmd { loadCommand.cmd }
 
     public let dylib: Dylib
 
@@ -34,7 +30,17 @@ public struct DylibCommand: LoadCommandTypeRepresentable {
             swap_dylib_command(&dylibCommand, kByteSwapOrder)
         }
 
-        underlyingValue = dylibCommand
+        self.init(dylibCommand, loadCommand: loadCommand)
+    }
+
+    // struct dylib_command {
+    //   uint32_t	cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,
+    //              LC_REEXPORT_DYLIB */
+    //   uint32_t	cmdsize;	/* includes pathname string */
+    //   struct dylib	dylib;		/* the library identification */
+    // };
+    init(_ dylibCommand: dylib_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         dylib = Dylib(command: dylibCommand, data: loadCommand.data)
     }
 

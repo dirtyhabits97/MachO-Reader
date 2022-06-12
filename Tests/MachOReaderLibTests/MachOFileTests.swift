@@ -35,7 +35,11 @@ import XCTest
 // LC_CODE_SIGNATURE             cmdsize: 16         dataoff: 0x00008960 (35168)   datasize: 404
 final class MachOFileTests: XCTestCase {
 
+    // MARK: - Properties
+
     var helloWorldURL: URL? { url(for: "helloworld") }
+
+    // MARK: - Tests
 
     func test_hasCommands_whenValidBinary() throws {
         guard let url = helloWorldURL else { return }
@@ -73,43 +77,34 @@ final class MachOFileTests: XCTestCase {
     }
 
     func test_onlyOneUuidCommand() throws {
-        guard let url = helloWorldURL else { return }
-
-        let file = try MachOFile(from: url, arch: nil)
-        let uuidCommands = file.commands.uuidCommands
-
-        XCTAssertEqual(uuidCommands.count, 1,
-                       "The binary MUST have only 1 LC_UUID.")
+        try assertOneCommand(.uuid)
     }
 
     func test_onlyOneBuildVersionCommand() throws {
-        guard let url = helloWorldURL else { return }
-
-        let file = try MachOFile(from: url, arch: nil)
-        let buildVersionCommands = file.commands.buildVersionCommands
-
-        XCTAssertEqual(buildVersionCommands.count, 1,
-                       "The binary MUST have only 1 LC_BUILD_VERSION.")
+        try assertOneCommand(.buildVersion)
     }
 
     func test_onlyOneSourceVersionCommand() throws {
-        guard let url = helloWorldURL else { return }
-
-        let file = try MachOFile(from: url, arch: nil)
-        let sourceVersionCommands = file.commands.sourceVersionCommands
-
-        XCTAssertEqual(sourceVersionCommands.count, 1,
-                       "The binary MUST have only 1 LC_SOURCE_VERSION.")
+        try assertOneCommand(.sourceVersion)
     }
 
     func test_onlyOneMainCommand() throws {
+        try assertOneCommand(.main)
+    }
+}
+
+// MARK: - Helpers
+
+extension MachOFileTests {
+
+    func assertOneCommand(_ cmd: Cmd) throws {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        let entryPointCommand = file.commands.entryPointCommand
+        let commands = file.commands.filter { $0.cmd == cmd }
 
-        XCTAssertEqual(entryPointCommand.count, 1,
-                       "The binary MUST have only 1 LC_MAIN.")
+        XCTAssertEqual(commands.count, 1,
+                       "The binary MUST have only 1 \(cmd.readableValue ?? String(cmd.rawValue)).")
     }
 }
 
@@ -117,46 +112,10 @@ final class MachOFileTests: XCTestCase {
 // TODO: Consider moving this to the MachO_Reader target
 extension Array where Element == LoadCommand {
 
-    var buildVersionCommands: [BuildVersionCommand] {
-        compactMap { command -> BuildVersionCommand? in
-            if case let .buildVersionCommand(buildVersionCommand) = command.commandType() {
-                return buildVersionCommand
-            }
-            return nil
-        }
-    }
-
-    var entryPointCommand: [EntryPointCommand] {
-        compactMap { command -> EntryPointCommand? in
-            if case let .entryPointCommand(entryPointCommand) = command.commandType() {
-                return entryPointCommand
-            }
-            return nil
-        }
-    }
-
     var segmentCommands: [SegmentCommand] {
         compactMap { command -> SegmentCommand? in
             if case let .segmentCommand(segmentCommand) = command.commandType() {
                 return segmentCommand
-            }
-            return nil
-        }
-    }
-
-    var sourceVersionCommands: [SourceVersionCommand] {
-        compactMap { command -> SourceVersionCommand? in
-            if case let .sourceVersionCommand(sourceVersionCommand) = command.commandType() {
-                return sourceVersionCommand
-            }
-            return nil
-        }
-    }
-
-    var uuidCommands: [UUIDCommand] {
-        compactMap { command -> UUIDCommand? in
-            if case let .uuidCommand(uuidCommand) = command.commandType() {
-                return uuidCommand
             }
             return nil
         }

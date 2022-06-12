@@ -10,14 +10,52 @@ extension Platform: CLIOutput {
 
 extension BuildVersionCommand: CLIOutput {
 
-    var cli: String {
+    var cliCompact: String {
         "platform: \(platform.cliCompact)   minos: \(minOS)   sdk: \(sdk)"
+    }
+
+    var cli: String {
+        // var str = cmd.cliCompact
+        // str += "   "
+        // str += cliCompact
+
+        // for (idx, section) in sections.enumerated() {
+        //     str += "\n    [\(idx)] "
+        //     str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
+        //     str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
+        //     str += "   "
+        //     str += "flags: \(String.flags(section.flags))"
+        //     str += "   "
+        //     str += "align: 2^\(section.align) (\(2 << section.align))"
+        //     str += "   "
+        //     str += "offset: \(section.offset)"
+        // }
+
+        // return str
+        var str = cmd.cliCompact
+        str += "  "
+        str += cliCompact
+
+        for (idx, tool) in buildToolVersions.enumerated() {
+            str += "\n    [\(idx)] "
+            str += "tool: \(tool.tool.readableValue ?? String(tool.tool.rawValue))"
+            str += "   "
+            str += "version: \(tool.version)"
+        }
+
+        return str
     }
 }
 
 extension DylibCommand: CLIOutput {
 
-    var cli: String { dylib.name }
+    var cli: String {
+        var str = cmd.cliCompact.padding(toLength: 24, withPad: " ", startingAt: 0)
+        str += dylib.name
+        return str
+    }
+
+    var cliCompact: String { dylib.name }
 }
 
 extension DylinkerCommand: CLIOutput {
@@ -72,7 +110,9 @@ extension SegmentCommand: CLIOutput {
     }
 
     var cli: String {
-        var str = cliCompact
+        var str = cmd.cliCompact
+        str += "   "
+        str += cliCompact
 
         for (idx, section) in sections.enumerated() {
             str += "\n    [\(idx)] "

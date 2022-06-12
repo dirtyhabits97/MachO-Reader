@@ -9,6 +9,12 @@ struct Reader: ParsableCommand {
     @Option(help: "The arch of the mach-o header to read.")
     var arch: String?
 
+    @Flag(help: "Only outputs information for LC_BUILD_VERSION.")
+    var buildVersion: Bool = false
+
+    @Flag(help: "Only outputs information for dylib-related commands.")
+    var dylibs: Bool = false
+
     @Flag(name: .shortAndLong, help: "Only outputs information for the fat header.")
     var fatHeader: Bool = false
 
@@ -39,6 +45,30 @@ struct Reader: ParsableCommand {
             CLIFormatter.print(file.header)
             return
         }
+        // onlyl prints build version
+        if buildVersion {
+            file.commands
+                .lazy
+                .compactMap { (loadCommand: LoadCommand) -> BuildVersionCommand? in
+                    if case let .buildVersionCommand(buildVersionCommand) = loadCommand.commandType() {
+                        return buildVersionCommand
+                    }
+                    return nil
+                }
+                .first
+                .map { CLIFormatter.print($0) }
+            return
+        }
+        // only print dylibs
+        if dylibs {
+            file.commands
+                .compactMap { (loadCommand: LoadCommand) -> DylibCommand? in
+                    guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
+                    return dylibCommand
+                }
+                .forEach { CLIFormatter.print($0) }
+            return
+        }
         // only print segments
         if segments {
             file.commands
@@ -46,9 +76,7 @@ struct Reader: ParsableCommand {
                     guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
                     return segmentCommand
                 }
-                .forEach { segmentCommand in
-                    CLIFormatter.print(segmentCommand)
-                }
+                .forEach { CLIFormatter.print($0) }
             return
         }
         // print default information
