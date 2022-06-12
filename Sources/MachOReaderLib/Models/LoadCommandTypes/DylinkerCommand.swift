@@ -9,7 +9,7 @@ import MachO
  * This struct is also used for the LC_DYLD_ENVIRONMENT load command and
  * contains string for dyld to treat like environment variable.
  */
-public struct DylinkerCommand: LoadCommandTypeRepresentable {
+public struct DylinkerCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -20,7 +20,7 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable {
     //   union lc_str    name;		/* dynamic linker's path name */
     // };
     private let underlyingValue: dylinker_command
-
+    private let loadCommand: LoadCommand
     public let name: String
 
     // MARK: - Lifecycle
@@ -34,6 +34,12 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable {
         if loadCommand.isSwapped {
             swap_dylinker_command(&dylinkerCommand, kByteSwapOrder)
         }
+
+        self.init(dylinkerCommand, loadCommand: loadCommand)
+    }
+
+    private init(_ dylinkerCommand: dylinker_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
 
         let offset = Int(dylinkerCommand.name.offset)
         let data = loadCommand.data.advanced(by: offset)
@@ -53,5 +59,11 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dylinkerCommand(DylinkerCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }

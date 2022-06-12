@@ -1,40 +1,28 @@
 import Foundation
 import MachOReaderLib
 
-extension Platform: CLIOutput {
+extension LoadCommand: CLIOutput {
 
     var cli: String {
-        readableValue ?? String(rawValue)
+        var str = cmd.cliCompact.padding(24)
+        str += "cmdsize: \(String(cmdsize).padding(8))"
+        return str
     }
+}
+
+extension CLIOutput where Self: LoadCommandTransformable {
+
+    var prefix: String { asLoadCommand().cliCompact }
 }
 
 extension BuildVersionCommand: CLIOutput {
 
     var cliCompact: String {
-        "platform: \(platform.cliCompact)   minos: \(minOS)   sdk: \(sdk)"
+        prefix + "platform: \(platform.cliCompact)   minos: \(minOS)   sdk: \(sdk)"
     }
 
     var cli: String {
-        // var str = cmd.cliCompact
-        // str += "   "
-        // str += cliCompact
-
-        // for (idx, section) in sections.enumerated() {
-        //     str += "\n    [\(idx)] "
-        //     str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
-        //     str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
-        //     str += "   "
-        //     str += "flags: \(String.flags(section.flags))"
-        //     str += "   "
-        //     str += "align: 2^\(section.align) (\(2 << section.align))"
-        //     str += "   "
-        //     str += "offset: \(section.offset)"
-        // }
-
-        // return str
-        var str = cmd.cliCompact
-        str += "  "
-        str += cliCompact
+        var str = cliCompact
 
         for (idx, tool) in buildToolVersions.enumerated() {
             str += "\n    [\(idx)] "
@@ -49,25 +37,20 @@ extension BuildVersionCommand: CLIOutput {
 
 extension DylibCommand: CLIOutput {
 
-    var cli: String {
-        var str = cmd.cliCompact.padding(toLength: 24, withPad: " ", startingAt: 0)
-        str += dylib.name
-        return str
-    }
-
-    var cliCompact: String { dylib.name }
+    var cli: String { prefix + dylib.name }
 }
 
 extension DylinkerCommand: CLIOutput {
 
-    var cli: String { name }
+    var cli: String { prefix + name }
 }
 
 extension DysymtabCommand: CLIOutput {
 
     var cli: String {
+        var str = prefix
         // swiftformat:disable:next redundantSelf
-        var str = "nlocalsym: \(self.nlocalsym)"
+        str += "nlocalsym: \(self.nlocalsym)"
         str += "   "
         // swiftformat:disable:next redundantSelf
         str += "nextdefsym: \(self.nextdefsym)"
@@ -84,23 +67,34 @@ extension DysymtabCommand: CLIOutput {
 extension EntryPointCommand: CLIOutput {
 
     var cli: String {
+        var str = prefix
         // swiftformat:disable:next redundantSelf
-        "entryoff: \(String(hex: self.entryoff)) (\(self.entryoff))   stacksize: \(self.stacksize)"
+        str += "entryoff: \(String(hex: self.entryoff)) (\(self.entryoff))"
+        str += "   "
+        // swiftformat:disable:next redundantSelf
+        str += "stacksize: \(self.stacksize)"
+        return str
     }
 }
 
 extension LinkedItDataCommand: CLIOutput {
 
     var cli: String {
+        var str = prefix
         // swiftformat:disable:next redundantSelf
-        "dataoff: \(String(hex: self.dataoff)) (\(self.dataoff))   datasize: \(self.datasize)"
+        str += "dataoff: \(String(hex: self.dataoff)) (\(self.dataoff))"
+        str += "   "
+        // swiftformat:disable:next redundantSelf
+        str += "datasize: \(self.datasize)"
+        return str
     }
 }
 
 extension SegmentCommand: CLIOutput {
 
     var cliCompact: String {
-        var str = "segname: \(segname)".padding(toLength: 30, withPad: " ", startingAt: 0)
+        var str = prefix
+        str += "segname: \(segname.padding(16))"
         str += "file: \(String(hex: fileoff))-\(String(hex: fileoff + filesize))"
         str += "   "
         str += "vm: \(String(hex: vmaddr))-\(String(hex: vmaddr + vmsize))"
@@ -110,18 +104,16 @@ extension SegmentCommand: CLIOutput {
     }
 
     var cli: String {
-        var str = cmd.cliCompact
-        str += "   "
-        str += cliCompact
+        var str = cliCompact
 
         for (idx, section) in sections.enumerated() {
             str += "\n    [\(idx)] "
-            str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
             str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
+            str += "    "
+            str += section.sectname.padding(25)
+            str += "align: 2^\(section.align) (\(2 << section.align))"
             str += "   "
             str += "flags: \(String.flags(section.flags))"
-            str += "   "
-            str += "align: 2^\(section.align) (\(2 << section.align))"
             str += "   "
             str += "offset: \(section.offset)"
         }
@@ -133,27 +125,38 @@ extension SegmentCommand: CLIOutput {
 extension SourceVersionCommand: CLIOutput {
 
     var cli: String {
-        "\(version.A).\(version.B).\(version.C).\(version.D).\(version.E)"
+        prefix + "\(version.A).\(version.B).\(version.C).\(version.D).\(version.E)"
     }
 }
 
 extension SymtabCommand: CLIOutput {
 
     var cli: String {
+        var str = prefix
         // swiftformat:disable:next redundantSelf
-        "symoff: \(self.symoff)   nsyms: \(self.nsyms)   stroff: \(self.stroff)   strsize: \(self.strsize)"
+        str += "symoff: \(self.symoff)"
+        str += "   "
+        // swiftformat:disable:next redundantSelf
+        str += "nsyms: \(self.nsyms)"
+        str += "   "
+        // swiftformat:disable:next redundantSelf
+        str += "stroff: \(self.stroff)"
+        str += "   "
+        // swiftformat:disable:next redundantSelf
+        str += "strsize: \(self.strsize)"
+        return str
     }
 }
 
 extension ThreadCommand: CLIOutput {
 
     // TODO: get more info from this
-    var cli: String { "" }
+    var cli: String { prefix }
 }
 
 extension UUIDCommand: CLIOutput {
 
-    var cli: String { uuid.uuidString }
+    var cli: String { prefix + uuid.uuidString }
 }
 
 extension LoadCommandType: CLIOutput {
@@ -178,12 +181,12 @@ extension LoadCommandType: CLIOutput {
             return command.cli
         case let .sourceVersionCommand(command):
             return command.cli
-        case .threadCommand:
-            return ""
+        case let .threadCommand(command):
+            return command.cli
         case let .uuidCommand(command):
             return command.cli
-        case .unspecified:
-            return ""
+        case let .unspecified(command):
+            return command.cli
         }
     }
 
@@ -207,12 +210,12 @@ extension LoadCommandType: CLIOutput {
             return command.cliCompact
         case let .sourceVersionCommand(command):
             return command.cliCompact
-        case .threadCommand:
-            return ""
+        case let .threadCommand(command):
+            return command.cliCompact
         case let .uuidCommand(command):
             return command.cliCompact
-        case .unspecified:
-            return ""
+        case let .unspecified(command):
+            return command.cliCompact
         }
     }
 }

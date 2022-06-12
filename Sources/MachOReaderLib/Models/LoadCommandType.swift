@@ -14,7 +14,7 @@ public enum LoadCommandType {
     case threadCommand(ThreadCommand)
     case uuidCommand(UUIDCommand)
 
-    case unspecified
+    case unspecified(LoadCommand)
 
     init(from loadCommand: LoadCommand) {
         let commandTypes: [LoadCommandTypeRepresentable.Type] = [
@@ -36,6 +36,6 @@ public enum LoadCommandType {
             return
         }
 
-        self = .unspecified
+        self = .unspecified(loadCommand)
     }
 }

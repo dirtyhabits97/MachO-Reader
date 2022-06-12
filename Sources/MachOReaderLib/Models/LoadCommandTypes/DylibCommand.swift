@@ -8,7 +8,7 @@ import MachO
  * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
  * LC_REEXPORT_DYLIB) for each library it uses.
  */
-public struct DylibCommand: LoadCommandTypeRepresentable {
+public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -52,6 +52,12 @@ public struct DylibCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dylibCommand(DylibCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }
 

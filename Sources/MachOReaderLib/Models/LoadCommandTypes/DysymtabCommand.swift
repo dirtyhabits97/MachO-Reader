@@ -40,10 +40,11 @@ import MachO
  * off the section structures.
  */
 @dynamicMemberLookup
-public struct DysymtabCommand: LoadCommandTypeRepresentable {
+public struct DysymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
+    private let loadCommand: LoadCommand
     private let underlyingValue: dysymtab_command
 
     // MARK: - Lifecycle
@@ -58,6 +59,11 @@ public struct DysymtabCommand: LoadCommandTypeRepresentable {
             swap_dysymtab_command(&dysymtabCommand, kByteSwapOrder)
         }
 
+        self.init(dysymtabCommand, loadCommand: loadCommand)
+    }
+
+    private init(_ dysymtabCommand: dysymtab_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = dysymtabCommand
     }
 
@@ -73,5 +79,11 @@ public struct DysymtabCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dysymtabCommand(DysymtabCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }

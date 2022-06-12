@@ -16,7 +16,7 @@ import MachO
  * section structures directly follow the segment command and their size is
  * reflected in cmdsize.
  */
-public struct SegmentCommand: LoadCommandTypeRepresentable {
+public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -150,6 +150,12 @@ public struct SegmentCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .segmentCommand(SegmentCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }
 

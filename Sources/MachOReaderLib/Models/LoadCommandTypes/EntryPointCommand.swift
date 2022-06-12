@@ -8,17 +8,12 @@ import MachO
  * field will contain the stack size need for the main thread.
  */
 @dynamicMemberLookup
-public struct EntryPointCommand: LoadCommandTypeRepresentable {
+public struct EntryPointCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
-    // struct entry_point_command {
-    //     uint32_t  cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
-    //     uint32_t  cmdsize;	/* 24 */
-    //     uint64_t  entryoff;	/* file (__TEXT) offset of main() */
-    //     uint64_t  stacksize;/* if not zero, initial stack size */
-    // };
     private let underlyingValue: entry_point_command
+    private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
 
@@ -32,6 +27,17 @@ public struct EntryPointCommand: LoadCommandTypeRepresentable {
             swap_entry_point_command(&entryPointCommand, kByteSwapOrder)
         }
 
+        self.init(entryPointCommand, loadCommand: loadCommand)
+    }
+
+    // struct entry_point_command {
+    //     uint32_t  cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
+    //     uint32_t  cmdsize;	/* 24 */
+    //     uint64_t  entryoff;	/* file (__TEXT) offset of main() */
+    //     uint64_t  stacksize;/* if not zero, initial stack size */
+    // };
+    private init(_ entryPointCommand: entry_point_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = entryPointCommand
     }
 
@@ -47,5 +53,11 @@ public struct EntryPointCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .entryPointCommand(EntryPointCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }
