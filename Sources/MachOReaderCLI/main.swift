@@ -81,6 +81,7 @@ struct Reader: ParsableCommand {
         }
         // print default information
         CLIFormatter.print(file)
+        file.test()
     }
 }
 
