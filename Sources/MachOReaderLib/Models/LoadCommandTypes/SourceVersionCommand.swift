@@ -5,16 +5,12 @@ import MachO
  * The source_version_command is an optional load command containing
  * the version of the sources used to build the binary.
  */
-public struct SourceVersionCommand: LoadCommandTypeRepresentable {
+public struct SourceVersionCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
-    // struct source_version_command {
-    //     uint32_t  cmd;	/* LC_SOURCE_VERSION */
-    //     uint32_t  cmdsize;	/* 16 */
-    //     uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
-    // };
-    let underlyingValue: source_version_command
+    private let underlyingValue: source_version_command
+    private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
 
@@ -28,6 +24,16 @@ public struct SourceVersionCommand: LoadCommandTypeRepresentable {
             swap_source_version_command(&sourceVersionCommand, kByteSwapOrder)
         }
 
+        self.init(sourceVersionCommand, loadCommand: loadCommand)
+    }
+
+    // struct source_version_command {
+    //     uint32_t  cmd;	/* LC_SOURCE_VERSION */
+    //     uint32_t  cmdsize;	/* 16 */
+    //     uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
+    // };
+    private init(_ sourceVersionCommand: source_version_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = sourceVersionCommand
     }
 
@@ -37,6 +43,12 @@ public struct SourceVersionCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .sourceVersionCommand(SourceVersionCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }
 

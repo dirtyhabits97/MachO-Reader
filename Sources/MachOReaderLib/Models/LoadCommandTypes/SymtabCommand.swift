@@ -7,19 +7,12 @@ import MachO
  * <nlist.h> and <stab.h>.
  */
 @dynamicMemberLookup
-public struct SymtabCommand: LoadCommandTypeRepresentable {
+public struct SymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
-    // struct symtab_command {
-    //   uint32_t	cmd;		/* LC_SYMTAB */
-    //   uint32_t	cmdsize;	/* sizeof(struct symtab_command) */
-    //   uint32_t	symoff;		/* symbol table offset */
-    //   uint32_t	nsyms;		/* number of symbol table entries */
-    //   uint32_t	stroff;		/* string table offset */
-    //   uint32_t	strsize;	/* string table size in bytes */
-    // };
-    let underlyingValue: symtab_command
+    private let underlyingValue: symtab_command
+    private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
 
@@ -33,6 +26,19 @@ public struct SymtabCommand: LoadCommandTypeRepresentable {
             swap_symtab_command(&symtabCommand, kByteSwapOrder)
         }
 
+        self.init(symtabCommand, loadCommand: loadCommand)
+    }
+
+    // struct symtab_command {
+    //   uint32_t	cmd;		/* LC_SYMTAB */
+    //   uint32_t	cmdsize;	/* sizeof(struct symtab_command) */
+    //   uint32_t	symoff;		/* symbol table offset */
+    //   uint32_t	nsyms;		/* number of symbol table entries */
+    //   uint32_t	stroff;		/* string table offset */
+    //   uint32_t	strsize;	/* string table size in bytes */
+    // };
+    private init(_ symtabCommand: symtab_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = symtabCommand
     }
 
@@ -48,5 +54,11 @@ public struct SymtabCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .symtabCommand(SymtabCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }

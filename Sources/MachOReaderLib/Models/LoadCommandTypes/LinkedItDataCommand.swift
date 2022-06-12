@@ -6,22 +6,12 @@ import MachO
  * of data in the __LINKEDIT segment.
  */
 @dynamicMemberLookup
-public struct LinkedItDataCommand: LoadCommandTypeRepresentable {
+public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
-    // struct linkedit_data_command {
-    //     uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
-    //            LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
-    //            LC_DYLIB_CODE_SIGN_DRS,
-    //            LC_LINKER_OPTIMIZATION_HINT,
-    //            LC_DYLD_EXPORTS_TRIE, or
-    //            LC_DYLD_CHAINED_FIXUPS. */
-    //     uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
-    //     uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
-    //     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
-    // };
     private let underlyingValue: linkedit_data_command
+    private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
 
@@ -35,6 +25,22 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable {
             swap_linkedit_data_command(&linkedItDataCommand, kByteSwapOrder)
         }
 
+        self.init(linkedItDataCommand, loadCommand: loadCommand)
+    }
+
+    // struct linkedit_data_command {
+    //     uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+    //            LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
+    //            LC_DYLIB_CODE_SIGN_DRS,
+    //            LC_LINKER_OPTIMIZATION_HINT,
+    //            LC_DYLD_EXPORTS_TRIE, or
+    //            LC_DYLD_CHAINED_FIXUPS. */
+    //     uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
+    //     uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
+    //     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
+    // };
+    private init(_ linkedItDataCommand: linkedit_data_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = linkedItDataCommand
     }
 
@@ -61,5 +67,11 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .linkedItDataCommand(LinkedItDataCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }

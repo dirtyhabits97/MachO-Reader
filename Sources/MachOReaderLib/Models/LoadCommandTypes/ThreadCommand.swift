@@ -22,19 +22,12 @@ import Foundation
  * and environment variables are copied onto that stack.
  */
 // TODO: get more info from this
-public struct ThreadCommand: LoadCommandTypeRepresentable {
+public struct ThreadCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
 
     // MARK: - Properties
 
-    // struct thread_command {
-    //   uint32_t	cmd;		/* LC_THREAD or  LC_UNIXTHREAD */
-    //   uint32_t	cmdsize;	/* total size of this command */
-    //   /* uint32_t flavor		   flavor of thread state */
-    //   /* uint32_t count		   count of uint32_t's in thread state */
-    //   /* struct XXX_thread_state state   thread state for this flavor */
-    //   /* ... */
-    // };
     private let underlyingValue: thread_command
+    private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
 
@@ -48,6 +41,19 @@ public struct ThreadCommand: LoadCommandTypeRepresentable {
             swap_thread_command(&threadCommand, kByteSwapOrder)
         }
 
+        self.init(threadCommand, loadCommand: loadCommand)
+    }
+
+    // struct thread_command {
+    //   uint32_t	cmd;		/* LC_THREAD or  LC_UNIXTHREAD */
+    //   uint32_t	cmdsize;	/* total size of this command */
+    //   /* uint32_t flavor		   flavor of thread state */
+    //   /* uint32_t count		   count of uint32_t's in thread state */
+    //   /* struct XXX_thread_state state   thread state for this flavor */
+    //   /* ... */
+    // };
+    private init(_ threadCommand: thread_command, loadCommand: LoadCommand) {
+        self.loadCommand = loadCommand
         underlyingValue = threadCommand
     }
 
@@ -57,5 +63,11 @@ public struct ThreadCommand: LoadCommandTypeRepresentable {
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .threadCommand(ThreadCommand(from: loadCommand))
+    }
+
+    // MARK: - LoadCommandTransformable
+
+    public func asLoadCommand() -> LoadCommand {
+        loadCommand
     }
 }

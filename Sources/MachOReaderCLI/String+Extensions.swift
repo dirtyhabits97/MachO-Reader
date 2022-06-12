@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - Formatters
+
 extension String {
 
     init(hex: UInt32) {
@@ -28,5 +30,17 @@ extension String {
 
     static func magic(_ magic: UInt32) -> String {
         self.init("0x" + String(format: "%08llx", magic))
+    }
+}
+
+// MARK: - Utils
+
+extension String {
+
+    func padding(_ length: Int) -> String {
+        // if the current string is equal or greater than the length,
+        // add 3 trailing whitespaces as padding
+        if count >= length { return self + "   " }
+        return padding(toLength: length, withPad: " ", startingAt: 0)
     }
 }

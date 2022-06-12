@@ -1,5 +1,11 @@
 import Foundation
 
+/// A Type that can be transformed back into a LoadCommand.
+public protocol LoadCommandTransformable {
+
+    func asLoadCommand() -> LoadCommand
+}
+
 /// A Type that can be built from MachO's LoadCommand object.
 protocol LoadCommandTypeRepresentable {
 

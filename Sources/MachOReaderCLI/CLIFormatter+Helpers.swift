@@ -42,3 +42,10 @@ extension MachOHeader.Flags: CLIOutput {
         readableValue ?? .flags(rawValue)
     }
 }
+
+extension Platform: CLIOutput {
+
+    var cli: String {
+        readableValue ?? String(rawValue)
+    }
+}
