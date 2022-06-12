@@ -15,23 +15,6 @@ extension BuildVersionCommand: CLIOutput {
     }
 
     var cli: String {
-        // var str = cmd.cliCompact
-        // str += "   "
-        // str += cliCompact
-
-        // for (idx, section) in sections.enumerated() {
-        //     str += "\n    [\(idx)] "
-        //     str += section.sectname.padding(toLength: 35, withPad: " ", startingAt: 0)
-        //     str += "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))"
-        //     str += "   "
-        //     str += "flags: \(String.flags(section.flags))"
-        //     str += "   "
-        //     str += "align: 2^\(section.align) (\(2 << section.align))"
-        //     str += "   "
-        //     str += "offset: \(section.offset)"
-        // }
-
-        // return str
         var str = cmd.cliCompact
         str += "  "
         str += cliCompact
