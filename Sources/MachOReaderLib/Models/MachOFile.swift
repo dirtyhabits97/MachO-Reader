@@ -99,9 +99,9 @@ public struct MachOFile {
             let foo = baseData.advanced(by: importsOffset).extract(dyld_chained_import.self)
             // TODO: split the UInt32 into libOrdinal: 8, weakimport: 1; name_offset: 23.
             let mask1: UInt32 = 1 << 8 - 1
-            let mask2: UInt32 = 1 << 1 - 1 
-            let mask3: UInt32 = 1 << 23 - 1 
-            // let mask3: UInt32 = 
+            let mask2: UInt32 = 1 << 1 - 1
+            let mask3: UInt32 = 1 << 23 - 1
+            // let mask3: UInt32 =
             print(mask1, mask2, mask3)
             let libOrdinal = foo.rawValue & mask1
             let weakImport = foo.rawValue >> 8 & mask2
@@ -109,6 +109,9 @@ public struct MachOFile {
 
             print("[\(idx)] lib_ordinal: \(libOrdinal)   weak_import: \(weakImport)   name_offset: \(nameOffset)")
             importsOffset += MemoryLayout.size(ofValue: foo)
+
+            // TODO: get dylib name
+            // TODO: get symbol name
         }
     }
 }
