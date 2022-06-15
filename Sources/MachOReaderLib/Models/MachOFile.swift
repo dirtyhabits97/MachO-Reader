@@ -68,6 +68,13 @@ public struct MachOFile {
             .first
     }
 
+    func getDylibCommands() -> [DylibCommand] {
+        commands.compactMap { loadCommand -> DylibCommand? in
+            guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
+            return dylibCommand
+        }
+    }
+
     // TODO: delete this
     public func test() {
         guard let linkedItSegment = getLinkedItSegment() else {
@@ -93,27 +100,63 @@ public struct MachOFile {
         // let dyldChainedStartsInImage = base.advanced(by: offset).extract(dyld_chained_starts_in_image.self)
         // print(dyldChainedStartsInImage)
 
+        let dylibCommands = getDylibCommands()
+        print(dylibCommands.count)
+
         print("IMPORTS...")
         var importsOffset = Int(dyldChainedFixupsHeader.importsOffset)
+        var pretty: [Pretty] = []
         for idx in 0 ..< dyldChainedFixupsHeader.importsCount {
             let foo = baseData.advanced(by: importsOffset).extract(dyld_chained_import.self)
             // TODO: split the UInt32 into libOrdinal: 8, weakimport: 1; name_offset: 23.
             let mask1: UInt32 = 1 << 8 - 1
             let mask2: UInt32 = 1 << 1 - 1
             let mask3: UInt32 = 1 << 23 - 1
-            // let mask3: UInt32 =
-            print(mask1, mask2, mask3)
+
             let libOrdinal = foo.rawValue & mask1
             let weakImport = foo.rawValue >> 8 & mask2
             let nameOffset = foo.rawValue >> 9 & mask3
 
-            print("[\(idx)] lib_ordinal: \(libOrdinal)   weak_import: \(weakImport)   name_offset: \(nameOffset)")
+            pretty.append(.init(libOrdinal: libOrdinal, weakImport: weakImport, nameOffset: nameOffset))
+
             importsOffset += MemoryLayout.size(ofValue: foo)
 
             // TODO: get dylib name
             // TODO: get symbol name
         }
+
+        // swiftlint:disable identifier_name
+        for (idx, p) in pretty.enumerated() {
+            let name = dylibCommands[Int(p.libOrdinal) - 1].dylib.name.split(separator: "/").last!
+
+            let offsetToSymbolName = 0 + dyldChainedFixupsHeader.symbolsOffset + p.nameOffset
+            let symbolNamename = baseData.advanced(by: Int(offsetToSymbolName)).nextString()!
+
+            // let str = String(bytes: chars, encoding: String.Encoding.utf8)
+            // print(str)
+
+            // let str = String(withUnsafePointer(to: baseData.advanced(by: Int(offsetToSymbolName))) {
+            //     $0.withMemoryRebound(to: [CChar].self, capacity: strLen) {
+            //         String(cString: $0)
+            //     }
+            // })
+
+            // print(strLen)
+
+            // // swiftlint:disable:next line_length
+            // let raw = baseData.advanced(by: Int(offsetToSymbolName)).extract((CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar, CChar).self)
+            // print("offset: \(offsetToSymbolName)", String.init(char16: raw))
+
+            // print("[\(idx)] lib_ordinal: \(libOrdinal) (\(name))   weak_import: \(weakImport)   name_offset: \(nameOffset)")
+            print(p, name, symbolNamename)
+        }
     }
+}
+
+struct Pretty {
+    let libOrdinal: UInt32
+    let weakImport: UInt32
+    let nameOffset: UInt32
 }
 
 // TODO: this should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
