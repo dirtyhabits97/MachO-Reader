@@ -125,7 +125,6 @@ public struct MachOFile {
                 offset += MemoryLayout.size(ofValue: pointer)
             }
             print(segCount, pointers)
-            print("=== in block ===")
 
             let segmentCommands = getSegmentCommands()
             for idx in 0 ..< Int(segCount) {
@@ -137,10 +136,18 @@ public struct MachOFile {
                 if pointer == 0 { continue }
 
                 let segmentOffset = 0 + Int(dyldChainedFixupsHeader.startsOffset) + Int(pointer)
-                print("segmentOffset: ", segmentOffset)
-                let startsInSegment = baseData.advanced(by: segmentOffset).extract(dyld_chain_starts_in_segment.self)
+                let startsInSegment = baseData.advanced(by: segmentOffset).extract(dyld_chained_starts_in_segment.self)
                 print(startsInSegment)
+
+                // TODO: replace this with constants
+                // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
+                if [2,6].contains(startsInSegment.pointerFormat) {
+                    print("Supported format")
+                } else {
+                    print("Unsupported format", startsInSegment.pointerFormat)
+                }
             }
+            print("=== in block ===")
         }
 
         let dylibCommands = getDylibCommands()
@@ -204,7 +211,7 @@ struct Pretty {
 }
 
 // swiftlint:disable:next type_name
-struct dyld_chain_starts_in_segment {
+struct dyld_chained_starts_in_segment {
     let size: UInt32
     let pageSize: UInt16
     let pointerFormat: UInt16
