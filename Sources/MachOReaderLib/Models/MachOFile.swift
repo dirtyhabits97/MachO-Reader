@@ -75,6 +75,13 @@ public struct MachOFile {
         }
     }
 
+    func getSegmentCommands() -> [SegmentCommand] {
+        commands.compactMap { loadCommand -> SegmentCommand? in
+            guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
+            return segmentCommand
+        }
+    }
+
     // TODO: delete this
     public func test() {
         guard let linkedItSegment = getLinkedItSegment() else {
@@ -97,8 +104,44 @@ public struct MachOFile {
         print(dyldChainedFixupsHeader)
         // offset += MemoryLayout.size(ofValue: dyldChainedFixupsHeader.startsOffset)
 
-        // let dyldChainedStartsInImage = base.advanced(by: offset).extract(dyld_chained_starts_in_image.self)
-        // print(dyldChainedStartsInImage)
+        let dyldChainedStartsInImage = baseData
+            .advanced(by: Int(dyldChainedFixupsHeader.startsOffset))
+            .extract(dyld_chained_starts_in_image.self)
+        print(dyldChainedStartsInImage)
+
+        do {
+            var offset = Int(dyldChainedFixupsHeader.startsOffset)
+            let segCount = baseData
+                .advanced(by: offset)
+                .extract(UInt32.self)
+            offset += MemoryLayout.size(ofValue: segCount)
+            print("=== in block ===")
+            var pointers: [UInt32] = []
+            for _ in 0 ..< segCount {
+                let pointer = baseData
+                    .advanced(by: offset)
+                    .extract(UInt32.self)
+                pointers.append(pointer)
+                offset += MemoryLayout.size(ofValue: pointer)
+            }
+            print(segCount, pointers)
+            print("=== in block ===")
+
+            let segmentCommands = getSegmentCommands()
+            for idx in 0 ..< Int(segCount) {
+                let segment = segmentCommands[idx]
+                let offset = MemoryLayout<UInt32>.size * idx
+                let pointer = pointers[idx]
+                print(segment.segname, pointer)
+
+                if pointer == 0 { continue }
+
+                let segmentOffset = 0 + Int(dyldChainedFixupsHeader.startsOffset) + Int(pointer)
+                print("segmentOffset: ", segmentOffset)
+                let startsInSegment = baseData.advanced(by: segmentOffset).extract(dyld_chain_starts_in_segment.self)
+                print(startsInSegment)
+            }
+        }
 
         let dylibCommands = getDylibCommands()
         print(dylibCommands.count)
@@ -127,6 +170,7 @@ public struct MachOFile {
 
         // swiftlint:disable identifier_name
         for (idx, p) in pretty.enumerated() {
+            // TODO: handle lib ordinal constants 254 and 255
             let name = dylibCommands[Int(p.libOrdinal) - 1].dylib.name.split(separator: "/").last!
 
             let offsetToSymbolName = 0 + dyldChainedFixupsHeader.symbolsOffset + p.nameOffset
@@ -157,6 +201,17 @@ struct Pretty {
     let libOrdinal: UInt32
     let weakImport: UInt32
     let nameOffset: UInt32
+}
+
+// swiftlint:disable:next type_name
+struct dyld_chain_starts_in_segment {
+    let size: UInt32
+    let pageSize: UInt16
+    let pointerFormat: UInt16
+    let segmentOffset: UInt64
+    let maxValidPointer: UInt32
+    let pageCount: UInt16
+    let pageStart: UInt16
 }
 
 // TODO: this should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
@@ -192,6 +247,7 @@ struct dyld_chained_fixups_header {
 // swiftlint:disable:next type_name
 struct dyld_chained_starts_in_image {
     let segCount: UInt32
+    // let segInfoOffset: UnsafePointer<UInt32>
     let segInfoOffset: UInt32
 }
 
