@@ -1,18 +1,5 @@
 import Foundation
 
-extension BinaryInteger {
-
-    func split(using masks: [Self]) -> [Self] {
-        var prefixSum: Self = 0
-        var result: [Self] = []
-        for mask in masks {
-            result.append((self >> prefixSum) & (1 << mask - 1))
-            prefixSum += mask
-        }
-        return result
-    }
-}
-
 // struct dyld_chained_ptr_64_bind
 // {
 //     uint64_t    ordinal   : 24,
