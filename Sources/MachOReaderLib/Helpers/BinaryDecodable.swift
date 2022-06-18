@@ -1,12 +1,12 @@
 import Foundation
 
-struct BinaryDecoder<Integer: BinaryInteger> {
+extension BinaryInteger {
 
-    func decode(_ rawValue: Integer, masks: [Integer]) -> [Integer] {
-        var prefixSum: Integer = 0
-        var result: [Integer] = []
+    func split(using masks: [Self]) -> [Self] {
+        var prefixSum: Self = 0
+        var result: [Self] = []
         for mask in masks {
-            result.append((rawValue >> prefixSum) & (1 << mask - 1))
+            result.append((self >> prefixSum) & (1 << mask - 1))
             prefixSum += mask
         }
         return result
@@ -31,7 +31,7 @@ struct dyld_chained_ptr_64_bind: CustomExtractable {
     let bind: Bool
 
     init(from rawValue: UInt64) {
-        let values = BinaryDecoder().decode(rawValue, masks: [24, 8, 19, 12, 1])
+        let values = rawValue.split(using: [24, 8, 19, 12, 1])
         ordinal = values[0]
         addend = values[1]
         reserved = values[2]
@@ -39,14 +39,9 @@ struct dyld_chained_ptr_64_bind: CustomExtractable {
         bind = values[4] == 1
     }
 
-    init(from data: Data) throws {
+    init(from data: Data) {
         self.init(from: data.extract(UInt64.self))
     }
-}
-
-protocol CustomExtractable {
-
-    init(from data: Data) throws
 }
 
 @dynamicMemberLookup
@@ -65,21 +60,11 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     private let underlyingValue: UnderlyingValue
     let pageStart: [UInt16]
 
-    init(from data: Data) throws {
+    init(from data: Data) {
         underlyingValue = data.extract(UnderlyingValue.self)
-
-        var pageStart: [UInt16] = []
-        var offset = MemoryLayout.size(ofValue: underlyingValue)
-
-        for _ in 0 ..< underlyingValue.pageCount {
-            let pointer = data
-                .advanced(by: offset)
-                .extract(UInt16.self)
-            pageStart.append(pointer)
-            offset += MemoryLayout.size(ofValue: pointer)
-        }
-
-        self.pageStart = pageStart
+        pageStart = data
+            .advanced(by: MemoryLayout.size(ofValue: underlyingValue))
+            .extractArray(UInt16.self, count: Int(underlyingValue.pageCount))
     }
 
     subscript<T>(dynamicMember keyPath: KeyPath<UnderlyingValue, T>) -> T {

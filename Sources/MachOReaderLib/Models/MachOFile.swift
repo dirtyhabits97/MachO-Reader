@@ -205,7 +205,7 @@ public struct MachOFile {
             let name = dylibCommands[Int(p.libOrdinal) - 1].dylib.name.split(separator: "/").last!
 
             let offsetToSymbolName = 0 + dyldChainedFixupsHeader.symbolsOffset + p.nameOffset
-            let symbolNamename = baseData.advanced(by: Int(offsetToSymbolName)).nextString()!
+            let symbolNamename = baseData.advanced(by: Int(offsetToSymbolName)).extractString()!
 
             // let str = String(bytes: chars, encoding: String.Encoding.utf8)
             // print(str)
