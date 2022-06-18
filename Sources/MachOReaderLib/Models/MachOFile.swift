@@ -156,6 +156,7 @@ public struct MachOFile {
                                 .extract(dyld_chained_ptr_64_bind.self)
 
                             print("Bind: \(bind)")
+                            // TODO: check if is bind or rebind
 
                             if bind.next == 0 {
                                 done = true
