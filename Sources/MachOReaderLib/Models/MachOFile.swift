@@ -139,12 +139,36 @@ public struct MachOFile {
                 let startsInSegment = baseData.advanced(by: segmentOffset).extract(dyld_chained_starts_in_segment.self)
                 print(startsInSegment)
 
-                // TODO: replace this with constants
-                // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
-                if [2,6].contains(startsInSegment.pointerFormat) {
-                    print("Supported format")
-                } else {
-                    print("Unsupported format", startsInSegment.pointerFormat)
+                for idx in 0 ..< Int(startsInSegment.pageCount) {
+                    print("PAGE: \(idx) (offset: \(startsInSegment.pageStart[idx]))")
+
+                    var chainedOffset: UInt32 = 0 + UInt32(startsInSegment.segmentOffset) + UInt32(startsInSegment.pageSize * 0) + UInt32(startsInSegment.pageStart[idx])
+                    print(String(format: "%08llx", startsInSegment.segmentOffset), "Chained offset: \(chainedOffset)")
+
+                    var done = false
+                    while !done {
+                        // TODO: replace this with constants
+                        // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
+                        if [2, 6].contains(startsInSegment.pointerFormat) {
+
+                            let bind = base
+                                .advanced(by: Int(chainedOffset))
+                                .extract(dyld_chained_ptr_64_bind.self)
+
+                            print("Bind: \(bind)")
+
+                            if bind.next == 0 {
+                                done = true
+                            } else {
+                                chainedOffset += UInt32(bind.next) * 4
+                            }
+
+                        } else {
+                            print("Unsupported format", startsInSegment.pointerFormat)
+                            done = true
+                            break
+                        }
+                    }
                 }
             }
             print("=== in block ===")
@@ -210,17 +234,6 @@ struct Pretty {
     let nameOffset: UInt32
 }
 
-// swiftlint:disable:next type_name
-struct dyld_chained_starts_in_segment {
-    let size: UInt32
-    let pageSize: UInt16
-    let pointerFormat: UInt16
-    let segmentOffset: UInt64
-    let maxValidPointer: UInt32
-    let pageCount: UInt16
-    let pageStart: UInt16
-}
-
 // TODO: this should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // for some reason it doesn't let me import it.
 // struct dyld_chained_fixups_header
@@ -269,3 +282,16 @@ struct dyld_chained_starts_in_image {
 struct dyld_chained_import {
     let rawValue: UInt32
 }
+
+// struct dyld_chained_ptr_64_bind
+// {
+//     uint64_t    ordinal   : 24,
+//                 addend    :  8,   // 0 thru 255
+//                 reserved  : 19,   // all zeros
+//                 next      : 12,   // 4-byte stride
+//                 bind      :  1;   // == 1
+// };
+// swiftlint:disable:next type_name
+// struct dyld_chained_ptr_64_bind {
+//     let rawValue: UInt64
+// }

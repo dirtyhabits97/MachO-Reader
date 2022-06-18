@@ -1,6 +1,13 @@
 import Foundation
 
+// TODO: use decoders instead of types diretly to handle the decoding
 extension Data {
+
+    func extract<C: CustomExtractable>(_: C.Type) -> C {
+        // TODO: handle throws
+        // swiftlint:disable:next force_try
+        try! C(from: self)
+    }
 
     func extract<T>(_: T.Type) -> T {
         let size = MemoryLayout<T>.size
