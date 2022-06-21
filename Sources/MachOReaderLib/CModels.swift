@@ -45,6 +45,7 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     }
 
     private let underlyingValue: UnderlyingValue
+    // TODO: figure out a better way to handle array pointers in swift
     let pageStart: [UInt16]
 
     init(from data: Data) {
