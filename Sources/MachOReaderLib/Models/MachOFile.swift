@@ -9,7 +9,7 @@ public struct MachOFile {
     public let header: MachOHeader
     public private(set) var commands: [LoadCommand]
 
-    /// A pointer to the start of the this file in memory.
+    /// A pointer to the start of the header of this file in memory.
     private var base: Data
 
     // MARK: - Lifecycle
@@ -26,7 +26,6 @@ public struct MachOFile {
             data = data.advanced(by: Int(offset))
         }
 
-        // TODO: delete this
         base = data
 
         header = MachOHeader(from: data)
