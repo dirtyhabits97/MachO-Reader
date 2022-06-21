@@ -1,5 +1,29 @@
 import Foundation
 
+// These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
+// but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.
+
+// struct dyld_chained_fixups_header
+// {
+//     uint32_t    fixups_version;    // 0
+//     uint32_t    starts_offset;     // offset of dyld_chained_starts_in_image in chain_data
+//     uint32_t    imports_offset;    // offset of imports table in chain_data
+//     uint32_t    symbols_offset;    // offset of symbol strings in chain_data
+//     uint32_t    imports_count;     // number of imported symbol names
+//     uint32_t    imports_format;    // DYLD_CHAINED_IMPORT*
+//     uint32_t    symbols_format;    // 0 => uncompressed, 1 => zlib compressed
+// };
+// swiftlint:disable:next type_name
+struct dyld_chained_fixups_header {
+    let fixupsVersion: UInt32
+    let startsOffset: UInt32
+    let importsOffset: UInt32
+    let symbolsOffset: UInt32
+    let importsCount: UInt32
+    let importsFormat: UInt32
+    let symbolsFormat: UInt32
+}
+
 // This struct is embedded in LC_DYLD_CHAINED_FIXUPS payload
 // struct dyld_chained_starts_in_image
 // {
@@ -17,6 +41,32 @@ struct dyld_chained_starts_in_image: CustomExtractable {
         segInfoOffset = data
             .advanced(by: MemoryLayout.size(ofValue: segCount))
             .extractArray(UInt32.self, count: Int(segCount))
+    }
+}
+
+// DYLD_CHAINED_IMPORT
+// struct dyld_chained_import
+// {
+//     uint32_t    lib_ordinal :  8,
+//                 weak_import :  1,
+//                 name_offset : 23;
+// };
+// swiftlint:disable:next type_name
+struct dyld_chained_import: CustomExtractable {
+
+    let libOrdinal: UInt8
+    let isWeakImport: Bool
+    let nameOffset: UInt32
+
+    init(from rawValue: UInt32) {
+        let values = rawValue.split(using: [8, 1, 23])
+        libOrdinal = UInt8(truncatingIfNeeded: values[0])
+        isWeakImport = values[1] == 1
+        nameOffset = values[2]
+    }
+
+    init(from data: Data) {
+        self.init(from: data.extract(UInt32.self))
     }
 }
 
