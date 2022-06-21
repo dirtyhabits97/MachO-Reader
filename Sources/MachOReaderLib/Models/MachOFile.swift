@@ -45,17 +45,6 @@ public struct MachOFile {
 
     // MARK: - Methods
 
-    func getLinkedItSegment() -> SegmentCommand? {
-        commands
-            .lazy
-            .compactMap { loadCommand -> SegmentCommand? in
-                guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
-                return segmentCommand
-            }
-            .filter { segmentCommand in segmentCommand.segname == "__LINKEDIT" }
-            .first
-    }
-
     func getDyldChainedFixups() -> LinkedItDataCommand? {
         commands
             .lazy
@@ -83,11 +72,6 @@ public struct MachOFile {
 
     // TODO: delete this
     public func test() {
-        guard let linkedItSegment = getLinkedItSegment() else {
-            assertionFailure("Expected a LinkedIt segment in the macho file.")
-            return
-        }
-
         guard let dyldChainedFixups = getDyldChainedFixups() else {
             assertionFailure("Expected a DyldChainedFixups command in the macho file.")
             return
