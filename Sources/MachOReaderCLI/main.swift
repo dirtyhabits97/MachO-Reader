@@ -27,6 +27,11 @@ struct Reader: ParsableCommand {
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
+    // MARK: - Reports
+
+    @Flag(help: "Output the LC_DYLD_CHAINED_FIXUPS report.")
+    var fixupChains: Bool = false
+
     // MARK: - Methods
 
     func run() throws {
@@ -79,9 +84,15 @@ struct Reader: ParsableCommand {
                 .forEach { CLIFormatter.print($0) }
             return
         }
+        // ===================
+        // REPORTS
+        // ===================
+        if fixupChains {
+            print(file.dyldChainedFixupsReport())
+            return
+        }
         // print default information
         CLIFormatter.print(file)
-        file.test()
     }
 }
 

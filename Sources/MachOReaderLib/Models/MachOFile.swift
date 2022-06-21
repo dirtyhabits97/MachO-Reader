@@ -43,11 +43,42 @@ public struct MachOFile {
         self.commands = commands
     }
 
-    // MARK: - Methods
+    // MARK: - Reports
+
+    public func dyldChainedFixupsReport() -> DyldChainedFixupsReport.Report {
+        DyldChainedFixupsReport(file: self).report()
+    }
 
 
     // TODO: delete this
     public func test() {
+        // let dyldOffset = dyldChainedFixups.dataoff
+
+        // let baseData = base.advanced(by: Int(dyldOffset))
+
+        // let dyldChainedFixupsHeader = baseData.extract(dyld_chained_fixups_header.self)
+        // print(dyldChainedFixupsHeader)
+
+        // let dyldChainedStartsInImage = baseData
+        //     .advanced(by: Int(dyldChainedFixupsHeader.startsOffset))
+        //     .extract(dyld_chained_starts_in_image.self)
+        // print(dyldChainedStartsInImage)
+
+        // let segCount = dyldChainedStartsInImage.segCount
+        // let pointers = dyldChainedStartsInImage.segInfoOffset
+        // print(segCount, pointers)
+
+        // let segmentCommands = getSegmentCommands()
+        // for idx in 0 ..< Int(segCount) {
+        //     let segment = segmentCommands[idx]
+        //     let pointer = pointers[idx]
+        //     print(segment.segname, pointer)
+
+        //     if pointer == 0 { continue }
+
+        //     let segmentOffset = 0 + Int(dyldChainedFixupsHeader.startsOffset) + Int(pointer)
+        //     let startsInSegment = baseData.advanced(by: segmentOffset).extract(dyld_chained_starts_in_segment.self)
+        //     print(startsInSegment)
 
         //     for idx in 0 ..< Int(startsInSegment.pageCount) {
         //         print("PAGE: \(idx) (offset: \(startsInSegment.pageStart[idx]))")
@@ -81,6 +112,20 @@ public struct MachOFile {
         //             }
         //         }
         //     }
+        // }
+        // print("=== in block ===")
+
+        // var importsOffset = Int(dyldChainedFixupsHeader.importsOffset)
+        // for _ in 0 ..< dyldChainedFixupsHeader.importsCount {
+        //     let chainedImport = baseData.advanced(by: importsOffset).extract(dyld_chained_import.self)
+
+        //     let name = dylibCommands[Int(chainedImport.libOrdinal) - 1].dylib.name.split(separator: "/").last!
+        //     let offsetToSymbolName = 0 + dyldChainedFixupsHeader.symbolsOffset + chainedImport.nameOffset
+        //     let symbolName = baseData.advanced(by: Int(offsetToSymbolName)).extractString()!
+
+        //     print(chainedImport, "\(name): \(symbolName)")
+        //     // TODO: make it easier for CModels to propose their own size.
+        //     importsOffset += MemoryLayout<UInt32>.size
         // }
     }
 }
