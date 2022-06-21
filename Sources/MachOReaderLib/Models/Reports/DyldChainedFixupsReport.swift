@@ -64,12 +64,52 @@ public struct DyldChainedFixupsReport {
                 .advanced(by: segmentOffset)
                 .extract(dyld_chained_starts_in_segment.self)
 
+            getPageInfo(using: startsInSegment)
             print(startsInSegment)
 
             result.append(startsInSegment)
         }
 
         return result
+    }
+
+    // TODO: Finish implementing this
+    private func getPageInfo(using segmentInfo: dyld_chained_starts_in_segment) {
+        for idx in 0 ..< Int(segmentInfo.pageCount) {
+            print("PAGE: \(idx) (offset: \(segmentInfo.pageStart[idx]))")
+
+            var chainedOffset = UInt32(segmentInfo.segmentOffset)
+                + UInt32(segmentInfo.pageSize * 0)
+                + UInt32(segmentInfo.pageStart[idx])
+
+            print(String(format: "%08llx", segmentInfo.segmentOffset), "Chained offset: \(chainedOffset)")
+
+            var done = false
+            while !done {
+                // TODO: replace this with constants
+                // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
+                if [2, 6].contains(segmentInfo.pointerFormat) {
+
+                    let bind = file.base
+                        .advanced(by: Int(chainedOffset))
+                        .extract(dyld_chained_ptr_64_bind.self)
+
+                    print("Bind: \(bind)")
+                    // TODO: check if is bind or rebind
+
+                    if bind.next == 0 {
+                        done = true
+                    } else {
+                        chainedOffset += UInt32(bind.next) * 4
+                    }
+
+                } else {
+                    print("Unsupported format", segmentInfo.pointerFormat)
+                    done = true
+                    break
+                }
+            }
+        }
     }
 
     private func getImports(using header: dyld_chained_fixups_header) -> [dyld_chained_import] {
