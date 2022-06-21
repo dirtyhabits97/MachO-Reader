@@ -82,7 +82,7 @@ public struct DyldChainedFixupsReport {
                 + UInt32(segmentInfo.pageSize * 0)
                 + UInt32(segmentInfo.pageStart[idx])
 
-            print(String(format: "%08llx", segmentInfo.segmentOffset), "Chained offset: \(chainedOffset)")
+            print("0x" + String(format: "%08llx", segmentInfo.segmentOffset), "Chained offset: \(chainedOffset)")
 
             var done = false
             while !done {
