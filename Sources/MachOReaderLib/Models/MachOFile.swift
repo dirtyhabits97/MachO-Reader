@@ -258,20 +258,6 @@ struct dyld_chained_fixups_header {
     let symbolsFormat: UInt32
 }
 
-// This struct is embedded in LC_DYLD_CHAINED_FIXUPS payload
-// struct dyld_chained_starts_in_image
-// {
-//     uint32_t    seg_count;
-//     uint32_t    seg_info_offset[1];  // each entry is offset into this struct for that segment
-//     // followed by pool of dyld_chain_starts_in_segment data
-// };
-// swiftlint:disable:next type_name
-struct dyld_chained_starts_in_image {
-    let segCount: UInt32
-    // let segInfoOffset: UnsafePointer<UInt32>
-    let segInfoOffset: UInt32
-}
-
 // DYLD_CHAINED_IMPORT
 // struct dyld_chained_import
 // {
@@ -283,16 +269,3 @@ struct dyld_chained_starts_in_image {
 struct dyld_chained_import {
     let rawValue: UInt32
 }
-
-// struct dyld_chained_ptr_64_bind
-// {
-//     uint64_t    ordinal   : 24,
-//                 addend    :  8,   // 0 thru 255
-//                 reserved  : 19,   // all zeros
-//                 next      : 12,   // 4-byte stride
-//                 bind      :  1;   // == 1
-// };
-// swiftlint:disable:next type_name
-// struct dyld_chained_ptr_64_bind {
-//     let rawValue: UInt64
-// }
