@@ -74,6 +74,7 @@ public struct DyldChainedFixupsReport {
         return result
     }
 
+    // TODO: might need to move this to its own struct / class with how many pointerFormat we want to support
     // TODO: Finish implementing this
     private func getPageInfo(using header: dyld_chained_fixups_header, segmentInfo: dyld_chained_starts_in_segment) {
         for idx in 0 ..< Int(segmentInfo.pageCount) {
@@ -114,7 +115,14 @@ public struct DyldChainedFixupsReport {
                     } else {
                         chainedOffset += UInt32(bind.next) * 4
                     }
+                // DYLD_CHAINED_PTR_32
+                } else if segmentInfo.pointerFormat == 3 {
 
+                    let data = file.base.advanced(by: Int(chainedOffset))
+                    let bind = data.extract()
+                    print("DYLD_CHAINED_PTR_32 ", segmentInfo.pointerFormat)
+                    done = true
+                    break
                 } else {
                     print("Unsupported format", segmentInfo.pointerFormat)
                     done = true

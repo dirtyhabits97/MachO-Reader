@@ -1,5 +1,7 @@
 import Foundation
 
+// swiftlint:disable type_name
+
 // These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.
 
@@ -13,7 +15,6 @@ import Foundation
 //     uint32_t    imports_format;    // DYLD_CHAINED_IMPORT*
 //     uint32_t    symbols_format;    // 0 => uncompressed, 1 => zlib compressed
 // };
-// swiftlint:disable:next type_name
 struct dyld_chained_fixups_header {
     let fixupsVersion: UInt32
     let startsOffset: UInt32
@@ -31,7 +32,6 @@ struct dyld_chained_fixups_header {
 //     uint32_t    seg_info_offset[1];  // each entry is offset into this struct for that segment
 //     // followed by pool of dyld_chain_starts_in_segment data
 // };
-// swiftlint:disable:next type_name
 struct dyld_chained_starts_in_image: CustomExtractable {
     let segCount: UInt32
     let segInfoOffset: [UInt32]
@@ -51,7 +51,6 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 //                 weak_import :  1,
 //                 name_offset : 23;
 // };
-// swiftlint:disable:next type_name
 struct dyld_chained_import: CustomExtractable {
 
     let libOrdinal: UInt8
@@ -78,7 +77,6 @@ struct dyld_chained_import: CustomExtractable {
 //                 next      : 12,   // 4-byte stride
 //                 bind      :  1;   // == 1
 // };
-// swiftlint:disable:next type_name
 struct dyld_chained_ptr_64_bind: CustomExtractable {
 
     let ordinal: UInt64
@@ -119,7 +117,6 @@ struct dyld_chained_ptr_64_bind: CustomExtractable {
 //                                     the last of which has the high bit set
 // };
 @dynamicMemberLookup
-// swiftlint:disable:next type_name
 struct dyld_chained_starts_in_segment: CustomExtractable {
 
     struct UnderlyingValue {
@@ -156,7 +153,6 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
 //                 next      : 12,    // 4-byte stride
 //                 bind      :  1;    // == 0
 // };
-// swiftlint:disable:next type_name
 struct dyld_chained_ptr_64_rebase: CustomExtractable {
 
     private let target: UInt64
@@ -176,5 +172,35 @@ struct dyld_chained_ptr_64_rebase: CustomExtractable {
 
     init(from data: Data) {
         self.init(from: data.extract(UInt64.self))
+    }
+}
+
+// MARK: - 32 bit counterparts
+
+// DYLD_CHAINED_PTR_32
+// struct dyld_chained_ptr_32_bind
+// {
+//     uint32_t    ordinal   : 20,
+//                 addend    :  6,   // 0 thru 63
+//                 next      :  5,   // 4-byte stride
+//                 bind      :  1;   // == 1
+// };
+struct dyld_chained_ptr_32_bind: CustomExtractable {
+
+    private let ordinal: UInt32
+    private let addend: UInt8
+    private let next: UInt8
+    private let bind: Bool
+
+    init(from rawValue: UInt32) {
+        let values = rawValue.split(using: [20, 6, 5, 1])
+        ordinal = values[0]
+        addend = UInt8(truncatingIfNeeded: values[1])
+        next = UInt8(truncatingIfNeeded: values[2])
+        bind = values[3] == 1
+    }
+
+    init(from data: Data) {
+        self.init(from: data.extract(UInt32.self))
     }
 }
