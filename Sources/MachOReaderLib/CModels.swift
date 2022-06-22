@@ -155,11 +155,11 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
 // };
 struct dyld_chained_ptr_64_rebase: CustomExtractable {
 
-    private let target: UInt64
-    private let high8: UInt8
-    private let reserved: UInt8
-    private let next: UInt16
-    private let bind: Bool
+    let target: UInt64
+    let high8: UInt8
+    let reserved: UInt8
+    let next: UInt16
+    let bind: Bool
 
     init(from rawValue: UInt64) {
         let values = rawValue.split(using: [36, 8, 7, 12, 1])
@@ -187,17 +187,41 @@ struct dyld_chained_ptr_64_rebase: CustomExtractable {
 // };
 struct dyld_chained_ptr_32_bind: CustomExtractable {
 
-    private let ordinal: UInt32
-    private let addend: UInt8
-    private let next: UInt8
-    private let bind: Bool
+    let ordinal: UInt32
+    let addend: UInt8
+    let next: UInt32
+    let bind: Bool
 
     init(from rawValue: UInt32) {
         let values = rawValue.split(using: [20, 6, 5, 1])
         ordinal = values[0]
         addend = UInt8(truncatingIfNeeded: values[1])
-        next = UInt8(truncatingIfNeeded: values[2])
+        next = values[2]
         bind = values[3] == 1
+    }
+
+    init(from data: Data) {
+        self.init(from: data.extract(UInt32.self))
+    }
+}
+
+// struct dyld_chained_ptr_32_rebase
+// {
+//     uint32_t    target    : 26,   // vmaddr, 64MB max image size
+//                 next      :  5,   // 4-byte stride
+//                 bind      :  1;   // == 0
+// };
+struct dyld_chained_ptr_32_rebase: CustomExtractable {
+
+    let target: UInt32
+    let next: UInt32
+    let bind: Bool
+
+    init(from rawValue: UInt32) {
+        let values = rawValue.split(using: [26, 5, 1])
+        target = values[0]
+        next = values[1]
+        bind = values[2] == 1
     }
 
     init(from data: Data) {

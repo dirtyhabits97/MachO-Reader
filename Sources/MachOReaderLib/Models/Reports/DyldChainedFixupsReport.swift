@@ -115,14 +115,23 @@ public struct DyldChainedFixupsReport {
                     } else {
                         chainedOffset += UInt32(bind.next) * 4
                     }
-                // DYLD_CHAINED_PTR_32
+                    // DYLD_CHAINED_PTR_32
                 } else if segmentInfo.pointerFormat == 3 {
 
                     let data = file.base.advanced(by: Int(chainedOffset))
-                    let bind = data.extract()
-                    print("DYLD_CHAINED_PTR_32 ", segmentInfo.pointerFormat)
-                    done = true
-                    break
+                    let bind = data.extract(dyld_chained_ptr_32_bind.self)
+                    if bind.bind {
+                        print("BIND   ", bind)
+                    } else {
+                        let rebase = data.extract(dyld_chained_ptr_32_rebase.self)
+                        print("REBASE   ", rebase)
+                    }
+
+                    if bind.next == 0 {
+                        done = true
+                    } else {
+                        chainedOffset += bind.next * 4
+                    }
                 } else {
                     print("Unsupported format", segmentInfo.pointerFormat)
                     done = true
