@@ -45,7 +45,7 @@ public struct MachOFile {
 
     // MARK: - Reports
 
-    public func dyldChainedFixupsReport() -> DyldChainedFixupsReport.Report {
-        DyldChainedFixupsReport(file: self).report()
+    public func dyldChainedFixupsReport() -> DyldChainedFixupsReport {
+        DyldChainedFixupsReport(file: self)
     }
 }

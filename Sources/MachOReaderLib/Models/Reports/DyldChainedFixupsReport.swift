@@ -21,7 +21,7 @@ public struct DyldChainedFixupsReport {
 
     // MARK: - Methods
 
-    func report() -> Report {
+    public func report() -> Report {
         // header of the LC_DYLD_CHAINED_FIXUPS payload
         let header = baseData.extract(dyld_chained_fixups_header.self)
 
@@ -54,6 +54,7 @@ public struct DyldChainedFixupsReport {
         for idx in 0 ..< Int(startsInImage.segCount) {
             let segment = segmentCommands[idx]
             let offset = startsInImage.segInfoOffset[idx]
+            print("SEGMENT \(segment.segname) (offset: \(offset))")
 
             // NO PAGES
             if offset == 0 { continue }
@@ -64,8 +65,8 @@ public struct DyldChainedFixupsReport {
                 .advanced(by: segmentOffset)
                 .extract(dyld_chained_starts_in_segment.self)
 
-            getPageInfo(using: startsInSegment)
             print(startsInSegment)
+            getPageInfo(using: header, segmentInfo: startsInSegment)
 
             result.append(startsInSegment)
         }
@@ -74,7 +75,7 @@ public struct DyldChainedFixupsReport {
     }
 
     // TODO: Finish implementing this
-    private func getPageInfo(using segmentInfo: dyld_chained_starts_in_segment) {
+    private func getPageInfo(using header: dyld_chained_fixups_header, segmentInfo: dyld_chained_starts_in_segment) {
         for idx in 0 ..< Int(segmentInfo.pageCount) {
             print("PAGE: \(idx) (offset: \(segmentInfo.pageStart[idx]))")
 
@@ -90,12 +91,23 @@ public struct DyldChainedFixupsReport {
                 // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
                 if [2, 6].contains(segmentInfo.pointerFormat) {
 
-                    let bind = file.base
-                        .advanced(by: Int(chainedOffset))
-                        .extract(dyld_chained_ptr_64_bind.self)
+                    let data = file.base.advanced(by: Int(chainedOffset))
+                    let bind = data.extract(dyld_chained_ptr_64_bind.self)
 
-                    print("Bind: \(bind)")
-                    // TODO: check if is bind or rebind
+                    if bind.bind {
+                        // TODO: this is duplicated work as getImports
+                        let chainedImport = baseData
+                            .advanced(by: Int(header.importsOffset) + MemoryLayout<UInt32>.size * Int(bind.ordinal))
+                            .extract(dyld_chained_import.self)
+                        let offsetToSymbolName = header.symbolsOffset + chainedImport.nameOffset
+                        let symbolName = baseData
+                            .advanced(by: Int(offsetToSymbolName))
+                            .extractString()!
+                        print("BIND   ", bind, symbolName)
+                    } else {
+                        let rebase = data.extract(dyld_chained_ptr_64_rebase.self)
+                        print("REBASE   ", rebase)
+                    }
 
                     if bind.next == 0 {
                         done = true

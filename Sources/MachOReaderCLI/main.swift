@@ -88,7 +88,7 @@ struct Reader: ParsableCommand {
         // REPORTS
         // ===================
         if fixupChains {
-            print(file.dyldChainedFixupsReport())
+            print(file.dyldChainedFixupsReport().report())
             return
         }
         // print default information

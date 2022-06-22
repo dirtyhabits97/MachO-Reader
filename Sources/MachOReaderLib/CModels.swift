@@ -146,3 +146,35 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
         underlyingValue[keyPath: keyPath]
     }
 }
+
+// DYLD_CHAINED_PTR_64/DYLD_CHAINED_PTR_64_OFFSET
+// struct dyld_chained_ptr_64_rebase
+// {
+//     uint64_t    target    : 36,    // 64GB max image size (DYLD_CHAINED_PTR_64 => vmAddr, DYLD_CHAINED_PTR_64_OFFSET => runtimeOffset)
+//                 high8     :  8,    // top 8 bits set to this (DYLD_CHAINED_PTR_64 => after slide added, DYLD_CHAINED_PTR_64_OFFSET => before slide added)
+//                 reserved  :  7,    // all zeros
+//                 next      : 12,    // 4-byte stride
+//                 bind      :  1;    // == 0
+// };
+// swiftlint:disable:next type_name
+struct dyld_chained_ptr_64_rebase: CustomExtractable {
+
+    private let target: UInt64
+    private let high8: UInt8
+    private let reserved: UInt8
+    private let next: UInt16
+    private let bind: Bool
+
+    init(from rawValue: UInt64) {
+        let values = rawValue.split(using: [36, 8, 7, 12, 1])
+        target = values[0]
+        high8 = UInt8(truncatingIfNeeded: values[1])
+        reserved = UInt8(truncatingIfNeeded: values[2])
+        next = UInt16(truncatingIfNeeded: values[3])
+        bind = values[4] == 1
+    }
+
+    init(from data: Data) {
+        self.init(from: data.extract(UInt64.self))
+    }
+}
