@@ -141,32 +141,34 @@ public struct DyldChainedFixupsReport {
         }
     }
 
-    private func getImports(using header: dyld_chained_fixups_header) -> [dyld_chained_import] {
+    private func getImports(using header: dyld_chained_fixups_header) -> [DyldChainedImport] {
         let dylibCommands = file.commands.getDylibCommands()
-        var result: [dyld_chained_import] = []
+        var result: [DyldChainedImport] = []
 
         print("IMPORTS...")
 
         var offset = Int(header.importsOffset)
         for _ in 0 ..< header.importsCount {
-            let chainedImport = baseData
-                .advanced(by: offset)
-                .extract(dyld_chained_import.self)
+            var chainedImport = DyldChainedImport(
+                baseData
+                    .advanced(by: offset)
+                    .extract(dyld_chained_import.self)
+            )
 
-            // TODO: improve this part of the code
-            let name = dylibCommands[Int(chainedImport.libOrdinal) - 1]
+            chainedImport.dylibName = dylibCommands[Int(chainedImport.libOrdinal) - 1]
                 .dylib
                 .name
                 .split(separator: "/")
-                .last!
+                .last?
+                .toString()
 
             let offsetToSymbolName = 0 + header.symbolsOffset + chainedImport.nameOffset
-            let symbolName = baseData
+            chainedImport.symbolName = baseData
                 .advanced(by: Int(offsetToSymbolName))
-                .extractString()!
+                .extractString()
 
             // TODO: remove this print
-            print(chainedImport, "\(name): \(symbolName)")
+            print(chainedImport)
             result.append(chainedImport)
             // TODO: make it easier for CModels to propose their own size.
             offset += MemoryLayout<UInt32>.size
@@ -183,7 +185,7 @@ public extension DyldChainedFixupsReport {
         let header: dyld_chained_fixups_header
         let startsInImage: dyld_chained_starts_in_image
         let startsInSegment: [dyld_chained_starts_in_segment]
-        let imports: [dyld_chained_import]
+        let imports: [DyldChainedImport]
         // TODO: consider adding an array of tuples with the name of the linked libraries and the symbols
     }
 }
