@@ -95,6 +95,9 @@ struct Reader: ParsableCommand {
             for seg in report.segmentInfo {
                 CLIFormatter.print(seg)
             }
+            for pages in report.pageInfo() {
+                CLIFormatter.print(pages)
+            }
             return
         }
         // print default information

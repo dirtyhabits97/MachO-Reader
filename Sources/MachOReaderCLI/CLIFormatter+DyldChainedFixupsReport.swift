@@ -25,3 +25,24 @@ extension DyldChainedSegmentInfo: CLIOutput {
         return str
     }
 }
+
+extension DyldChainedSegmentInfo.PageInfo: CLIOutput {
+
+    var cli: String {
+        let str = "PAGE \(idx) (offset: \(offset))"
+        // TODO: finish implementing this
+        return str
+    }
+}
+
+extension DyldChainedSegmentInfo.Pages: CLIOutput {
+
+    // TODO: implement this correctly
+    var cli: String {
+        var str = ""
+        for page in pages {
+            str += "\n\(page.cli)"
+        }
+        return str
+    }
+}

@@ -37,6 +37,10 @@ public final class DyldChainedFixupsReport {
         segmentInfo = DyldChainedStartsInSegmentBuilder(self).segmentInfo
     }
 
+    public func pageInfo() -> [DyldChainedSegmentInfo.Pages] {
+        DyldChainedSegmentPageInfoBuilder(self).pageInfo
+    }
+
     // MARK: - Methods
 
     // TODO: might need to move this to its own struct / class with how many pointerFormat we want to support
