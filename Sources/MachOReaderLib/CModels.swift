@@ -5,6 +5,7 @@ import Foundation
 // These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.
 
+/// header of the LC_DYLD_CHAINED_FIXUPS payload
 struct dyld_chained_fixups_header {
     /// 0
     let fixups_version: UInt32
@@ -20,6 +21,22 @@ struct dyld_chained_fixups_header {
     let imports_format: UInt32
     /// 0 => uncompressed, 1 => zlib compressed
     let symbols_format: UInt32
+}
+
+/// This struct is embedded in LC_DYLD_CHAINED_FIXUPS payload
+struct dyld_chained_starts_in_image: CustomExtractable {
+
+    let segCount: UInt32
+    /// each entry is offset into this struct for that segment
+    /// followed by pool of dyld_chain_starts_in_segment data
+    let segInfoOffset: [UInt32]
+
+    init(from data: Data) {
+        segCount = data.extract(UInt32.self)
+        segInfoOffset = data
+            .advanced(by: MemoryLayout.size(ofValue: segCount))
+            .extractArray(UInt32.self, count: Int(segCount))
+    }
 }
 
 // DYLD_CHAINED_IMPORT

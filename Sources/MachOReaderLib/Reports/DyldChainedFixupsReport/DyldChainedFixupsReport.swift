@@ -10,7 +10,7 @@ public final class DyldChainedFixupsReport {
     let fixupData: Data
 
     public let header: DyldChainedFixupsHeader
-    public let startsInImage: DyldChainedStartsInImage
+    internal let startsInImage: dyld_chained_starts_in_image
 
     public private(set) var imports: [DyldChainedImport] = []
     public private(set) var segmentInfo: [DyldChainedSegmentInfo] = []
@@ -31,7 +31,7 @@ public final class DyldChainedFixupsReport {
         // as well as imports
         startsInImage = fixupData
             .advanced(by: Int(header.startsOffset))
-            .extract(DyldChainedStartsInImage.self)
+            .extract(dyld_chained_starts_in_image.self)
 
         // build the imports first, since we use them when building the segments
         imports = DyldChainedImportBuilder(self).imports
