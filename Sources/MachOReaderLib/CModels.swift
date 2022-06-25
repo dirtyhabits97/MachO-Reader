@@ -5,45 +5,6 @@ import Foundation
 // These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.
 
-// struct dyld_chained_fixups_header
-// {
-//     uint32_t    fixups_version;    // 0
-//     uint32_t    starts_offset;     // offset of dyld_chained_starts_in_image in chain_data
-//     uint32_t    imports_offset;    // offset of imports table in chain_data
-//     uint32_t    symbols_offset;    // offset of symbol strings in chain_data
-//     uint32_t    imports_count;     // number of imported symbol names
-//     uint32_t    imports_format;    // DYLD_CHAINED_IMPORT*
-//     uint32_t    symbols_format;    // 0 => uncompressed, 1 => zlib compressed
-// };
-struct dyld_chained_fixups_header {
-    let fixupsVersion: UInt32
-    let startsOffset: UInt32
-    let importsOffset: UInt32
-    let symbolsOffset: UInt32
-    let importsCount: UInt32
-    let importsFormat: UInt32
-    let symbolsFormat: UInt32
-}
-
-// This struct is embedded in LC_DYLD_CHAINED_FIXUPS payload
-// struct dyld_chained_starts_in_image
-// {
-//     uint32_t    seg_count;
-//     uint32_t    seg_info_offset[1];  // each entry is offset into this struct for that segment
-//     // followed by pool of dyld_chain_starts_in_segment data
-// };
-struct dyld_chained_starts_in_image: CustomExtractable {
-    let segCount: UInt32
-    let segInfoOffset: [UInt32]
-
-    init(from data: Data) {
-        segCount = data.extract(UInt32.self)
-        segInfoOffset = data
-            .advanced(by: MemoryLayout.size(ofValue: segCount))
-            .extractArray(UInt32.self, count: Int(segCount))
-    }
-}
-
 // DYLD_CHAINED_IMPORT
 // struct dyld_chained_import
 // {

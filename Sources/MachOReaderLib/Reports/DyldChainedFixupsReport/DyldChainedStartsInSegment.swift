@@ -37,6 +37,7 @@ struct DyldChainedStartsInSegmentBuilder {
 // TODO: document this
 public struct DyldChainedSegmentInfo {
 
+    // TODO: rename this to starts in segment
     public struct DyldChainedStartsInSegment {
 
         public let size: UInt32

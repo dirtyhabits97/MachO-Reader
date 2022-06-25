@@ -9,8 +9,8 @@ public final class DyldChainedFixupsReport {
     /// The pointer to __LINKED it segment where the LC_DYLD_CHAINED_FIXUPS payload lives.
     let fixupData: Data
 
-    let header: dyld_chained_fixups_header
-    let startsInImage: dyld_chained_starts_in_image
+    public let header: DyldChainedFixupsHeader
+    public let startsInImage: DyldChainedStartsInImage
 
     public private(set) var imports: [DyldChainedImport] = []
     public private(set) var segmentInfo: [DyldChainedSegmentInfo] = []
@@ -25,13 +25,13 @@ public final class DyldChainedFixupsReport {
         fixupData = file.base.advanced(by: Int(dyldChainedFixups.dataoff))
         self.file = file
         // header of the LC_DYLD_CHAINED_FIXUPS payload
-        header = fixupData.extract(dyld_chained_fixups_header.self)
+        header = fixupData.extract(DyldChainedFixupsHeader.self)
         // each of these comes with a segment offset.
         // in that offset information bind / rebase exist
         // as well as imports
         startsInImage = fixupData
             .advanced(by: Int(header.startsOffset))
-            .extract(dyld_chained_starts_in_image.self)
+            .extract(DyldChainedStartsInImage.self)
 
         // build the imports first, since we use them when building the segments
         imports = DyldChainedImportBuilder(self).imports

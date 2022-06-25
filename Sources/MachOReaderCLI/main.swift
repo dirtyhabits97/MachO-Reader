@@ -88,16 +88,7 @@ struct Reader: ParsableCommand {
         // REPORTS
         // ===================
         if fixupChains {
-            let report = file.dyldChainedFixupsReport()
-            for imp in report.imports {
-                CLIFormatter.print(imp)
-            }
-            for seg in report.segmentInfo {
-                CLIFormatter.print(seg)
-            }
-            for pages in report.pageInfo() {
-                CLIFormatter.print(pages)
-            }
+            CLIFormatter.print(file.dyldChainedFixupsReport())
             return
         }
         // print default information

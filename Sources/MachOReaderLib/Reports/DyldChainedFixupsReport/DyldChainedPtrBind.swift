@@ -8,6 +8,8 @@ enum DyldChainedPtrBindOrRebase {
     case rebase64(dyld_chained_ptr_64_rebase)
 }
 
+// TODO: reorganize this next to the CModels. Somethng like Swift/PrettyModels
+
 struct DyldChainedPtrBind {
 
     // MARK: - Properties
