@@ -17,10 +17,10 @@ extension DyldChainedImport: CLIOutput {
     }
 }
 
-extension DyldChainedStartsInSegment: CLIOutput {
+extension DyldChainedSegmentInfo: CLIOutput {
 
     var cli: String {
-        let str = "SEGMENT \(segmentName) (offset: \(segmentOffset))"
+        let str = "SEGMENT \(segmentName) (offset: \(segInfoOffset))"
         // TODO: finish implementing this
         return str
     }
