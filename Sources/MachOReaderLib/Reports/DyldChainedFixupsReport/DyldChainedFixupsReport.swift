@@ -33,6 +33,7 @@ public final class DyldChainedFixupsReport {
 
         // build the imports first, since we use them when building the segments
         imports = DyldChainedImportBuilder(self).imports
+        _ = getSegmentInfo(using: header, startsInImage: startsInImage)
     }
 
     // MARK: - Methods
@@ -88,21 +89,15 @@ public final class DyldChainedFixupsReport {
                     let data = file.base.advanced(by: Int(chainedOffset))
                     let bind = data.extract(dyld_chained_ptr_64_bind.self)
 
-                    // TODO: resolve this
-                    // if bind.bind {
-                    //     // TODO: this is duplicated work as getImports
-                    //     let chainedImport = baseData
-                    //         .advanced(by: Int(header.importsOffset) + MemoryLayout<UInt32>.size * Int(bind.ordinal))
-                    //         .extract(dyld_chained_import.self)
-                    //     let offsetToSymbolName = header.symbolsOffset + chainedImport.nameOffset
-                    //     let symbolName = baseData
-                    //         .advanced(by: Int(offsetToSymbolName))
-                    //         .extractString()!
-                    //     print("BIND   ", bind, symbolName)
-                    // } else {
-                    //     let rebase = data.extract(dyld_chained_ptr_64_rebase.self)
-                    //     print("REBASE   ", rebase)
-                    // }
+                    if bind.bind {
+                        // TODO: this is duplicated work as getImports
+                        let chainedImport = imports[Int(bind.ordinal)]
+                        let symbolName = chainedImport.symbolName ?? "no symbol"
+                        print("BIND   ", bind, symbolName)
+                    } else {
+                        let rebase = data.extract(dyld_chained_ptr_64_rebase.self)
+                        print("REBASE   ", rebase)
+                    }
 
                     if bind.next == 0 {
                         done = true
