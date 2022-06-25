@@ -51,11 +51,11 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 //                 weak_import :  1,
 //                 name_offset : 23;
 // };
-public struct dyld_chained_import: RawRepresentable {
+struct dyld_chained_import: RawRepresentable {
 
-    public let rawValue: UInt32
+    let rawValue: UInt32
 
-    public init(rawValue: UInt32) {
+    init(rawValue: UInt32) {
         self.rawValue = rawValue
     }
 }
