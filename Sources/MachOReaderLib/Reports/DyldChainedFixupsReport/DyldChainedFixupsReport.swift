@@ -13,6 +13,7 @@ public final class DyldChainedFixupsReport {
     let startsInImage: dyld_chained_starts_in_image
 
     public private(set) var imports: [DyldChainedImport] = []
+    private(set) var segmentInfo: [dyld_chained_starts_in_segment] = []
 
     // MARK: - Lifecycle
 
@@ -33,40 +34,10 @@ public final class DyldChainedFixupsReport {
 
         // build the imports first, since we use them when building the segments
         imports = DyldChainedImportBuilder(self).imports
-        _ = getSegmentInfo(using: header, startsInImage: startsInImage)
+        segmentInfo = DyldChainedStartsInSegmentBuilder(self).segmentInfo
     }
 
     // MARK: - Methods
-
-    private func getSegmentInfo(
-        using header: dyld_chained_fixups_header,
-        startsInImage: dyld_chained_starts_in_image
-    ) -> [dyld_chained_starts_in_segment] {
-        let segmentCommands = file.commands.getSegmentCommands()
-        var result: [dyld_chained_starts_in_segment] = []
-
-        for idx in 0 ..< Int(startsInImage.segCount) {
-            let segment = segmentCommands[idx]
-            let offset = startsInImage.segInfoOffset[idx]
-            print("SEGMENT \(segment.segname) (offset: \(offset))")
-
-            // NO PAGES
-            if offset == 0 { continue }
-
-            // calculate offset
-            let segmentOffset = Int(header.startsOffset) + Int(offset)
-            let startsInSegment = fixupData
-                .advanced(by: segmentOffset)
-                .extract(dyld_chained_starts_in_segment.self)
-
-            print(startsInSegment)
-            getPageInfo(using: header, segmentInfo: startsInSegment)
-
-            result.append(startsInSegment)
-        }
-
-        return result
-    }
 
     // TODO: might need to move this to its own struct / class with how many pointerFormat we want to support
     // TODO: Finish implementing this

@@ -1,8 +1,8 @@
 import Foundation
 
-internal struct DyldChainedImportBuilder {
+struct DyldChainedImportBuilder {
 
-    var imports: [DyldChainedImport]
+    let imports: [DyldChainedImport]
 
     init(_ fixupsReport: DyldChainedFixupsReport) {
         let dylibCommands = fixupsReport.file.commands.getDylibCommands()
