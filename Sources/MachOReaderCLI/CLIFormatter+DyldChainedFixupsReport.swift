@@ -13,9 +13,9 @@ extension DyldChainedFixupsHeader: CLIOutput {
         str += "   "
         str += "symbols_offset: \(symbolsOffset)"
         str += "\n".padding(26)
-        str += "imports_format: \(importsFormat)"
+        str += "imports_format: \(importsFormat.readableValue ?? String(importsFormat.rawValue))"
         str += "   "
-        str += "symbols_format: \(symbolsFormat)"
+        str += "symbols_format: \(symbolsFormat.readableValue ?? String(symbolsFormat.rawValue))"
         return str
     }
 }

@@ -1,9 +1,26 @@
 import Foundation
 
-// swiftlint:disable type_name
+// swiftlint:disable type_name identifier_name
 
 // These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.
+
+struct dyld_chained_fixups_header {
+    /// 0
+    let fixups_version: UInt32
+    /// offset of dyld_chained_starts_in_image in chain_data
+    let starts_offset: UInt32
+    /// offset of imports table in chain_data
+    let imports_offset: UInt32
+    /// offset of symbol strings in chain_data
+    let symbols_offset: UInt32
+    /// number of imported symbol names
+    let imports_count: UInt32
+    /// DYLD_CHAINED_IMPORT*
+    let imports_format: UInt32
+    /// 0 => uncompressed, 1 => zlib compressed
+    let symbols_format: UInt32
+}
 
 // DYLD_CHAINED_IMPORT
 // struct dyld_chained_import

@@ -25,7 +25,7 @@ public final class DyldChainedFixupsReport {
         fixupData = file.base.advanced(by: Int(dyldChainedFixups.dataoff))
         self.file = file
         // header of the LC_DYLD_CHAINED_FIXUPS payload
-        header = fixupData.extract(DyldChainedFixupsHeader.self)
+        header = DyldChainedFixupsHeader(fixupData.extract(dyld_chained_fixups_header.self))
         // each of these comes with a segment offset.
         // in that offset information bind / rebase exist
         // as well as imports
