@@ -18,6 +18,7 @@ public final class DyldChainedFixupsReport {
     // MARK: - Lifecycle
 
     init(file: MachOFile) {
+        // TODO: this should throw
         guard let dyldChainedFixups = file.commands.getDyldChainedFixups() else {
             fatalError("Expected a DyldChainedFixups command in the macho file.")
         }
@@ -37,72 +38,10 @@ public final class DyldChainedFixupsReport {
         segmentInfo = DyldChainedStartsInSegmentBuilder(self).segmentInfo
     }
 
-    public func pageInfo() -> [DyldChainedSegmentInfo.Pages] {
-        DyldChainedSegmentPageInfoBuilder(self).pageInfo
-    }
-
     // MARK: - Methods
 
-    // TODO: might need to move this to its own struct / class with how many pointerFormat we want to support
-    // TODO: Finish implementing this
-    private func getPageInfo(using _: dyld_chained_fixups_header, segmentInfo: dyld_chained_starts_in_segment) {
-        for idx in 0 ..< Int(segmentInfo.pageCount) {
-            print("PAGE: \(idx) (offset: \(segmentInfo.pageStart[idx]))")
-
-            var chainedOffset = UInt32(segmentInfo.segmentOffset)
-                + UInt32(segmentInfo.pageSize * 0)
-                + UInt32(segmentInfo.pageStart[idx])
-
-            print("0x" + String(format: "%08llx", segmentInfo.segmentOffset), "Chained offset: \(chainedOffset)")
-
-            var done = false
-            while !done {
-                // TODO: replace this with constants
-                // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
-                if [2, 6].contains(segmentInfo.pointerFormat) {
-
-                    let data = file.base.advanced(by: Int(chainedOffset))
-                    let bind = data.extract(dyld_chained_ptr_64_bind.self)
-
-                    if bind.bind {
-                        // TODO: this is duplicated work as getImports
-                        let chainedImport = imports[Int(bind.ordinal)]
-                        let symbolName = chainedImport.symbolName ?? "no symbol"
-                        print("BIND   ", bind, symbolName)
-                    } else {
-                        let rebase = data.extract(dyld_chained_ptr_64_rebase.self)
-                        print("REBASE   ", rebase)
-                    }
-
-                    if bind.next == 0 {
-                        done = true
-                    } else {
-                        chainedOffset += UInt32(bind.next) * 4
-                    }
-                    // DYLD_CHAINED_PTR_32
-                } else if segmentInfo.pointerFormat == 3 {
-
-                    let data = file.base.advanced(by: Int(chainedOffset))
-                    let bind = data.extract(dyld_chained_ptr_32_bind.self)
-                    if bind.bind {
-                        print("BIND   ", bind)
-                    } else {
-                        let rebase = data.extract(dyld_chained_ptr_32_rebase.self)
-                        print("REBASE   ", rebase)
-                    }
-
-                    if bind.next == 0 {
-                        done = true
-                    } else {
-                        chainedOffset += bind.next * 4
-                    }
-                } else {
-                    print("Unsupported format", segmentInfo.pointerFormat)
-                    done = true
-                    break
-                }
-            }
-        }
+    public func pageInfo() -> [DyldChainedSegmentInfo.Pages] {
+        DyldChainedSegmentPageInfoBuilder(self).pageInfo
     }
 }
 
