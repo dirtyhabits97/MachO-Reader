@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO: remove prints
-public struct DyldChainedFixupsReport {
+public final class DyldChainedFixupsReport {
 
     // MARK: - Properties
 
@@ -20,6 +20,10 @@ public struct DyldChainedFixupsReport {
     }
 
     // MARK: - Methods
+
+    public func build() {
+        // TODO: use this to replace the report method and struct
+    }
 
     public func report() -> Report {
         // header of the LC_DYLD_CHAINED_FIXUPS payload
@@ -186,7 +190,6 @@ public extension DyldChainedFixupsReport {
         let startsInImage: dyld_chained_starts_in_image
         let startsInSegment: [dyld_chained_starts_in_segment]
         public let imports: [DyldChainedImport]
-        // TODO: consider adding an array of tuples with the name of the linked libraries and the symbols
     }
 }
 
