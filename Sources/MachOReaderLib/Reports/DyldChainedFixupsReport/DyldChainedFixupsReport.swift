@@ -13,7 +13,7 @@ public final class DyldChainedFixupsReport {
     let startsInImage: dyld_chained_starts_in_image
 
     public private(set) var imports: [DyldChainedImport] = []
-    private(set) var segmentInfo: [dyld_chained_starts_in_segment] = []
+    public private(set) var segmentInfo: [DyldChainedStartsInSegment] = []
 
     // MARK: - Lifecycle
 
