@@ -51,7 +51,7 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 //                 weak_import :  1,
 //                 name_offset : 23;
 // };
-struct dyld_chained_import: CustomExtractable {
+public struct dyld_chained_import: CustomExtractable {
 
     let libOrdinal: UInt8
     let isWeakImport: Bool

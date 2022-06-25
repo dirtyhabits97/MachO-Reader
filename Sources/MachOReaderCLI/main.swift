@@ -88,7 +88,10 @@ struct Reader: ParsableCommand {
         // REPORTS
         // ===================
         if fixupChains {
-            print(file.dyldChainedFixupsReport().report())
+            let report = file.dyldChainedFixupsReport().report()
+            for imp in report.imports {
+                CLIFormatter.print(imp)
+            }
             return
         }
         // print default information

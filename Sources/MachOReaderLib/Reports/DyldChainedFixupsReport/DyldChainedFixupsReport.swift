@@ -185,7 +185,7 @@ public extension DyldChainedFixupsReport {
         let header: dyld_chained_fixups_header
         let startsInImage: dyld_chained_starts_in_image
         let startsInSegment: [dyld_chained_starts_in_segment]
-        let imports: [DyldChainedImport]
+        public let imports: [DyldChainedImport]
         // TODO: consider adding an array of tuples with the name of the linked libraries and the symbols
     }
 }

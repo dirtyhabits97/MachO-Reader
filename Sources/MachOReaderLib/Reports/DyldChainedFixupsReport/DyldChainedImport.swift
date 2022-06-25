@@ -1,21 +1,22 @@
 import Foundation
 
-@dynamicMemberLookup
-struct DyldChainedImport {
+public struct DyldChainedImport {
 
-    private let underlyingValue: dyld_chained_import
-    var dylibName: String?
-    var symbolName: String?
+    public let libOrdinal: UInt8
+    public let isWeakImport: Bool
+    public let nameOffset: UInt32
+
+    public internal(set) var dylibName: String?
+    public internal(set) var symbolName: String?
 
     init(_ underlyingValue: dyld_chained_import) {
-        self.underlyingValue = underlyingValue
-    }
-
-    subscript<T>(dynamicMember keyPath: KeyPath<dyld_chained_import, T>) -> T {
-        underlyingValue[keyPath: keyPath]
+        libOrdinal = underlyingValue.libOrdinal
+        isWeakImport = underlyingValue.isWeakImport
+        nameOffset = underlyingValue.nameOffset
     }
 }
 
+// TODO: move this somewhere
 extension String.SubSequence {
 
     func toString() -> String {
