@@ -12,3 +12,10 @@ extension BinaryInteger {
         return result
     }
 }
+
+extension RawRepresentable where RawValue: BinaryInteger {
+
+    func split(using masks: [RawValue]) -> [RawValue] {
+        rawValue.split(using: masks)
+    }
+}

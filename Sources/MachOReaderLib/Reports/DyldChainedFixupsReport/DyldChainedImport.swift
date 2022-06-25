@@ -9,10 +9,11 @@ public struct DyldChainedImport {
     public internal(set) var dylibName: String?
     public internal(set) var symbolName: String?
 
-    init(_ underlyingValue: dyld_chained_import) {
-        libOrdinal = underlyingValue.libOrdinal
-        isWeakImport = underlyingValue.isWeakImport
-        nameOffset = underlyingValue.nameOffset
+    init(_ chainedImport: dyld_chained_import) {
+        let values = chainedImport.split(using: [8, 1, 23])
+        libOrdinal = UInt8(truncatingIfNeeded: values[0])
+        isWeakImport = values[1] == 1
+        nameOffset = values[2]
     }
 }
 
