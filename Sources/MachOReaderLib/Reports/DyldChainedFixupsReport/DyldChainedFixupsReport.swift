@@ -5,9 +5,14 @@ public final class DyldChainedFixupsReport {
 
     // MARK: - Properties
 
-    private let file: MachOFile
+    let file: MachOFile
     /// The pointer to __LINKED it segment where the LC_DYLD_CHAINED_FIXUPS payload lives.
-    private let baseData: Data
+    let fixupData: Data
+
+    let header: dyld_chained_fixups_header
+    let startsInImage: dyld_chained_starts_in_image
+
+    public private(set) var imports: [DyldChainedImport] = []
 
     // MARK: - Lifecycle
 
@@ -15,38 +20,22 @@ public final class DyldChainedFixupsReport {
         guard let dyldChainedFixups = file.commands.getDyldChainedFixups() else {
             fatalError("Expected a DyldChainedFixups command in the macho file.")
         }
-        baseData = file.base.advanced(by: Int(dyldChainedFixups.dataoff))
+        fixupData = file.base.advanced(by: Int(dyldChainedFixups.dataoff))
         self.file = file
-    }
-
-    // MARK: - Methods
-
-    public func build() {
-        // TODO: use this to replace the report method and struct
-    }
-
-    public func report() -> Report {
         // header of the LC_DYLD_CHAINED_FIXUPS payload
-        let header = baseData.extract(dyld_chained_fixups_header.self)
-
+        header = fixupData.extract(dyld_chained_fixups_header.self)
         // each of these comes with a segment offset.
         // in that offset information bind / rebase exist
         // as well as imports
-        let startsInImage = baseData
+        startsInImage = fixupData
             .advanced(by: Int(header.startsOffset))
             .extract(dyld_chained_starts_in_image.self)
 
-        // the libraries imported by the binary
-        let imports = getImports(using: header)
-
-        // TODO: document this
-        let startsInSegments = getSegmentInfo(using: header, startsInImage: startsInImage)
-
-        return Report(header: header,
-                      startsInImage: startsInImage,
-                      startsInSegment: startsInSegments,
-                      imports: imports)
+        // build the imports first, since we use them when building the segments
+        imports = DyldChainedImportBuilder(self).imports
     }
+
+    // MARK: - Methods
 
     private func getSegmentInfo(
         using header: dyld_chained_fixups_header,
@@ -65,7 +54,7 @@ public final class DyldChainedFixupsReport {
 
             // calculate offset
             let segmentOffset = Int(header.startsOffset) + Int(offset)
-            let startsInSegment = baseData
+            let startsInSegment = fixupData
                 .advanced(by: segmentOffset)
                 .extract(dyld_chained_starts_in_segment.self)
 
@@ -80,7 +69,7 @@ public final class DyldChainedFixupsReport {
 
     // TODO: might need to move this to its own struct / class with how many pointerFormat we want to support
     // TODO: Finish implementing this
-    private func getPageInfo(using header: dyld_chained_fixups_header, segmentInfo: dyld_chained_starts_in_segment) {
+    private func getPageInfo(using _: dyld_chained_fixups_header, segmentInfo: dyld_chained_starts_in_segment) {
         for idx in 0 ..< Int(segmentInfo.pageCount) {
             print("PAGE: \(idx) (offset: \(segmentInfo.pageStart[idx]))")
 
@@ -145,42 +134,6 @@ public final class DyldChainedFixupsReport {
             }
         }
     }
-
-    private func getImports(using header: dyld_chained_fixups_header) -> [DyldChainedImport] {
-        let dylibCommands = file.commands.getDylibCommands()
-        var result: [DyldChainedImport] = []
-
-        print("IMPORTS...")
-
-        var offset = Int(header.importsOffset)
-        for _ in 0 ..< header.importsCount {
-            var chainedImport = DyldChainedImport(
-                baseData
-                    .advanced(by: offset)
-                    .extract(dyld_chained_import.self)
-            )
-
-            chainedImport.dylibName = dylibCommands[Int(chainedImport.libOrdinal) - 1]
-                .dylib
-                .name
-                .split(separator: "/")
-                .last?
-                .toString()
-
-            let offsetToSymbolName = 0 + header.symbolsOffset + chainedImport.nameOffset
-            chainedImport.symbolName = baseData
-                .advanced(by: Int(offsetToSymbolName))
-                .extractString()
-
-            // TODO: remove this print
-            print(chainedImport)
-            result.append(chainedImport)
-            // TODO: make it easier for CModels to propose their own size.
-            offset += MemoryLayout<UInt32>.size
-        }
-
-        return result
-    }
 }
 
 public extension DyldChainedFixupsReport {
@@ -194,7 +147,8 @@ public extension DyldChainedFixupsReport {
     }
 }
 
-private extension Array where Element == LoadCommand {
+// TODO: move this somewhere
+extension Array where Element == LoadCommand {
 
     func getDyldChainedFixups() -> LinkedItDataCommand? {
         lazy
