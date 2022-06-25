@@ -136,17 +136,6 @@ public final class DyldChainedFixupsReport {
     }
 }
 
-public extension DyldChainedFixupsReport {
-
-    struct Report {
-
-        let header: dyld_chained_fixups_header
-        let startsInImage: dyld_chained_starts_in_image
-        let startsInSegment: [dyld_chained_starts_in_segment]
-        public let imports: [DyldChainedImport]
-    }
-}
-
 // TODO: move this somewhere
 extension Array where Element == LoadCommand {
 
