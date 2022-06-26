@@ -53,7 +53,6 @@ extension DyldChainedSegmentInfo.StartsInSegment {
         [
             "   size: \(size)",
             "   page_size: \(pageSize)",
-            // TODO: this should be a raw representable struct
             "   pointer_format: \(pointerFormat.readableValue ?? String(pointerFormat.rawValue))",
             "   segment_offset: \(segmentOffset)",
             "   max_valid_pointer: \(maxValidPointer)",
@@ -75,7 +74,6 @@ extension DyldChainedSegmentInfo.PageInfo: CLIOutput {
 
 extension DyldChainedSegmentInfo.Pages: CLIOutput {
 
-    // TODO: implement this correctly
     var cli: String {
         var str = ""
         for page in pages {
