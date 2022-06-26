@@ -39,15 +39,17 @@ public extension DyldChainedFixupsHeader {
         }
 
         // Source: fixup-chains.h
-        static let `import` = ImportsFormat(1)
-        static let addend = ImportsFormat(2)
-        static let addend64 = ImportsFormat(3)
+        // swiftlint:disable identifier_name
+        static let DYLD_CHAINED_IMPORT = ImportsFormat(1)
+        static let DYLD_CHAINED_IMPORT_ADDEND = ImportsFormat(2)
+        static let DYLD_CHAINED_IMPORT_ADDEND_64 = ImportsFormat(3)
+        // swiftlint:enable identifier_name
 
         public var readableValue: String? {
             switch self {
-            case .import: return "DYLD_CHAINED_IMPORT"
-            case .addend: return "DYLD_CHAINED_IMPORT_ADDEND"
-            case .addend64: return "DYLD_CHAINED_IMPORT_ADDEND_64"
+            case .DYLD_CHAINED_IMPORT: return "DYLD_CHAINED_IMPORT"
+            case .DYLD_CHAINED_IMPORT_ADDEND: return "DYLD_CHAINED_IMPORT_ADDEND"
+            case .DYLD_CHAINED_IMPORT_ADDEND_64: return "DYLD_CHAINED_IMPORT_ADDEND_64"
             default: return nil
             }
         }
