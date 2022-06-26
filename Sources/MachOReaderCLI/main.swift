@@ -4,6 +4,9 @@ import MachOReaderLib
 
 struct Reader: ParsableCommand {
 
+    static let configuration = CommandConfiguration(commandName: "read",
+                                                    subcommands: [DyldChainedFixupsCommand.self])
+
     // MARK: - Properties
 
     @Option(help: "The arch of the mach-o header to read.")
@@ -26,11 +29,6 @@ struct Reader: ParsableCommand {
 
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
-
-    // MARK: - Reports
-
-    @Flag(help: "Output the LC_DYLD_CHAINED_FIXUPS report.")
-    var fixupChains: Bool = false
 
     // MARK: - Methods
 
@@ -82,13 +80,6 @@ struct Reader: ParsableCommand {
                     return segmentCommand
                 }
                 .forEach { CLIFormatter.print($0) }
-            return
-        }
-        // ===================
-        // REPORTS
-        // ===================
-        if fixupChains {
-            CLIFormatter.print(file.dyldChainedFixupsReport())
             return
         }
         // print default information

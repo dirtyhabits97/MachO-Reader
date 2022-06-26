@@ -90,13 +90,6 @@ extension DyldChainedFixupsReport: CLIOutput {
     var cli: String {
         var str = header.cli
         str += "\n"
-        str += "IMPORTS:"
-        for (idx, imp) in imports.enumerated() {
-            str += "\n   "
-            str += "[\(idx)]".padding(6)
-            str += imp.cli
-        }
-        str += "\n"
         for (seg, pages) in zip(segmentInfo, pageInfo()) {
             str += "\n\(seg.cli)"
             str += pages.cli
