@@ -22,9 +22,6 @@ struct DyldChainedStartsInSegmentBuilder {
                         .advanced(by: segmentOffset)
                         .extract(dyld_chained_starts_in_segment.self)
                 )
-
-                // TODO: implement this somehow
-                // getPageInfo(using: header, segmentInfo: startsInSegment)
             }
 
             result.append(segmentInfo)
@@ -34,7 +31,6 @@ struct DyldChainedStartsInSegmentBuilder {
     }
 }
 
-// TODO: document this
 public struct DyldChainedSegmentInfo {
 
     public struct StartsInSegment {
