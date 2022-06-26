@@ -34,7 +34,6 @@ struct DyldChainedSegmentPageInfoBuilder {
                         let bind = data.extract(dyld_chained_ptr_64_bind.self)
 
                         if bind.bind {
-                            // TODO: this is duplicated work as getImports
                             let chainedImport = fixupsReport.imports[Int(bind.ordinal)]
                             let symbolName = chainedImport.symbolName ?? "no symbol"
                             print("BIND   ", bind, symbolName)

@@ -37,12 +37,10 @@ struct DyldChainedStartsInSegmentBuilder {
 // TODO: document this
 public struct DyldChainedSegmentInfo {
 
-    // TODO: rename this to starts in segment
     public struct StartsInSegment {
 
         public let size: UInt32
         public let pageSize: UInt16
-        // TODO: Move this to a RawRepresentable struct
         public let pointerFormat: PointerFormat
         public let segmentOffset: UInt64
         public let maxValidPointer: UInt32
