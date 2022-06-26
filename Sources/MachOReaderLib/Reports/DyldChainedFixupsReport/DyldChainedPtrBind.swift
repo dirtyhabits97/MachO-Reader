@@ -1,61 +1,65 @@
 import Foundation
 
-enum DyldChainedPtrBindOrRebase {
+struct DyldChainedPtrBindOrRebase {
 
-    case bind32(dyld_chained_ptr_32_bind)
-    case bind64(dyld_chained_ptr_64_bind)
-    case rebase32(dyld_chained_ptr_32_rebase)
-    case rebase64(dyld_chained_ptr_64_rebase)
 }
 
-// TODO: reorganize this next to the CModels. Somethng like Swift/PrettyModels
+// enum DyldChainedPtrBindOrRebase {
 
-struct DyldChainedPtrBind {
+//     case bind32(dyld_chained_ptr_32_bind)
+//     case bind64(dyld_chained_ptr_64_bind)
+//     case rebase32(dyld_chained_ptr_32_rebase)
+//     case rebase64(dyld_chained_ptr_64_rebase)
+// }
 
-    // MARK: - Properties
+// // TODO: reorganize this next to the CModels. Somethng like Swift/PrettyModels
 
-    private let underlyingValue: UnderlyingValue
+// struct DyldChainedPtrBind {
 
-    // MARK: - Lifecycle
+//     // MARK: - Properties
 
-    init(_ rawValue: dyld_chained_ptr_32_bind) {
-        underlyingValue = .b32(rawValue)
-    }
+//     private let underlyingValue: UnderlyingValue
 
-    init(_ rawValue: dyld_chained_ptr_64_bind) {
-        underlyingValue = .b64(rawValue)
-    }
-}
+//     // MARK: - Lifecycle
 
-extension DyldChainedPtrBind {
+//     init(_ rawValue: dyld_chained_ptr_32_bind) {
+//         underlyingValue = .b32(rawValue)
+//     }
 
-    enum UnderlyingValue {
-        case b32(dyld_chained_ptr_32_bind)
-        case b64(dyld_chained_ptr_64_bind)
-    }
-}
+//     init(_ rawValue: dyld_chained_ptr_64_bind) {
+//         underlyingValue = .b64(rawValue)
+//     }
+// }
 
-struct DyldChainedPtrRebase {
+// extension DyldChainedPtrBind {
 
-    // MARK: - Properties
+//     enum UnderlyingValue {
+//         case b32(dyld_chained_ptr_32_bind)
+//         case b64(dyld_chained_ptr_64_bind)
+//     }
+// }
 
-    private let underlyingValue: UnderlyingValue
+// struct DyldChainedPtrRebase {
 
-    // MARK: - Lifecycle
+//     // MARK: - Properties
 
-    init(_ rawValue: dyld_chained_ptr_32_rebase) {
-        underlyingValue = .b32(rawValue)
-    }
+//     private let underlyingValue: UnderlyingValue
 
-    init(_ rawValue: dyld_chained_ptr_64_rebase) {
-        underlyingValue = .b64(rawValue)
-    }
-}
+//     // MARK: - Lifecycle
 
-extension DyldChainedPtrRebase {
+//     init(_ rawValue: dyld_chained_ptr_32_rebase) {
+//         underlyingValue = .b32(rawValue)
+//     }
 
-    enum UnderlyingValue {
-        case b32(dyld_chained_ptr_32_rebase)
-        case b64(dyld_chained_ptr_64_rebase)
-    }
-}
+//     init(_ rawValue: dyld_chained_ptr_64_rebase) {
+//         underlyingValue = .b64(rawValue)
+//     }
+// }
+
+// extension DyldChainedPtrRebase {
+
+//     enum UnderlyingValue {
+//         case b32(dyld_chained_ptr_32_rebase)
+//         case b64(dyld_chained_ptr_64_rebase)
+//     }
+// }

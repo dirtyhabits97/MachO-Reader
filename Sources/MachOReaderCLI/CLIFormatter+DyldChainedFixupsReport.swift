@@ -47,14 +47,14 @@ extension DyldChainedSegmentInfo: CLIOutput {
     }
 }
 
-extension DyldChainedSegmentInfo.DyldChainedStartsInSegment {
+extension DyldChainedSegmentInfo.StartsInSegment {
 
     var cli: String {
         [
             "   size: \(size)",
             "   page_size: \(pageSize)",
             // TODO: this should be a raw representable struct
-            "   pointer_format: \(pointerFormat)",
+            "   pointer_format: \(pointerFormat.readableValue ?? String(pointerFormat.rawValue))",
             "   segment_offset: \(segmentOffset)",
             "   max_valid_pointer: \(maxValidPointer)",
             "   page_count: \(pageCount)",
@@ -90,9 +90,8 @@ extension DyldChainedFixupsReport: CLIOutput {
     var cli: String {
         var str = header.cli
         str += "\n"
-        for (seg, pages) in zip(segmentInfo, pageInfo()) {
+        for seg in segmentInfo {
             str += "\n\(seg.cli)"
-            str += pages.cli
         }
         return str
     }

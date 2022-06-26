@@ -28,9 +28,7 @@ struct DyldChainedSegmentPageInfoBuilder {
                 var done = false
                 while !done {
 
-                    // TODO: replace this with constants
-                    // [DYLD_CHAINED_PTR_64, DYLD_CHAINED_PTR_64_OFFSET]
-                    if [2, 6].contains(startsInSegment.pointerFormat) {
+                    if [.DYLD_CHAINED_PTR_64, .DYLD_CHAINED_PTR_64_OFFSET].contains(startsInSegment.pointerFormat) {
 
                         let data = fixupsReport.file.base.advanced(by: Int(chainedOffset))
                         let bind = data.extract(dyld_chained_ptr_64_bind.self)
@@ -50,8 +48,7 @@ struct DyldChainedSegmentPageInfoBuilder {
                         } else {
                             chainedOffset += UInt32(bind.next) * 4
                         }
-                        // DYLD_CHAINED_PTR_32
-                    } else if startsInSegment.pointerFormat == 3 {
+                    } else if startsInSegment.pointerFormat == .DYLD_CHAINED_PTR_32 {
 
                         let data = fixupsReport.file.base.advanced(by: Int(chainedOffset))
                         let bind = data.extract(dyld_chained_ptr_32_bind.self)

@@ -51,11 +51,3 @@ public struct DyldChainedImport {
         nameOffset = values[2]
     }
 }
-
-// TODO: move this somewhere
-extension String.SubSequence {
-
-    func toString() -> String {
-        String(self)
-    }
-}
