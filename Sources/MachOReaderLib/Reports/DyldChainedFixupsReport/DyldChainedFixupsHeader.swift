@@ -1,6 +1,5 @@
 import Foundation
 
-// TODO: rename this file to DyldChainedFixupsHeader.
 public struct DyldChainedFixupsHeader {
 
     public let fixupsVersion: UInt32
