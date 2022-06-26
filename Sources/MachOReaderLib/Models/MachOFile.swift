@@ -9,6 +9,9 @@ public struct MachOFile {
     public let header: MachOHeader
     public private(set) var commands: [LoadCommand]
 
+    /// A pointer to the start of the header of this file in memory.
+    private(set) var base: Data
+
     // MARK: - Lifecycle
 
     public init(from url: URL, arch: String?) throws {
@@ -23,6 +26,8 @@ public struct MachOFile {
             data = data.advanced(by: Int(offset))
         }
 
+        base = data
+
         header = MachOHeader(from: data)
 
         var commands = [LoadCommand]()
@@ -36,5 +41,11 @@ public struct MachOFile {
         }
 
         self.commands = commands
+    }
+
+    // MARK: - Reports
+
+    public func dyldChainedFixupsReport() -> DyldChainedFixupsReport {
+        DyldChainedFixupsReport(file: self)
     }
 }

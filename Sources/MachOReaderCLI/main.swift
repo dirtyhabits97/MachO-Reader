@@ -4,6 +4,9 @@ import MachOReaderLib
 
 struct Reader: ParsableCommand {
 
+    static let configuration = CommandConfiguration(commandName: "read",
+                                                    subcommands: [DyldChainedFixupsCommand.self])
+
     // MARK: - Properties
 
     @Option(help: "The arch of the mach-o header to read.")

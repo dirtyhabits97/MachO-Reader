@@ -28,3 +28,10 @@ extension String {
         self.init("0x" + String(format: "%08llx", hex))
     }
 }
+
+extension String.SubSequence {
+
+    func toString() -> String {
+        String(self)
+    }
+}
