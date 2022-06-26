@@ -1,6 +1,5 @@
 import Foundation
 
-// TODO: remove prints
 public final class DyldChainedFixupsReport {
 
     // MARK: - Properties
@@ -10,7 +9,7 @@ public final class DyldChainedFixupsReport {
     let fixupData: Data
 
     public let header: DyldChainedFixupsHeader
-    internal let startsInImage: dyld_chained_starts_in_image
+    let startsInImage: dyld_chained_starts_in_image
 
     public private(set) var imports: [DyldChainedImport] = []
     public private(set) var segmentInfo: [DyldChainedSegmentInfo] = []
@@ -18,7 +17,6 @@ public final class DyldChainedFixupsReport {
     // MARK: - Lifecycle
 
     init(file: MachOFile) {
-        // TODO: this should throw
         guard let dyldChainedFixups = file.commands.getDyldChainedFixups() else {
             fatalError("Expected a DyldChainedFixups command in the macho file.")
         }
@@ -41,33 +39,5 @@ public final class DyldChainedFixupsReport {
 
     public func pageInfo() -> [DyldChainedSegmentInfo.Pages] {
         DyldChainedSegmentPageInfoBuilder(self).pageInfo
-    }
-}
-
-// TODO: move this somewhere
-extension Array where Element == LoadCommand {
-
-    func getDyldChainedFixups() -> LinkedItDataCommand? {
-        lazy
-            .filter { loadCommand in loadCommand.cmd == .dyldChainedFixups }
-            .compactMap { loadCommand -> LinkedItDataCommand? in
-                guard case let .linkedItDataCommand(linkedItDataCommand) = loadCommand.commandType() else { return nil }
-                return linkedItDataCommand
-            }
-            .first
-    }
-
-    func getDylibCommands() -> [DylibCommand] {
-        compactMap { loadCommand -> DylibCommand? in
-            guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
-            return dylibCommand
-        }
-    }
-
-    func getSegmentCommands() -> [SegmentCommand] {
-        compactMap { loadCommand -> SegmentCommand? in
-            guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
-            return segmentCommand
-        }
     }
 }
