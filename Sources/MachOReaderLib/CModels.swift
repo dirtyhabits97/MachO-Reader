@@ -1,6 +1,6 @@
 import Foundation
 
-// swiftlint:disable type_name identifier_name
+// swiftlint:disable type_name identifier_name line_length
 
 // These models should come from /Applications/Xcode.13.3.0.13E113.app.../mach-o/fixup-chains.h
 // but `import MachO.fixups` doesn't work. For some reason it doesn't let me import it.

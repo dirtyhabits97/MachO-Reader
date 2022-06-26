@@ -66,8 +66,13 @@ extension DyldChainedSegmentInfo.StartsInSegment {
 extension DyldChainedSegmentInfo.PageInfo: CLIOutput {
 
     var cli: String {
-        let str = "PAGE \(idx) (offset: \(offset))"
-        // TODO: finish implementing this
+        var str = "PAGE \(idx) (offset: \(offset))"
+
+        for element in bindOrRebase {
+            str += "\n   "
+            str += element.textToPrint
+        }
+
         return str
     }
 }
