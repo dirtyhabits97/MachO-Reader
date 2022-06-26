@@ -33,7 +33,6 @@ public final class DyldChainedFixupsReport {
             .advanced(by: Int(header.startsOffset))
             .extract(dyld_chained_starts_in_image.self)
 
-        // build the imports first, since we use them when building the segments
         imports = DyldChainedImportBuilder(self).imports
         segmentInfo = DyldChainedStartsInSegmentBuilder(self).segmentInfo
     }

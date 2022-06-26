@@ -93,6 +93,12 @@ extension DyldChainedFixupsReport: CLIOutput {
         for seg in segmentInfo {
             str += "\n\(seg.cli)"
         }
+        str += "\n\nIMPORTS:"
+        for (idx, imp) in imports.enumerated() {
+            str += "\n   "
+            str += "[\(idx)]".padding(6)
+            str += imp.cli
+        }
         return str
     }
 }

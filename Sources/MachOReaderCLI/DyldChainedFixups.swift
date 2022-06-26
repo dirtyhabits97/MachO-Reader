@@ -11,6 +11,9 @@ struct DyldChainedFixupsCommand: ParsableCommand {
     @Option(help: "The arch of the mach-o header to read.")
     var arch: String?
 
+    @Flag(help: "Only outputs the chained header.")
+    var chainedHeader: Bool = false
+
     @Flag(help: "Only outputs the imports.")
     var imports: Bool = false
 
@@ -29,6 +32,11 @@ struct DyldChainedFixupsCommand: ParsableCommand {
         }
         let file = try MachOFile(from: url, arch: arch)
         let report = file.dyldChainedFixupsReport()
+
+        if chainedHeader {
+            CLIFormatter.print(report.header)
+            return
+        }
 
         if imports {
             for imp in report.imports {
