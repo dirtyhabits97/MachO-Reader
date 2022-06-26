@@ -52,7 +52,7 @@ final class MachOFileTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        let segmentCommands = file.commands.segmentCommands
+        let segmentCommands = file.commands.getSegmentCommands()
 
         XCTAssertEqual(segmentCommands.count, 4)
         XCTAssertEqual(segmentCommands[0].segname, "__PAGEZERO")
@@ -66,7 +66,7 @@ final class MachOFileTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        let segmentCommands = file.commands.segmentCommands
+        let segmentCommands = file.commands.getSegmentCommands()
 
         XCTAssertEqual(segmentCommands[1].segname, "__TEXT")
         let textSegment = segmentCommands[1]
@@ -105,19 +105,5 @@ extension MachOFileTests {
 
         XCTAssertEqual(commands.count, 1,
                        "The binary MUST have only 1 \(cmd.readableValue ?? String(cmd.rawValue)).")
-    }
-}
-
-// TODO: Consider creating a custom collection type for LoadCommands
-// TODO: Consider moving this to the MachO_Reader target
-extension Array where Element == LoadCommand {
-
-    var segmentCommands: [SegmentCommand] {
-        compactMap { command -> SegmentCommand? in
-            if case let .segmentCommand(segmentCommand) = command.commandType() {
-                return segmentCommand
-            }
-            return nil
-        }
     }
 }
