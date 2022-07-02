@@ -32,7 +32,7 @@ public struct DyldChainedPtrBindOrRebase {
             if bind.bind {
                 textToPrint = "BIND"
             } else {
-                // let rebase = data.extract(dyld_chained_ptr_32_rebase.self)
+                underlyingValue = .rebase32(data.extract(DyldChainedPtr32Rebase.self))
                 textToPrint = "REBASE"
             }
 
@@ -47,6 +47,7 @@ extension DyldChainedPtrBindOrRebase {
 
     enum UnderlyingValue {
 
+        case rebase32(DyldChainedPtr32Rebase)
         case rebase64(DyldChainedPtr64Rebase)
     }
 }
