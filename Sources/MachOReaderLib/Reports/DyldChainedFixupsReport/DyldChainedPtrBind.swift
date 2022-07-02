@@ -6,7 +6,7 @@ public struct DyldChainedPtrBindOrRebase {
     public let textToPrint: String
 
     // TODO: make this non-optional let.
-    private var underlyingValue: UnderlyingValue?
+    public private(set) var underlyingValue: UnderlyingValue?
 
     let next: UInt32
 
@@ -43,7 +43,7 @@ public struct DyldChainedPtrBindOrRebase {
     }
 }
 
-extension DyldChainedPtrBindOrRebase {
+public extension DyldChainedPtrBindOrRebase {
 
     enum UnderlyingValue {
 
@@ -54,13 +54,13 @@ extension DyldChainedPtrBindOrRebase {
 
 // MARK: - Models
 
-struct DyldChainedPtr64Rebase: CustomExtractable {
+public struct DyldChainedPtr64Rebase: CustomExtractable {
 
-    let target: UInt64
-    let high8: UInt8
-    let reserved: UInt8
-    let next: UInt16
-    let bind: Bool
+    public let target: UInt64
+    public let high8: UInt8
+    public let reserved: UInt8
+    public let next: UInt16
+    public let bind: Bool
 
     init(_ rawValue: dyld_chained_ptr_64_rebase) {
         let values = rawValue.split(using: [36, 8, 7, 12, 1])
@@ -76,11 +76,11 @@ struct DyldChainedPtr64Rebase: CustomExtractable {
     }
 }
 
-struct DyldChainedPtr32Rebase: CustomExtractable {
+public struct DyldChainedPtr32Rebase: CustomExtractable {
 
-    let target: UInt32
-    let next: UInt32
-    let bind: Bool
+    public let target: UInt32
+    public let next: UInt32
+    public let bind: Bool
 
     init(_ rawValue: dyld_chained_ptr_32_rebase) {
         let values = rawValue.split(using: [26, 5, 1])
