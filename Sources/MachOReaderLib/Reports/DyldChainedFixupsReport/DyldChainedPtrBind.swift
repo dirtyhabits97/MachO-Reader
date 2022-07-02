@@ -2,10 +2,6 @@ import Foundation
 
 public struct DyldChainedPtrBindOrRebase {
 
-    // TODO: store real data here
-    public let textToPrint: String
-
-    // TODO: make this non-optional let.
     public let underlyingValue: UnderlyingValue
 
     let next: UInt32
@@ -16,10 +12,8 @@ public struct DyldChainedPtrBindOrRebase {
 
             if bind.bind {
                 underlyingValue = .bind64(data.extract(DyldChainedPtr64Bind.self))
-                textToPrint = "BIND"
             } else {
                 underlyingValue = .rebase64(data.extract(DyldChainedPtr64Rebase.self))
-                textToPrint = "REBASE"
             }
 
             next = UInt32(bind.next)
@@ -30,10 +24,8 @@ public struct DyldChainedPtrBindOrRebase {
 
             if bind.bind {
                 underlyingValue = .bind32(data.extract(DyldChainedPtr32Bind.self))
-                textToPrint = "BIND"
             } else {
                 underlyingValue = .rebase32(data.extract(DyldChainedPtr32Rebase.self))
-                textToPrint = "REBASE"
             }
 
             next = bind.next
