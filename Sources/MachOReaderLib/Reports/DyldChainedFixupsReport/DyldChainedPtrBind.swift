@@ -12,11 +12,12 @@ public struct DyldChainedPtrBindOrRebase {
 
     init?(from data: Data, pointerFormat: DyldChainedSegmentInfo.PointerFormat) {
         if [.DYLD_CHAINED_PTR_64, .DYLD_CHAINED_PTR_64_OFFSET].contains(pointerFormat) {
-            let bind = data.extract(dyld_chained_ptr_64_bind.self)
+            let bind = data.extract(DyldChainedPtr64Bind.self)
 
             if bind.bind {
                 // let chainedImport = fixupsReport.imports[Int(bind.ordinal)]
                 // let symbolName = chainedImport.symbolName ?? "no symbol"
+                underlyingValue = .bind64(data.extract(DyldChainedPtr64Bind.self))
                 textToPrint = "BIND"
             } else {
                 underlyingValue = .rebase64(data.extract(DyldChainedPtr64Rebase.self))
@@ -49,12 +50,35 @@ public extension DyldChainedPtrBindOrRebase {
     enum UnderlyingValue {
 
         case bind32(DyldChainedPtr32Bind)
+        case bind64(DyldChainedPtr64Bind)
         case rebase32(DyldChainedPtr32Rebase)
         case rebase64(DyldChainedPtr64Rebase)
     }
 }
 
 // MARK: - Models
+
+public struct DyldChainedPtr64Bind: CustomExtractable {
+
+    let ordinal: UInt64
+    let addend: UInt64
+    let reserved: UInt64
+    let next: UInt64
+    let bind: Bool
+
+    init(_ rawValue: dyld_chained_ptr_64_bind) {
+        let values = rawValue.split(using: [24, 8, 19, 12, 1])
+        ordinal = values[0]
+        addend = values[1]
+        reserved = values[2]
+        next = values[3]
+        bind = values[4] == 1
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_64_bind.self))
+    }
+}
 
 public struct DyldChainedPtr32Bind: CustomExtractable {
 

@@ -48,36 +48,6 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 // };
 typealias dyld_chained_import = UInt32
 
-// struct dyld_chained_ptr_64_bind
-// {
-//     uint64_t    ordinal   : 24,
-//                 addend    :  8,   // 0 thru 255
-//                 reserved  : 19,   // all zeros
-//                 next      : 12,   // 4-byte stride
-//                 bind      :  1;   // == 1
-// };
-struct dyld_chained_ptr_64_bind: CustomExtractable {
-
-    let ordinal: UInt64
-    let addend: UInt64
-    let reserved: UInt64
-    let next: UInt64
-    let bind: Bool
-
-    init(from rawValue: UInt64) {
-        let values = rawValue.split(using: [24, 8, 19, 12, 1])
-        ordinal = values[0]
-        addend = values[1]
-        reserved = values[2]
-        next = values[3]
-        bind = values[4] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt64.self))
-    }
-}
-
 // This struct is embedded in dyld_chain_starts_in_image
 // and passed down to the kernel for page-in linking
 // struct dyld_chained_starts_in_segment
@@ -123,6 +93,16 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     }
 }
 
+// struct dyld_chained_ptr_64_bind
+// {
+//     uint64_t    ordinal   : 24,
+//                 addend    :  8,   // 0 thru 255
+//                 reserved  : 19,   // all zeros
+//                 next      : 12,   // 4-byte stride
+//                 bind      :  1;   // == 1
+// };
+typealias dyld_chained_ptr_64_bind = UInt64
+
 // DYLD_CHAINED_PTR_64/DYLD_CHAINED_PTR_64_OFFSET
 // struct dyld_chained_ptr_64_rebase
 // {
@@ -133,8 +113,6 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
 //                 bind      :  1;    // == 0
 // };
 typealias dyld_chained_ptr_64_rebase = UInt64
-
-// MARK: - 32 bit counterparts
 
 // DYLD_CHAINED_PTR_32
 // struct dyld_chained_ptr_32_bind
