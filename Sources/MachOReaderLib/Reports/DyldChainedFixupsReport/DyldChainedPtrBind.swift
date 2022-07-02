@@ -6,7 +6,7 @@ public struct DyldChainedPtrBindOrRebase {
     public let textToPrint: String
 
     // TODO: make this non-optional let.
-    public private(set) var underlyingValue: UnderlyingValue?
+    public let underlyingValue: UnderlyingValue
 
     let next: UInt32
 
@@ -15,8 +15,6 @@ public struct DyldChainedPtrBindOrRebase {
             let bind = data.extract(DyldChainedPtr64Bind.self)
 
             if bind.bind {
-                // let chainedImport = fixupsReport.imports[Int(bind.ordinal)]
-                // let symbolName = chainedImport.symbolName ?? "no symbol"
                 underlyingValue = .bind64(data.extract(DyldChainedPtr64Bind.self))
                 textToPrint = "BIND"
             } else {
