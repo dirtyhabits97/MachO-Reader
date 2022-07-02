@@ -60,11 +60,11 @@ public extension DyldChainedPtrBindOrRebase {
 
 public struct DyldChainedPtr64Bind: CustomExtractable {
 
-    let ordinal: UInt64
-    let addend: UInt64
-    let reserved: UInt64
-    let next: UInt64
-    let bind: Bool
+    public let ordinal: UInt64
+    public let addend: UInt64
+    public let reserved: UInt64
+    public let next: UInt64
+    public let bind: Bool
 
     init(_ rawValue: dyld_chained_ptr_64_bind) {
         let values = rawValue.split(using: [24, 8, 19, 12, 1])
@@ -82,10 +82,10 @@ public struct DyldChainedPtr64Bind: CustomExtractable {
 
 public struct DyldChainedPtr32Bind: CustomExtractable {
 
-    let ordinal: UInt32
-    let addend: UInt8
-    let next: UInt32
-    let bind: Bool
+    public let ordinal: UInt32
+    public let addend: UInt8
+    public let next: UInt32
+    public let bind: Bool
 
     init(_ rawValue: dyld_chained_ptr_32_bind) {
         let values = rawValue.split(using: [20, 6, 5, 1])
