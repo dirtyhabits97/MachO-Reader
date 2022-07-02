@@ -46,14 +46,7 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 //                 weak_import :  1,
 //                 name_offset : 23;
 // };
-struct dyld_chained_import: RawRepresentable {
-
-    let rawValue: UInt32
-
-    init(rawValue: UInt32) {
-        self.rawValue = rawValue
-    }
-}
+typealias dyld_chained_import = UInt32
 
 // struct dyld_chained_ptr_64_bind
 // {
@@ -139,27 +132,7 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
 //                 next      : 12,    // 4-byte stride
 //                 bind      :  1;    // == 0
 // };
-struct dyld_chained_ptr_64_rebase: CustomExtractable {
-
-    let target: UInt64
-    let high8: UInt8
-    let reserved: UInt8
-    let next: UInt16
-    let bind: Bool
-
-    init(from rawValue: UInt64) {
-        let values = rawValue.split(using: [36, 8, 7, 12, 1])
-        target = values[0]
-        high8 = UInt8(truncatingIfNeeded: values[1])
-        reserved = UInt8(truncatingIfNeeded: values[2])
-        next = UInt16(truncatingIfNeeded: values[3])
-        bind = values[4] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt64.self))
-    }
-}
+typealias dyld_chained_ptr_64_rebase = UInt64
 
 // MARK: - 32 bit counterparts
 
@@ -197,20 +170,4 @@ struct dyld_chained_ptr_32_bind: CustomExtractable {
 //                 next      :  5,   // 4-byte stride
 //                 bind      :  1;   // == 0
 // };
-struct dyld_chained_ptr_32_rebase: CustomExtractable {
-
-    let target: UInt32
-    let next: UInt32
-    let bind: Bool
-
-    init(from rawValue: UInt32) {
-        let values = rawValue.split(using: [26, 5, 1])
-        target = values[0]
-        next = values[1]
-        bind = values[2] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt32.self))
-    }
-}
+typealias dyld_chained_ptr_32_rebase = UInt32
