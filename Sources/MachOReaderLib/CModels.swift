@@ -144,25 +144,7 @@ typealias dyld_chained_ptr_64_rebase = UInt64
 //                 next      :  5,   // 4-byte stride
 //                 bind      :  1;   // == 1
 // };
-struct dyld_chained_ptr_32_bind: CustomExtractable {
-
-    let ordinal: UInt32
-    let addend: UInt8
-    let next: UInt32
-    let bind: Bool
-
-    init(from rawValue: UInt32) {
-        let values = rawValue.split(using: [20, 6, 5, 1])
-        ordinal = values[0]
-        addend = UInt8(truncatingIfNeeded: values[1])
-        next = values[2]
-        bind = values[3] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt32.self))
-    }
-}
+typealias dyld_chained_ptr_32_bind = UInt32
 
 // struct dyld_chained_ptr_32_rebase
 // {

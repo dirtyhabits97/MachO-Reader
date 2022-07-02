@@ -27,9 +27,10 @@ public struct DyldChainedPtrBindOrRebase {
             return
         }
         if pointerFormat == .DYLD_CHAINED_PTR_32 {
-            let bind = data.extract(dyld_chained_ptr_32_bind.self)
+            let bind = data.extract(DyldChainedPtr32Bind.self)
 
             if bind.bind {
+                underlyingValue = .bind32(data.extract(DyldChainedPtr32Bind.self))
                 textToPrint = "BIND"
             } else {
                 underlyingValue = .rebase32(data.extract(DyldChainedPtr32Rebase.self))
@@ -47,12 +48,33 @@ public extension DyldChainedPtrBindOrRebase {
 
     enum UnderlyingValue {
 
+        case bind32(DyldChainedPtr32Bind)
         case rebase32(DyldChainedPtr32Rebase)
         case rebase64(DyldChainedPtr64Rebase)
     }
 }
 
 // MARK: - Models
+
+public struct DyldChainedPtr32Bind: CustomExtractable {
+
+    let ordinal: UInt32
+    let addend: UInt8
+    let next: UInt32
+    let bind: Bool
+
+    init(_ rawValue: dyld_chained_ptr_32_bind) {
+        let values = rawValue.split(using: [20, 6, 5, 1])
+        ordinal = values[0]
+        addend = UInt8(truncatingIfNeeded: values[1])
+        next = values[2]
+        bind = values[3] == 1
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_32_bind.self))
+    }
+}
 
 public struct DyldChainedPtr64Rebase: CustomExtractable {
 
