@@ -7,6 +7,9 @@ public struct DyldChainedPtrBindOrRebase {
     let next: UInt32
 
     init?(from data: Data, pointerFormat: DyldChainedSegmentInfo.PointerFormat) {
+        if pointerFormat == .DYLD_CHAINED_PTR_ARM64E {
+            // TODO: handle this scenario
+        }
         if [.DYLD_CHAINED_PTR_64, .DYLD_CHAINED_PTR_64_OFFSET].contains(pointerFormat) {
             let bind = data.extract(DyldChainedPtr64Bind.self)
 
@@ -19,6 +22,12 @@ public struct DyldChainedPtrBindOrRebase {
             next = UInt32(bind.next)
             return
         }
+        if pointerFormat == .DYLD_CHAINED_PTR_ARM64E_USERLAND24 {
+            // TODO: handle this scenario
+        }
+        if [.DYLD_CHAINED_PTR_64_KERNEL_CACHE, .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE].contains(pointerFormat) {
+            // TODO: handle this scenario
+        }
         if pointerFormat == .DYLD_CHAINED_PTR_32 {
             let bind = data.extract(DyldChainedPtr32Bind.self)
 
@@ -30,6 +39,12 @@ public struct DyldChainedPtrBindOrRebase {
 
             next = bind.next
             return
+        }
+        if pointerFormat == .DYLD_CHAINED_PTR_32_CACHE {
+            // TODO: handle this scenario
+        }
+        if pointerFormat == .DYLD_CHAINED_PTR_32_FIRMWARE {
+            // TODO: handle this scenario
         }
         return nil
     }
