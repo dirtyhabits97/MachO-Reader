@@ -70,7 +70,7 @@ extension DyldChainedSegmentInfo.PageInfo: CLIOutput {
 
         for element in bindOrRebase {
             str += "\n   "
-            str += element.textToPrint
+            str += element.cli
         }
 
         return str
@@ -103,5 +103,67 @@ extension DyldChainedFixupsReport: CLIOutput {
             str += imp.cli
         }
         return str
+    }
+}
+
+extension DyldChainedPtr64Bind: CLIOutput {
+
+    var cli: String {
+        var str = "BIND"
+        str += "   "
+        str += "ordinal: \(ordinal)"
+        str += "   "
+        str += "addend: \(addend)"
+        return str
+    }
+}
+
+extension DyldChainedPtr32Bind: CLIOutput {
+
+    var cli: String {
+        var str = "BIND"
+        str += "   "
+        str += "ordinal: \(ordinal)"
+        str += "   "
+        str += "addend: \(addend)"
+        return str
+    }
+}
+
+extension DyldChainedPtr64Rebase: CLIOutput {
+
+    var cli: String {
+        var str = "REBASE"
+        str += "   "
+        str += "target: \(target)"
+        str += "   "
+        str += "high8: \(high8)"
+        return str
+    }
+}
+
+extension DyldChainedPtr32Rebase: CLIOutput {
+
+    var cli: String {
+        var str = "REBASE"
+        str += "   "
+        str += "target: \(target)"
+        return str
+    }
+}
+
+extension DyldChainedPtrBindOrRebase: CLIOutput {
+
+    var cli: String {
+        switch underlyingValue {
+        case let .bind32(bind):
+            return bind.cli
+        case let .bind64(bind):
+            return bind.cli
+        case let .rebase32(rebase):
+            return rebase.cli
+        case let .rebase64(rebase):
+            return rebase.cli
+        }
     }
 }

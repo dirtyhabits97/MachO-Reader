@@ -46,44 +46,7 @@ struct dyld_chained_starts_in_image: CustomExtractable {
 //                 weak_import :  1,
 //                 name_offset : 23;
 // };
-struct dyld_chained_import: RawRepresentable {
-
-    let rawValue: UInt32
-
-    init(rawValue: UInt32) {
-        self.rawValue = rawValue
-    }
-}
-
-// struct dyld_chained_ptr_64_bind
-// {
-//     uint64_t    ordinal   : 24,
-//                 addend    :  8,   // 0 thru 255
-//                 reserved  : 19,   // all zeros
-//                 next      : 12,   // 4-byte stride
-//                 bind      :  1;   // == 1
-// };
-struct dyld_chained_ptr_64_bind: CustomExtractable {
-
-    let ordinal: UInt64
-    let addend: UInt64
-    let reserved: UInt64
-    let next: UInt64
-    let bind: Bool
-
-    init(from rawValue: UInt64) {
-        let values = rawValue.split(using: [24, 8, 19, 12, 1])
-        ordinal = values[0]
-        addend = values[1]
-        reserved = values[2]
-        next = values[3]
-        bind = values[4] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt64.self))
-    }
-}
+typealias dyld_chained_import = UInt32
 
 // This struct is embedded in dyld_chain_starts_in_image
 // and passed down to the kernel for page-in linking
@@ -130,6 +93,16 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     }
 }
 
+// struct dyld_chained_ptr_64_bind
+// {
+//     uint64_t    ordinal   : 24,
+//                 addend    :  8,   // 0 thru 255
+//                 reserved  : 19,   // all zeros
+//                 next      : 12,   // 4-byte stride
+//                 bind      :  1;   // == 1
+// };
+typealias dyld_chained_ptr_64_bind = UInt64
+
 // DYLD_CHAINED_PTR_64/DYLD_CHAINED_PTR_64_OFFSET
 // struct dyld_chained_ptr_64_rebase
 // {
@@ -139,29 +112,7 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
 //                 next      : 12,    // 4-byte stride
 //                 bind      :  1;    // == 0
 // };
-struct dyld_chained_ptr_64_rebase: CustomExtractable {
-
-    let target: UInt64
-    let high8: UInt8
-    let reserved: UInt8
-    let next: UInt16
-    let bind: Bool
-
-    init(from rawValue: UInt64) {
-        let values = rawValue.split(using: [36, 8, 7, 12, 1])
-        target = values[0]
-        high8 = UInt8(truncatingIfNeeded: values[1])
-        reserved = UInt8(truncatingIfNeeded: values[2])
-        next = UInt16(truncatingIfNeeded: values[3])
-        bind = values[4] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt64.self))
-    }
-}
-
-// MARK: - 32 bit counterparts
+typealias dyld_chained_ptr_64_rebase = UInt64
 
 // DYLD_CHAINED_PTR_32
 // struct dyld_chained_ptr_32_bind
@@ -171,25 +122,7 @@ struct dyld_chained_ptr_64_rebase: CustomExtractable {
 //                 next      :  5,   // 4-byte stride
 //                 bind      :  1;   // == 1
 // };
-struct dyld_chained_ptr_32_bind: CustomExtractable {
-
-    let ordinal: UInt32
-    let addend: UInt8
-    let next: UInt32
-    let bind: Bool
-
-    init(from rawValue: UInt32) {
-        let values = rawValue.split(using: [20, 6, 5, 1])
-        ordinal = values[0]
-        addend = UInt8(truncatingIfNeeded: values[1])
-        next = values[2]
-        bind = values[3] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt32.self))
-    }
-}
+typealias dyld_chained_ptr_32_bind = UInt32
 
 // struct dyld_chained_ptr_32_rebase
 // {
@@ -197,20 +130,4 @@ struct dyld_chained_ptr_32_bind: CustomExtractable {
 //                 next      :  5,   // 4-byte stride
 //                 bind      :  1;   // == 0
 // };
-struct dyld_chained_ptr_32_rebase: CustomExtractable {
-
-    let target: UInt32
-    let next: UInt32
-    let bind: Bool
-
-    init(from rawValue: UInt32) {
-        let values = rawValue.split(using: [26, 5, 1])
-        target = values[0]
-        next = values[1]
-        bind = values[2] == 1
-    }
-
-    init(from data: Data) {
-        self.init(from: data.extract(UInt32.self))
-    }
-}
+typealias dyld_chained_ptr_32_rebase = UInt32
