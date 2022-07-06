@@ -26,7 +26,10 @@ public struct DyldChainedPtrBindOrRebase {
             // TODO: handle this scenario
         }
         if [.DYLD_CHAINED_PTR_64_KERNEL_CACHE, .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE].contains(pointerFormat) {
-            // TODO: handle this scenario
+            let rebase = data.extract(DyldChainedPtr64KernelCacheRebase.self)
+            underlyingValue = .kernelCacheRebase(rebase)
+            next = rebase.next
+            return
         }
         if pointerFormat == .DYLD_CHAINED_PTR_32 {
             let bind = data.extract(DyldChainedPtr32Bind.self)
@@ -64,6 +67,7 @@ public extension DyldChainedPtrBindOrRebase {
         case bind64(DyldChainedPtr64Bind)
         case rebase32(DyldChainedPtr32Rebase)
         case rebase64(DyldChainedPtr64Rebase)
+        case kernelCacheRebase(DyldChainedPtr64KernelCacheRebase)
         case cacheRebase(DyldChainedPtr32CacheRebase)
         case firmwareRebase(DyldChainedPtr32FirmwareRebase)
     }
@@ -153,7 +157,33 @@ public struct DyldChainedPtr32Rebase: CustomExtractable {
     }
 }
 
-public struct DyldChainedPtr32CacheRebase {
+public struct DyldChainedPtr64KernelCacheRebase: CustomExtractable {
+
+    public let target: UInt32
+    public let cacheLevel: UInt8
+    public let diversity: UInt16
+    public let addrDiv: UInt8
+    public let key: UInt8
+    public let next: UInt32
+    public let isAuth: Bool
+
+    init(_ rawValue: dyld_chained_ptr_64_kernel_cache_rebase) {
+        let values = rawValue.split(using: [30, 2, 16, 1, 2, 12, 1])
+        target = UInt32(truncatingIfNeeded: values[0])
+        cacheLevel = UInt8(truncatingIfNeeded: values[1])
+        diversity = UInt16(truncatingIfNeeded: values[2])
+        addrDiv = UInt8(truncatingIfNeeded: values[3])
+        key = UInt8(truncatingIfNeeded: values[4])
+        next = UInt32(truncatingIfNeeded: values[5])
+        isAuth = values[6] == 1
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_64_kernel_cache_rebase.self))
+    }
+}
+
+public struct DyldChainedPtr32CacheRebase: CustomExtractable {
 
     public let target: UInt32
     public let next: UInt32
@@ -163,9 +193,13 @@ public struct DyldChainedPtr32CacheRebase {
         target = values[0]
         next = values[1]
     }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_32_cache_rebase.self))
+    }
 }
 
-public struct DyldChainedPtr32FirmwareRebase {
+public struct DyldChainedPtr32FirmwareRebase: CustomExtractable {
 
     public let target: UInt32
     public let next: UInt32
@@ -174,5 +208,9 @@ public struct DyldChainedPtr32FirmwareRebase {
         let values = rawValue.split(using: [26, 6])
         target = values[0]
         next = values[1]
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_32_firmware_rebase.self))
     }
 }

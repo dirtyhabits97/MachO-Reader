@@ -132,6 +132,19 @@ typealias dyld_chained_ptr_32_bind = UInt32
 // };
 typealias dyld_chained_ptr_32_rebase = UInt32
 
+// DYLD_CHAINED_PTR_64_KERNEL_CACHE, DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE
+// struct dyld_chained_ptr_64_kernel_cache_rebase
+// {
+//     uint64_t    target     : 30,   // basePointers[cacheLevel] + target
+//                 cacheLevel :  2,   // what level of cache to bind to (indexes a mach_header array)
+//                 diversity  : 16,
+//                 addrDiv    :  1,
+//                 key        :  2,
+//                 next       : 12,    // 1 or 4-byte stide
+//                 isAuth     :  1;    // 0 -> not authenticated.  1 -> authenticated
+// };
+typealias dyld_chained_ptr_64_kernel_cache_rebase = UInt64
+
 // DYLD_CHAINED_PTR_32_CACHE
 // struct dyld_chained_ptr_32_cache_rebase
 // {
