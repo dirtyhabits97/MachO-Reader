@@ -131,3 +131,19 @@ typealias dyld_chained_ptr_32_bind = UInt32
 //                 bind      :  1;   // == 0
 // };
 typealias dyld_chained_ptr_32_rebase = UInt32
+
+// DYLD_CHAINED_PTR_32_CACHE
+// struct dyld_chained_ptr_32_cache_rebase
+// {
+//     uint32_t    target    : 30,   // 1GB max dyld cache TEXT and DATA
+//                 next      :  2;   // 4-byte stride
+// };
+typealias dyld_chained_ptr_32_cache_rebase = UInt32
+
+// DYLD_CHAINED_PTR_32_FIRMWARE
+// struct dyld_chained_ptr_32_firmware_rebase
+// {
+//     uint32_t    target   : 26,   // 64MB max firmware TEXT and DATA
+//                 next     :  6;   // 4-byte stride
+// };
+typealias dyld_chained_ptr_32_firmware_rebase = UInt32
