@@ -6,9 +6,29 @@ public struct DyldChainedPtrBindOrRebase {
 
     let next: UInt32
 
+    // TODO: split this into different blocks, similar to loadcommand type implementation
     init?(from data: Data, pointerFormat: DyldChainedSegmentInfo.PointerFormat) {
         if pointerFormat == .DYLD_CHAINED_PTR_ARM64E {
-            // TODO: handle this scenario
+
+            let values = data.extract(UInt64.self).split(using: [62, 1, 1])
+            let isBind = values[1] == 1
+            let isAuth = values[2] == 1
+
+            switch (isBind, isAuth) {
+            case (true, true):
+                break
+            case (true, false):
+                break
+            case (false, true):
+                let rebase = data.extract(DyldChainedPtrArm64eAuthRebase.self)
+                underlyingValue = .arm64(.authRebase(rebase))
+                next = rebase.next
+            case (false, false):
+                let rebase = data.extract(DyldChainedPtrArm64eRebase.self)
+                underlyingValue = .arm64(.rebase(rebase))
+                next = rebase.next
+            }
+            return
         }
         if [.DYLD_CHAINED_PTR_64, .DYLD_CHAINED_PTR_64_OFFSET].contains(pointerFormat) {
             let bind = data.extract(DyldChainedPtr64Bind.self)
@@ -63,6 +83,7 @@ public extension DyldChainedPtrBindOrRebase {
 
     enum UnderlyingValue {
 
+        case arm64(Arm64)
         case bind32(DyldChainedPtr32Bind)
         case bind64(DyldChainedPtr64Bind)
         case rebase32(DyldChainedPtr32Rebase)
@@ -70,6 +91,11 @@ public extension DyldChainedPtrBindOrRebase {
         case kernelCacheRebase(DyldChainedPtr64KernelCacheRebase)
         case cacheRebase(DyldChainedPtr32CacheRebase)
         case firmwareRebase(DyldChainedPtr32FirmwareRebase)
+    }
+
+    enum Arm64 {
+        case rebase(DyldChainedPtrArm64eRebase)
+        case authRebase(DyldChainedPtrArm64eAuthRebase)
     }
 }
 
@@ -154,6 +180,60 @@ public struct DyldChainedPtr32Rebase: CustomExtractable {
 
     init(from data: Data) {
         self.init(data.extract(dyld_chained_ptr_32_rebase.self))
+    }
+}
+
+public struct DyldChainedPtrArm64eRebase: CustomExtractable {
+
+    public let target: UInt64
+    public let high8: UInt8
+    public let next: UInt32
+    public let bind: Bool
+    public let auth: Bool
+
+    init(_ rawValue: dyld_chained_ptr_arm64e_rebase) {
+        let values = rawValue.split(using: [43, 8, 11, 1, 1])
+        target = values[0]
+        high8 = UInt8(truncatingIfNeeded: values[1])
+        next = UInt32(truncatingIfNeeded: values[2])
+        bind = values[3] == 1
+        auth = values[4] == 1
+
+        assert(bind == false)
+        assert(auth == false)
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_arm64e_rebase.self))
+    }
+}
+
+public struct DyldChainedPtrArm64eAuthRebase: CustomExtractable {
+
+    public let target: UInt32
+    public let diversity: UInt16
+    public let addrDiv: Bool
+    public let key: UInt8
+    public let next: UInt32
+    public let bind: Bool
+    public let auth: Bool
+
+    init(_ rawValue: dyld_chained_ptr_arm64e_auth_rebase) {
+        let values = rawValue.split(using: [32, 16, 1, 2, 11, 1, 1])
+        target = UInt32(truncatingIfNeeded: values[0])
+        diversity = UInt16(truncatingIfNeeded: values[1])
+        addrDiv = values[2] == 1
+        key = UInt8(truncatingIfNeeded: values[3])
+        next = UInt32(truncatingIfNeeded: values[4])
+        bind = values[5] == 1
+        auth = values[6] == 1
+
+        assert(bind == false)
+        assert(auth == true)
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_arm64e_auth_rebase.self))
     }
 }
 
