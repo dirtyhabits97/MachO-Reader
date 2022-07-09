@@ -16,9 +16,13 @@ public struct DyldChainedPtrBindOrRebase {
 
             switch (isBind, isAuth) {
             case (true, true):
-                break
+                let bind = data.extract(DyldChainedPtrArm64eAuthBind.self)
+                underlyingValue = .arm64(.authBind(bind))
+                next = bind.next
             case (true, false):
-                break
+                let bind = data.extract(DyldChainedPtrArm64eBind.self)
+                underlyingValue = .arm64(.bind(bind))
+                next = bind.next
             case (false, true):
                 let rebase = data.extract(DyldChainedPtrArm64eAuthRebase.self)
                 underlyingValue = .arm64(.authRebase(rebase))
@@ -94,7 +98,10 @@ public extension DyldChainedPtrBindOrRebase {
     }
 
     enum Arm64 {
+
+        case bind(DyldChainedPtrArm64eBind)
         case rebase(DyldChainedPtrArm64eRebase)
+        case authBind(DyldChainedPtrArm64eAuthBind)
         case authRebase(DyldChainedPtrArm64eAuthRebase)
     }
 }
@@ -234,6 +241,64 @@ public struct DyldChainedPtrArm64eAuthRebase: CustomExtractable {
 
     init(from data: Data) {
         self.init(data.extract(dyld_chained_ptr_arm64e_auth_rebase.self))
+    }
+}
+
+public struct DyldChainedPtrArm64eBind: CustomExtractable {
+
+    public let ordinal: UInt16
+    public let zero: UInt16
+    public let addend: UInt32
+    public let next: UInt32
+    public let bind: Bool
+    public let auth: Bool
+
+    init(_ rawValue: dyld_chained_ptr_arm64e_bind) {
+        let values = rawValue.split(using: [16, 16, 19, 11, 1, 1])
+        ordinal = UInt16(truncatingIfNeeded: values[0])
+        zero = UInt16(truncatingIfNeeded: values[1])
+        addend = UInt32(truncatingIfNeeded: values[2])
+        next = UInt32(truncatingIfNeeded: values[3])
+        bind = values[4] == 1
+        auth = values[5] == 1
+
+        assert(bind == true)
+        assert(auth == false)
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_arm64e_bind.self))
+    }
+}
+
+public struct DyldChainedPtrArm64eAuthBind: CustomExtractable {
+
+    public let ordinal: UInt16
+    public let zero: UInt16
+    public let diversity: UInt16
+    public let addrDiv: Bool
+    public let key: UInt8
+    public let next: UInt32
+    public let bind: Bool
+    public let auth: Bool
+
+    init(_ rawValue: dyld_chained_ptr_arm64e_auth_bind) {
+        let values = rawValue.split(using: [16, 16, 16, 1, 2, 11, 1, 1])
+        ordinal = UInt16(truncatingIfNeeded: values[0])
+        zero = UInt16(truncatingIfNeeded: values[1])
+        diversity = UInt16(truncatingIfNeeded: values[2])
+        addrDiv = values[3] == 1
+        key = UInt8(truncatingIfNeeded: values[4])
+        next = UInt32(truncatingIfNeeded: values[5])
+        bind = values[6] == 1
+        auth = values[7] == 1
+
+        assert(bind == true)
+        assert(auth == true)
+    }
+
+    init(from data: Data) {
+        self.init(data.extract(dyld_chained_ptr_arm64e_auth_bind.self))
     }
 }
 
