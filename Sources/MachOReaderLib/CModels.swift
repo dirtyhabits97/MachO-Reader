@@ -114,6 +114,56 @@ typealias dyld_chained_ptr_64_bind = UInt64
 // };
 typealias dyld_chained_ptr_64_rebase = UInt64
 
+// DYLD_CHAINED_PTR_ARM64E
+// struct dyld_chained_ptr_arm64e_rebase
+// {
+//     uint64_t    target   : 43,
+//                 high8    :  8,
+//                 next     : 11,    // 4 or 8-byte stide
+//                 bind     :  1,    // == 0
+//                 auth     :  1;    // == 0
+// };
+typealias dyld_chained_ptr_arm64e_rebase = UInt64
+
+// DYLD_CHAINED_PTR_ARM64E
+// struct dyld_chained_ptr_arm64e_bind
+// {
+//     uint64_t    ordinal   : 16,
+//                 zero      : 16,
+//                 addend    : 19,    // +/-256K
+//                 next      : 11,    // 4 or 8-byte stide
+//                 bind      :  1,    // == 1
+//                 auth      :  1;    // == 0
+// };
+typealias dyld_chained_ptr_arm64e_bind = UInt64
+
+// DYLD_CHAINED_PTR_ARM64E
+// struct dyld_chained_ptr_arm64e_auth_rebase
+// {
+//     uint64_t    target    : 32,   // runtimeOffset
+//                 diversity : 16,
+//                 addrDiv   :  1,
+//                 key       :  2,
+//                 next      : 11,    // 4 or 8-byte stide
+//                 bind      :  1,    // == 0
+//                 auth      :  1;    // == 1
+// };
+typealias dyld_chained_ptr_arm64e_auth_rebase = UInt64
+
+// DYLD_CHAINED_PTR_ARM64E
+// struct dyld_chained_ptr_arm64e_auth_bind
+// {
+//     uint64_t    ordinal   : 16,
+//                 zero      : 16,
+//                 diversity : 16,
+//                 addrDiv   :  1,
+//                 key       :  2,
+//                 next      : 11,    // 4 or 8-byte stide
+//                 bind      :  1,    // == 1
+//                 auth      :  1;    // == 1
+// };
+typealias dyld_chained_ptr_arm64e_auth_bind = UInt64
+
 // DYLD_CHAINED_PTR_32
 // struct dyld_chained_ptr_32_bind
 // {
@@ -131,3 +181,32 @@ typealias dyld_chained_ptr_32_bind = UInt32
 //                 bind      :  1;   // == 0
 // };
 typealias dyld_chained_ptr_32_rebase = UInt32
+
+// DYLD_CHAINED_PTR_64_KERNEL_CACHE, DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE
+// struct dyld_chained_ptr_64_kernel_cache_rebase
+// {
+//     uint64_t    target     : 30,   // basePointers[cacheLevel] + target
+//                 cacheLevel :  2,   // what level of cache to bind to (indexes a mach_header array)
+//                 diversity  : 16,
+//                 addrDiv    :  1,
+//                 key        :  2,
+//                 next       : 12,    // 1 or 4-byte stide
+//                 isAuth     :  1;    // 0 -> not authenticated.  1 -> authenticated
+// };
+typealias dyld_chained_ptr_64_kernel_cache_rebase = UInt64
+
+// DYLD_CHAINED_PTR_32_CACHE
+// struct dyld_chained_ptr_32_cache_rebase
+// {
+//     uint32_t    target    : 30,   // 1GB max dyld cache TEXT and DATA
+//                 next      :  2;   // 4-byte stride
+// };
+typealias dyld_chained_ptr_32_cache_rebase = UInt32
+
+// DYLD_CHAINED_PTR_32_FIRMWARE
+// struct dyld_chained_ptr_32_firmware_rebase
+// {
+//     uint32_t    target   : 26,   // 64MB max firmware TEXT and DATA
+//                 next     :  6;   // 4-byte stride
+// };
+typealias dyld_chained_ptr_32_firmware_rebase = UInt32
