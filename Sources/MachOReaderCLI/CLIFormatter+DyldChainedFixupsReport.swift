@@ -192,10 +192,19 @@ extension DyldChainedPtr32FirmwareRebase: CLIOutput {
     }
 }
 
+extension DyldChainedPtrBindOrRebase.Arm64: CLIOutput {
+
+    var cli: String {
+        "TODO: implement this"
+    }
+}
+
 extension DyldChainedPtrBindOrRebase: CLIOutput {
 
     var cli: String {
         switch underlyingValue {
+        case let .arm64(rebase):
+            return rebase.cli
         case let .bind32(bind):
             return bind.cli
         case let .bind64(bind):
