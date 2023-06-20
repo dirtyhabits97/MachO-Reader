@@ -152,10 +152,59 @@ extension DyldChainedPtr32Rebase: CLIOutput {
     }
 }
 
+extension DyldChainedPtr64KernelCacheRebase: CLIOutput {
+
+    var cli: String {
+        var str = "CACHE REBASE"
+        str += "   "
+        str += "target: \(target)"
+        str += "   "
+        str += "cacheLevel: \(cacheLevel)"
+        str += "   "
+        str += "diversity: \(diversity)"
+        str += "   "
+        str += "addrDiv: \(addrDiv)"
+        str += "   "
+        str += "key: \(key)"
+        str += "   "
+        str += "isAuth: \(isAuth)"
+        return str
+    }
+}
+
+extension DyldChainedPtr32CacheRebase: CLIOutput {
+
+    var cli: String {
+        var str = "CACHE REBASE"
+        str += "   "
+        str += "target: \(target)"
+        return str
+    }
+}
+
+extension DyldChainedPtr32FirmwareRebase: CLIOutput {
+
+    var cli: String {
+        var str = "FIRMWARE REBASE"
+        str += "   "
+        str += "target: \(target)"
+        return str
+    }
+}
+
+extension DyldChainedPtrBindOrRebase.Arm64: CLIOutput {
+
+    var cli: String {
+        "TODO: implement this"
+    }
+}
+
 extension DyldChainedPtrBindOrRebase: CLIOutput {
 
     var cli: String {
         switch underlyingValue {
+        case let .arm64(rebase):
+            return rebase.cli
         case let .bind32(bind):
             return bind.cli
         case let .bind64(bind):
@@ -163,6 +212,12 @@ extension DyldChainedPtrBindOrRebase: CLIOutput {
         case let .rebase32(rebase):
             return rebase.cli
         case let .rebase64(rebase):
+            return rebase.cli
+        case let .kernelCacheRebase(rebase):
+            return rebase.cli
+        case let .cacheRebase(rebase):
+            return rebase.cli
+        case let .firmwareRebase(rebase):
             return rebase.cli
         }
     }
