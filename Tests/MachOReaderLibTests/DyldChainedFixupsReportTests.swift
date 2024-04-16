@@ -14,7 +14,7 @@ final class DyldChainedFixupsReportTests: XCTestCase {
         super.setUp()
 
         XCTAssertNoThrow(
-            report = DyldChainedFixupsReport(file: try MachOFile(from: url(for: "helloworld")!, arch: nil))
+            report = try DyldChainedFixupsReport(file: MachOFile(from: url(for: "helloworld")!, arch: nil))
         )
     }
 
