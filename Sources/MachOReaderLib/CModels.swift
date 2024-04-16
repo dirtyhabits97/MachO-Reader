@@ -131,3 +131,5 @@ typealias dyld_chained_ptr_32_bind = UInt32
 //                 bind      :  1;   // == 0
 // };
 typealias dyld_chained_ptr_32_rebase = UInt32
+
+// swiftlint:enable type_name identifier_name line_length

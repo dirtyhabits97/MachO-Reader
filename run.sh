@@ -3,4 +3,4 @@
 set -euxo pipefail
 
 swift build -c "release" --disable-sandbox
-./.build/release/macho-reader
+./.build/release/macho-reader "$@"

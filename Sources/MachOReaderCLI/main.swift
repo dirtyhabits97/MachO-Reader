@@ -2,7 +2,7 @@ import ArgumentParser
 import Foundation
 import MachOReaderLib
 
-struct Reader: ParsableCommand {
+struct MachOReaderCommand: ParsableCommand {
 
     static let configuration = CommandConfiguration(commandName: "read",
                                                     subcommands: [DyldChainedFixupsCommand.self])
@@ -33,10 +33,12 @@ struct Reader: ParsableCommand {
     // MARK: - Methods
 
     func run() throws {
-        guard let url = URL(string: "file://\(pathToBinary)") else {
-            print("Could not create url for \(pathToBinary)")
-            return
+        guard
+            let url = URL(string: "file://\(pathToBinary)")
+        else {
+            fatalError("Could not create url for \(pathToBinary)")
         }
+
         let file = try MachOFile(from: url, arch: arch)
         // only print fat header
         if fatHeader, let header = file.fatHeader {
@@ -87,4 +89,4 @@ struct Reader: ParsableCommand {
     }
 }
 
-Reader.main()
+MachOReaderCommand.main()
