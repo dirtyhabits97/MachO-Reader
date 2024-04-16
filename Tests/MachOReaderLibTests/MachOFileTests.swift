@@ -1,5 +1,3 @@
-// swiftlint:disable line_length
-
 @testable import MachOReaderLib
 import XCTest
 

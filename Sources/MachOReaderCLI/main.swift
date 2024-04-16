@@ -2,7 +2,7 @@ import ArgumentParser
 import Foundation
 import MachOReaderLib
 
-struct Reader: ParsableCommand {
+struct MachOReaderCommand: ParsableCommand {
 
     static let configuration = CommandConfiguration(commandName: "read",
                                                     subcommands: [DyldChainedFixupsCommand.self])
@@ -33,58 +33,36 @@ struct Reader: ParsableCommand {
     // MARK: - Methods
 
     func run() throws {
-        guard let url = URL(string: "file://\(pathToBinary)") else {
-            print("Could not create url for \(pathToBinary)")
-            return
+        guard
+            let url = URL(string: "file://\(pathToBinary)")
+        else {
+            fatalError("Could not create url for \(pathToBinary)")
         }
-        let file = try MachOFile(from: url, arch: arch)
-        // only print fat header
-        if fatHeader, let header = file.fatHeader {
-            CLIFormatter.print(header)
-            return
+
+        let reader = try MachOReader(binaryURL: url, arch: arch)
+        // print the FAT header if specified and it exists in the binary
+        if fatHeader, let fatHeader = reader.getFatHeader() {
+            return CLIFormatter.print(fatHeader)
         }
-        // only print mach-o header
+        // print the header for a given architecture
         if header {
-            CLIFormatter.print(file.header)
-            return
+            return CLIFormatter.print(reader.getHeader())
         }
-        // onlyl prints build version
-        if buildVersion {
-            file.commands
-                .lazy
-                .compactMap { (loadCommand: LoadCommand) -> BuildVersionCommand? in
-                    if case let .buildVersionCommand(buildVersionCommand) = loadCommand.commandType() {
-                        return buildVersionCommand
-                    }
-                    return nil
-                }
-                .first
-                .map { CLIFormatter.print($0) }
-            return
+        // print the build version if it exists
+        if buildVersion, let command = reader.getBuildVersionCommand() {
+            return CLIFormatter.print(command)
         }
         // only print dylibs
         if dylibs {
-            file.commands
-                .compactMap { (loadCommand: LoadCommand) -> DylibCommand? in
-                    guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
-                    return dylibCommand
-                }
-                .forEach { CLIFormatter.print($0) }
-            return
+            return reader.getDylibCommands().forEach(CLIFormatter.print(_:))
         }
         // only print segments
         if segments {
-            file.commands
-                .compactMap { (loadCommand: LoadCommand) -> SegmentCommand? in
-                    guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
-                    return segmentCommand
-                }
-                .forEach { CLIFormatter.print($0) }
-            return
+            return reader.getDylibCommands().forEach(CLIFormatter.print(_:))
         }
         // print default information
-        CLIFormatter.print(file)
+        CLIFormatter.print(reader.getParsedFile())
     }
 }
 
-Reader.main()
+MachOReaderCommand.main()

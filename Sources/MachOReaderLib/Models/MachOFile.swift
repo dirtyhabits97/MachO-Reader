@@ -5,7 +5,7 @@ public struct MachOFile {
 
     // MARK: - Properties
 
-    public let fatHeader: FatHeader?
+    public let fatHeader: MachOFatHeader?
     public let header: MachOHeader
     public private(set) var commands: [LoadCommand]
 
@@ -15,11 +15,11 @@ public struct MachOFile {
     // MARK: - Lifecycle
 
     public init(from url: URL, arch: String?) throws {
-        self.init(from: try Data(contentsOf: url), arch: arch)
+        try self.init(from: Data(contentsOf: url), arch: arch)
     }
 
     init(from data: Data, arch: String?) {
-        fatHeader = FatHeader(from: data)
+        fatHeader = MachOFatHeader(from: data)
 
         var data = data
         if let offset = fatHeader?.offset(for: CPUType(from: arch)) {

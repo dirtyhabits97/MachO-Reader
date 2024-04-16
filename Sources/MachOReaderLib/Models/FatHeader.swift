@@ -15,7 +15,7 @@ import MachO
  * All structures defined here are always written and read to/from disk
  * in big-endian order.
  */
-public struct FatHeader {
+public struct MachOFatHeader {
 
     // MARK: - Properties
 
@@ -81,7 +81,7 @@ public struct FatHeader {
     }
 }
 
-public extension FatHeader {
+public extension MachOFatHeader {
 
     // Source: .../usr/include/mach-o/fat.h
     struct Architecture {
