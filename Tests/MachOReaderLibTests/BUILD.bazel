@@ -1,0 +1,15 @@
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_test")
+
+swift_test(
+    name = "MachOReaderLibTests",
+    srcs = [
+        "Constants.swift",
+        "DyldChainedFixupsReportTests.swift",
+        "FatHeaderTests.swift",
+        "Fixtures/helloworld.swift",
+        "MachOFileTests.swift",
+        "MachOHeaderTests.swift",
+    ],
+    module_name = "MachOReaderLibTests",
+    deps = ["//Sources/MachOReaderLib"],
+)

@@ -1,7 +1,7 @@
 load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load(
-  "@rules_swift_package_manager//swiftpkg:defs.bzl",
-  "swift_update_packages",
+    "@rules_swift_package_manager//swiftpkg:defs.bzl",
+    "swift_update_packages",
 )
 
 # - Gazelle
