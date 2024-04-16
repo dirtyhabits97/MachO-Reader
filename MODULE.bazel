@@ -1,4 +1,6 @@
 # Source: https://www.buildbuddy.io/blog/how-to-migrate-an-ios-app-to-bazel/#swift-packages-swiftpm
+# NOTE: To update dependencies run `bazel run //:swift_update_pkg`
+
 bazel_dep(name = "rules_swift_package_manager", version = "0.28.0")
 bazel_dep(name = "gazelle", version = "0.35.0")
 
