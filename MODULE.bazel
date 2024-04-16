@@ -1,0 +1,17 @@
+# Source: https://www.buildbuddy.io/blog/how-to-migrate-an-ios-app-to-bazel/#swift-packages-swiftpm
+bazel_dep(name = "rules_swift_package_manager", version = "0.28.0")
+bazel_dep(name = "gazelle", version = "0.35.0")
+
+# swift_deps START
+swift_deps = use_extension(
+    "@rules_swift_package_manager//:extensions.bzl",
+    "swift_deps",
+)
+swift_deps.from_file(
+    deps_index = "//:swift_deps_index.json",
+)
+use_repo(
+    swift_deps,
+    "swiftpkg_swift_argument_parser",
+)
+# swift_deps END

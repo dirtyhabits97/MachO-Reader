@@ -1,0 +1,46 @@
+{
+  "direct_dep_identities": [
+    "swift-argument-parser"
+  ],
+  "modules": [
+    {
+      "name": "ArgumentParser",
+      "c99name": "ArgumentParser",
+      "src_type": "swift",
+      "label": "@swiftpkg_swift_argument_parser//:ArgumentParser.rspm",
+      "package_identity": "swift-argument-parser",
+      "product_memberships": [
+        "ArgumentParser"
+      ]
+    },
+    {
+      "name": "ArgumentParserToolInfo",
+      "c99name": "ArgumentParserToolInfo",
+      "src_type": "swift",
+      "label": "@swiftpkg_swift_argument_parser//:ArgumentParserToolInfo.rspm",
+      "package_identity": "swift-argument-parser",
+      "product_memberships": [
+        "ArgumentParser"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "identity": "swift-argument-parser",
+      "name": "ArgumentParser",
+      "type": "library",
+      "label": "@swiftpkg_swift_argument_parser//:ArgumentParser"
+    }
+  ],
+  "packages": [
+    {
+      "name": "swiftpkg_swift_argument_parser",
+      "identity": "swift-argument-parser",
+      "remote": {
+        "commit": "f3c9084a71ef4376f2fabbdf1d3d90a49f1fabdb",
+        "remote": "https://github.com/apple/swift-argument-parser",
+        "version": "1.1.2"
+      }
+    }
+  ]
+}
