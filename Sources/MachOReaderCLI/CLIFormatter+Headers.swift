@@ -1,6 +1,6 @@
 import MachOReaderLib
 
-extension FatHeader: CLIOutput {
+extension MachOFatHeader: CLIOutput {
 
     var cli: String {
         var str = "FAT_HEADER".padding(toLength: 20, withPad: " ", startingAt: 0)
@@ -15,7 +15,7 @@ extension FatHeader: CLIOutput {
     }
 }
 
-extension FatHeader.Architecture: CLIOutput {
+extension MachOFatHeader.Architecture: CLIOutput {
 
     // TODO: for some reason, the cpu subtype is not matching otool
     var cli: String {
