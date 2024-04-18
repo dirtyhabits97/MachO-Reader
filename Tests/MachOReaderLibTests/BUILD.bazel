@@ -6,7 +6,6 @@ swift_test(
         "Constants.swift",
         "DyldChainedFixupsReportTests.swift",
         "FatHeaderTests.swift",
-        "Fixtures/helloworld.swift",
         "MachOFileTests.swift",
         "MachOHeaderTests.swift",
     ],

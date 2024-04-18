@@ -1,10 +1,5 @@
 load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
-load(
-    "@rules_swift_package_manager//swiftpkg:defs.bzl",
-    "swift_update_packages",
-)
-
-# - Gazelle
+load("@rules_swift_package_manager//swiftpkg:defs.bzl", "swift_update_packages")
 
 # Ignore the `.build` folder that is created by running Swift package manager
 # commands. The Swift Gazelle plugin executes some Swift package manager
@@ -17,8 +12,7 @@ load(
 
 # This declaration builds a Gazelle binary that incorporates all of the Gazelle
 # plugins for the languages that you use in your workspace. In this example, we
-# are only listing the Gazelle plugin for Swift from
-# rules_swift_package_manager.
+# are only listing the Gazelle plugin for Swift from rules_swift_package_manager.
 gazelle_binary(
     name = "gazelle_bin",
     languages = [
@@ -31,8 +25,8 @@ gazelle_binary(
 #
 # The `swift_update_pkgs` target should be run whenever the list of external
 # dependencies is updated in the `Package.swift`. Running this target will
-# populate the `swift_deps.bzl` with `swift_package` declarations for all of the
-# direct and transitive Swift packages that your project uses.
+# populate the `swift_deps.bzl` with `swift_package` declarations for all of
+# the direct and transitive Swift packages that your project uses.
 #
 # The `swift_update_pkgs_to_latest` target should be run when you want to
 # update your Swift dependencies to their latest eligible version.
