@@ -3206,6 +3206,54 @@
         ]
       }
     },
+    "@@rules_swift_package_manager~0.29.2//:extensions.bzl%swift_deps": {
+      "general": {
+        "bzlTransitiveDigest": "QDTq/AbMoKxRRtTy24EyWhLDeJFjEnHH/bZr5pt8p5g=",
+        "accumulatedFileDigests": {
+          "@@//:swift_deps_index.json": "ffe92beabe398a73b006f9bd55437888379386a469d5bee1d3ca0576994f5262"
+        },
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "swiftpkg_swift_argument_parser": {
+            "bzlFile": "@@rules_swift_package_manager~0.29.2//swiftpkg/internal:swift_package.bzl",
+            "ruleClassName": "swift_package",
+            "attributes": {
+              "name": "rules_swift_package_manager~0.29.2~swift_deps~swiftpkg_swift_argument_parser",
+              "bazel_package_name": "swiftpkg_swift_argument_parser",
+              "commit": "f3c9084a71ef4376f2fabbdf1d3d90a49f1fabdb",
+              "remote": "https://github.com/apple/swift-argument-parser",
+              "dependencies_index": "@@//:swift_deps_index.json",
+              "init_submodules": false,
+              "recursive_init_submodules": false,
+              "patch_args": [
+                "-p0"
+              ],
+              "patch_cmds": [],
+              "patch_cmds_win": [],
+              "patch_tool": "",
+              "patches": []
+            }
+          }
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "rules_swift_package_manager~0.29.2",
+            "bazel_skylib",
+            "bazel_skylib~1.5.0"
+          ],
+          [
+            "rules_swift_package_manager~0.29.2",
+            "bazel_tools",
+            "bazel_tools"
+          ],
+          [
+            "rules_swift_package_manager~0.29.2",
+            "cgrindel_bazel_starlib",
+            "cgrindel_bazel_starlib~0.18.1"
+          ]
+        ]
+      }
+    },
     "@@rules_swift~1.16.0//swift:extensions.bzl%non_module_deps": {
       "general": {
         "bzlTransitiveDigest": "JXT9csgB0VHkXU94H+OROIY4q5dpOW0Di+C2YoFqVTM=",
