@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "cc71ec6cf1c0cf1273b4d16e97ed2b1f3b2675e94da42c950b2ce1b8188c1a47",
+  "moduleFileHash": "2ca936f0df7179d8ac51ba5a4b509257ff2b257d65f1355860d16843c716e43a",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -58,7 +58,7 @@
       "deps": {
         "apple_support": "apple_support@1.14.0",
         "build_bazel_rules_swift": "rules_swift@1.16.0",
-        "rules_swift_package_manager": "rules_swift_package_manager@0.28.0",
+        "rules_swift_package_manager": "rules_swift_package_manager@0.29.2",
         "gazelle": "gazelle@0.35.0",
         "cgrindel_bazel_starlib": "cgrindel_bazel_starlib@0.18.1",
         "bazel_tools": "bazel_tools@_",
@@ -197,10 +197,10 @@
         }
       }
     },
-    "rules_swift_package_manager@0.28.0": {
+    "rules_swift_package_manager@0.29.2": {
       "name": "rules_swift_package_manager",
-      "version": "0.28.0",
-      "key": "rules_swift_package_manager@0.28.0",
+      "version": "0.29.2",
+      "key": "rules_swift_package_manager@0.29.2",
       "repoName": "rules_swift_package_manager",
       "executionPlatformsToRegister": [],
       "toolchainsToRegister": [],
@@ -208,9 +208,9 @@
         {
           "extensionBzlFile": "@apple_support//crosstool:setup.bzl",
           "extensionName": "apple_cc_configure_extension",
-          "usingModule": "rules_swift_package_manager@0.28.0",
+          "usingModule": "rules_swift_package_manager@0.29.2",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.28.0/MODULE.bazel",
+            "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.29.2/MODULE.bazel",
             "line": 40,
             "column": 35
           },
@@ -225,9 +225,9 @@
         {
           "extensionBzlFile": "@bazel_gazelle//:extensions.bzl",
           "extensionName": "go_deps",
-          "usingModule": "rules_swift_package_manager@0.28.0",
+          "usingModule": "rules_swift_package_manager@0.29.2",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.28.0/MODULE.bazel",
+            "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.29.2/MODULE.bazel",
             "line": 46,
             "column": 24
           },
@@ -249,7 +249,7 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.28.0/MODULE.bazel",
+                "file": "https://bcr.bazel.build/modules/rules_swift_package_manager/0.29.2/MODULE.bazel",
                 "line": 47,
                 "column": 18
               }
@@ -276,14 +276,14 @@
         "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
         "ruleClassName": "http_archive",
         "attributes": {
-          "name": "rules_swift_package_manager~0.28.0",
+          "name": "rules_swift_package_manager~0.29.2",
           "urls": [
-            "https://github.com/cgrindel/rules_swift_package_manager/releases/download/v0.28.0/rules_swift_package_manager.v0.28.0.tar.gz"
+            "https://github.com/cgrindel/rules_swift_package_manager/releases/download/v0.29.2/rules_swift_package_manager.v0.29.2.tar.gz"
           ],
-          "integrity": "sha256-7vFsil+fphAgSfdigj53NgGkQ5i68qXefvfL68uIiHA=",
+          "integrity": "sha256-0ttiQzGVJLuMSa7JjJagdprWW/AAlPeLkU8ZLbrEINM=",
           "strip_prefix": "",
           "remote_patches": {
-            "https://bcr.bazel.build/modules/rules_swift_package_manager/0.28.0/patches/module_dot_bazel_version.patch": "sha256-d9pC0zIcYyPBbjK+Is2y8j8wwKsboI6qFDRVVbOCZ6c="
+            "https://bcr.bazel.build/modules/rules_swift_package_manager/0.29.2/patches/module_dot_bazel_version.patch": "sha256-nfXsy86LreICqr2NXOXJ+VDzXMmn7d9eEML8LE7l7GM="
           },
           "remote_patch_strip": 1
         }
@@ -1898,11 +1898,11 @@
           "@@rules_go~0.44.0//:go.mod": "15454724af1504c4ce1782c2a7f423d596a1d8490125eb7c5bd9c95fea1991f0",
           "@@gazelle~0.35.0//:go.mod": "48dc6e771c3028ee1c18b9ffc81e596fd5f6d7e0016c5ef280e30f2821f60473",
           "@@cgrindel_bazel_starlib~0.18.1//:go.sum": "c50d75994c714e6fddfc6eb0cb8da5d2c40ff0ca816fa655ed0cf397cf16a27b",
-          "@@rules_swift_package_manager~0.28.0//:go.sum": "d4edd30cacfea3691acf8373bc83b3a643ccae5284085a8cbce6d3933586b35c",
+          "@@rules_swift_package_manager~0.29.2//:go.mod": "66453e886f07d090f43db9752d71a84f566ffb4be0715e943ecfc7903f6bbe24",
           "@@gazelle~0.35.0//:go.sum": "7c4460e8ecb5dd8691a51d4fa2e9e4751108b933636497ce46db499fc2e7a88d",
           "@@rules_go~0.44.0//:go.sum": "b5938730bf7d3581421928b0385d99648dd9634becead96fca0594ac491b2f49",
-          "@@cgrindel_bazel_starlib~0.18.1//:go.mod": "2a988325920be786451553b4c7e4251b65cf3de0a1bd8a7917ff742cd33a278e",
-          "@@rules_swift_package_manager~0.28.0//:go.mod": "948db7237b4c72de4e224f20c6eb5630afe940fff1212f32d0fe556349f57598"
+          "@@rules_swift_package_manager~0.29.2//:go.sum": "aee0dd582a6a87e8b0d506dc7a3f9733e2dfdcbe1331cc5f5453fe06d81e3465",
+          "@@cgrindel_bazel_starlib~0.18.1//:go.mod": "2a988325920be786451553b4c7e4251b65cf3de0a1bd8a7917ff742cd33a278e"
         },
         "envVariables": {},
         "generatedRepoSpecs": {
@@ -2127,9 +2127,9 @@
               "build_extra_args": [],
               "patches": [],
               "patch_args": [],
-              "sum": "h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=",
+              "sum": "h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=",
               "replace": "",
-              "version": "v1.8.4"
+              "version": "v1.9.0"
             }
           },
           "org_golang_x_sync": {
@@ -2361,11 +2361,11 @@
                 "org_golang_google_grpc_cmd_protoc_gen_go_grpc": "google.golang.org/grpc/cmd/protoc-gen-go-grpc",
                 "org_golang_google_protobuf": "google.golang.org/protobuf",
                 "org_golang_google_genproto_googleapis_rpc": "google.golang.org/genproto/googleapis/rpc",
-                "@rules_swift_package_manager~0.28.0": "github.com/cgrindel/rules_swift_package_manager",
+                "@rules_swift_package_manager~0.29.2": "github.com/cgrindel/rules_swift_package_manager",
                 "@cgrindel_bazel_starlib~0.18.1": "github.com/cgrindel/bazel-starlib"
               },
               "module_names": {
-                "@rules_swift_package_manager~0.28.0": "rules_swift_package_manager",
+                "@rules_swift_package_manager~0.29.2": "rules_swift_package_manager",
                 "@gazelle~0.35.0": "gazelle",
                 "@cgrindel_bazel_starlib~0.18.1": "cgrindel_bazel_starlib",
                 "@rules_go~0.44.0": "rules_go"
@@ -3202,54 +3202,6 @@
             "rules_java~7.1.0",
             "remote_java_tools",
             "rules_java~7.1.0~toolchains~remote_java_tools"
-          ]
-        ]
-      }
-    },
-    "@@rules_swift_package_manager~0.28.0//:extensions.bzl%swift_deps": {
-      "general": {
-        "bzlTransitiveDigest": "L7RHn5ghSAuhk0jfjVY+57L1oZW1Xwlfez30WCMMdZM=",
-        "accumulatedFileDigests": {
-          "@@//:swift_deps_index.json": "ffe92beabe398a73b006f9bd55437888379386a469d5bee1d3ca0576994f5262"
-        },
-        "envVariables": {},
-        "generatedRepoSpecs": {
-          "swiftpkg_swift_argument_parser": {
-            "bzlFile": "@@rules_swift_package_manager~0.28.0//swiftpkg/internal:swift_package.bzl",
-            "ruleClassName": "swift_package",
-            "attributes": {
-              "name": "rules_swift_package_manager~0.28.0~swift_deps~swiftpkg_swift_argument_parser",
-              "bazel_package_name": "swiftpkg_swift_argument_parser",
-              "commit": "f3c9084a71ef4376f2fabbdf1d3d90a49f1fabdb",
-              "remote": "https://github.com/apple/swift-argument-parser",
-              "dependencies_index": "@@//:swift_deps_index.json",
-              "init_submodules": false,
-              "recursive_init_submodules": false,
-              "patch_args": [
-                "-p0"
-              ],
-              "patch_cmds": [],
-              "patch_cmds_win": [],
-              "patch_tool": "",
-              "patches": []
-            }
-          }
-        },
-        "recordedRepoMappingEntries": [
-          [
-            "rules_swift_package_manager~0.28.0",
-            "bazel_skylib",
-            "bazel_skylib~1.5.0"
-          ],
-          [
-            "rules_swift_package_manager~0.28.0",
-            "bazel_tools",
-            "bazel_tools"
-          ],
-          [
-            "rules_swift_package_manager~0.28.0",
-            "cgrindel_bazel_starlib",
-            "cgrindel_bazel_starlib~0.18.1"
           ]
         ]
       }
