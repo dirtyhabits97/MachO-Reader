@@ -1,5 +1,6 @@
 load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("@rules_swift_package_manager//swiftpkg:defs.bzl", "swift_update_packages")
+load("@cgrindel_bazel_starlib//bzltidy:defs.bzl", "tidy")
 
 # Ignore the `.build` folder that is created by running Swift package manager
 # commands. The Swift Gazelle plugin executes some Swift package manager
@@ -42,4 +43,12 @@ swift_update_packages(
 gazelle(
     name = "update_build_files",
     gazelle = ":gazelle_bin",
+)
+
+tidy(
+    name = "tidy",
+    targets = [
+        ":swift_update_pkgs",
+        ":update_build_files",
+    ],
 )
