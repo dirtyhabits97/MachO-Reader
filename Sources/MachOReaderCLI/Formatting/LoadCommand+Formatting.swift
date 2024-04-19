@@ -42,6 +42,16 @@ extension BuildVersionCommand: CLIOutput {
 extension DylibCommand: CLIOutput {
 
     var summary: String { prefix + dylib.name }
+
+    var detailed: [String] {
+        [
+            prefix,
+            "\n\t", "name:".padding(32), String(describing: dylib.name),
+            "\n\t", "timestamp:".padding(32), String(describing: dylib.timestamp),
+            "\n\t", "current_version:".padding(32), String(describing: dylib.currentVersion),
+            "\n\t", "compatibility_version:".padding(32), String(describing: dylib.compatibilityVersion),
+        ]
+    }
 }
 
 extension DylinkerCommand: CLIOutput {

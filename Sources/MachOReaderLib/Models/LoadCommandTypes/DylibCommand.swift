@@ -77,9 +77,9 @@ public extension DylibCommand {
     struct Dylib {
 
         public let name: String
-        let timestamp: Date
-        let currentVersion: SemanticVersion
-        let compatibilityVersion: SemanticVersion
+        public let timestamp: Date
+        public let currentVersion: SemanticVersion
+        public let compatibilityVersion: SemanticVersion
 
         // struct dylib {
         //     union lc_str  name;			/* library's path name */
