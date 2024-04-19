@@ -6,9 +6,16 @@ swift_test(
         "Constants.swift",
         "DyldChainedFixupsReportTests.swift",
         "FatHeaderTests.swift",
+        "Fixtures.swift",
         "MachOFileTests.swift",
         "MachOHeaderTests.swift",
     ],
+    data = [":MachOReaderLibTestsFixtures"],
     module_name = "MachOReaderLibTests",
     deps = ["//Sources/MachOReaderLib"],
+)
+
+filegroup(
+    name = "MachOReaderLibTestsFixtures",
+    srcs = glob(["Fixtures/**/*"]),
 )
