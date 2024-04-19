@@ -32,7 +32,7 @@ let package = Package(
             ],
             resources: [
                 .process("Fixtures/helloworld"),
-                .process("Fixtures/helloworld.swift"),
+                .process("Fixtures/helloworld.swift.txt"),
             ]
         ),
     ]

@@ -1,0 +1,22 @@
+common --enable_bzlmod
+
+# Verbose Failures
+build --verbose_failures
+
+# Test output information
+test --test_output=errors --test_summary=detailed
+
+# Strict PATH. Helps prevent build cache invalidation due to PATH differences.
+build --incompatible_strict_action_env=true
+
+# Set minimum macOS version
+# This prevents the tests from failing
+build --macos_minimum_os=13.0
+build --host_macos_minimum_os=13.0
+
+# Configure Apple CC toolchain
+# https://github.com/bazelbuild/apple_support#toolchain-setup
+build --enable_platform_specific_config
+build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
