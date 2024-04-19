@@ -3,6 +3,7 @@ import Foundation
 public enum LoadCommandType {
 
     case buildVersionCommand(BuildVersionCommand)
+    case dyldInfoCommand(DyldInfoCommand)
     case dylibCommand(DylibCommand)
     case dylinkerCommand(DylinkerCommand)
     case dysymtabCommand(DysymtabCommand)
@@ -19,6 +20,7 @@ public enum LoadCommandType {
     init(from loadCommand: LoadCommand) {
         let commandTypes: [LoadCommandTypeRepresentable.Type] = [
             BuildVersionCommand.self,
+            DyldInfoCommand.self,
             DylibCommand.self,
             DylinkerCommand.self,
             DysymtabCommand.self,
