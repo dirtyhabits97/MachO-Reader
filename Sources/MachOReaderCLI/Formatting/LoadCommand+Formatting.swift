@@ -148,17 +148,20 @@ extension SourceVersionCommand: CLIOutput {
 extension SymtabCommand: CLIOutput {
 
     var summary: String {
+        detailed.joined()
+    }
+
+    var detailed: [String] {
         [
             prefix,
             "symoff: \(self.symoff)",
             "   ",
             "nsyms: \(self.nsyms)",
             "   ",
-            "stroff: \(self.stroff)",
+            "stroff: \(String(hex: self.stroff))(\(self.stroff))",
             "   ",
             "strsize: \(self.strsize)",
         ]
-        .joined()
     }
 }
 

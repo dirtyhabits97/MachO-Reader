@@ -30,7 +30,7 @@ extension Magic: CLIOutput {
 
     var summary: String {
         if let readableValue = readableValue {
-            return "\(readableValue) \(String.magic(rawValue))"
+            return "\(readableValue) (\(String.magic(rawValue)))"
         }
         return .magic(rawValue)
     }
