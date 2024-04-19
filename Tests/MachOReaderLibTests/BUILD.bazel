@@ -12,7 +12,10 @@ swift_test(
     ],
     data = [":MachOReaderLibTestsFixtures"],
     module_name = "MachOReaderLibTests",
-    deps = ["//Sources/MachOReaderLib"],
+    deps = [
+        "//Sources/Env",
+        "//Sources/MachOReaderLib",
+    ],
 )
 
 filegroup(

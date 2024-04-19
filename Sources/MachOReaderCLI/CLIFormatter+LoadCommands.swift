@@ -159,11 +159,29 @@ extension UUIDCommand: CLIOutput {
     var cli: String { prefix + uuid.uuidString }
 }
 
+extension DyldInfoCommand: CLIOutput {
+    var cliCompact: String {
+        var str = prefix
+        str += "rebase_size: \(self.bind_size)"
+        str += "   "
+        str += "bind_size: \(self.bind_size)"
+        str += "   "
+        str += "export_size: \(self.export_size)"
+        return str
+    }
+
+    var cli: String {
+        prefix
+    }
+}
+
 extension LoadCommandType: CLIOutput {
 
     var cli: String {
         switch self {
         case let .buildVersionCommand(command):
+            return command.cli
+        case let .dyldInfoCommand(command):
             return command.cli
         case let .dylibCommand(command):
             return command.cli
@@ -193,6 +211,8 @@ extension LoadCommandType: CLIOutput {
     var cliCompact: String {
         switch self {
         case let .buildVersionCommand(command):
+            return command.cliCompact
+        case let .dyldInfoCommand(command):
             return command.cliCompact
         case let .dylibCommand(command):
             return command.cliCompact

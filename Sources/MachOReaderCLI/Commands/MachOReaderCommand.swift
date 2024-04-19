@@ -2,6 +2,7 @@ import ArgumentParser
 import Foundation
 import MachOReaderLib
 
+@main
 struct MachOReaderCommand: ParsableCommand {
 
     static let configuration = CommandConfiguration(commandName: "read",
@@ -64,5 +65,3 @@ struct MachOReaderCommand: ParsableCommand {
         CLIFormatter.print(reader.getParsedFile())
     }
 }
-
-MachOReaderCommand.main()

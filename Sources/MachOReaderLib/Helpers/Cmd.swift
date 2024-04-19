@@ -28,6 +28,8 @@ public struct Cmd: RawRepresentable, Equatable, Hashable {
     static let dyldChainedFixups = Cmd(LC_DYLD_CHAINED_FIXUPS)
     static let dyldEnvironment = Cmd(LC_DYLD_ENVIRONMENT)
     static let dyldExportsTrie = Cmd(LC_DYLD_EXPORTS_TRIE)
+    static let dyldInfo = Cmd(LC_DYLD_INFO)
+    static let dyldInfoOnly = Cmd(LC_DYLD_INFO_ONLY)
     static let dylibCodeSignDrs = Cmd(LC_DYLIB_CODE_SIGN_DRS)
     static let dysymtab = Cmd(LC_DYSYMTAB)
     static let functionStarts = Cmd(LC_FUNCTION_STARTS)
@@ -61,6 +63,8 @@ extension Cmd: Readable {
         case .dyldChainedFixups: return "LC_DYLD_CHAINED_FIXUPS"
         case .dyldEnvironment: return "LC_DYLD_ENVIRONMENT"
         case .dyldExportsTrie: return "LC_DYLD_EXPORTS_TRIE"
+        case .dyldInfo: return "LC_DYLD_INFO"
+        case .dyldInfoOnly: return "LC_DYLD_INFO_ONLY"
         case .dylibCodeSignDrs: return "LC_DYLIB_CODE_SIGN_DRS"
         case .dysymtab: return "LC_DYSYMTAB"
         case .functionStarts: return "LC_FUNCTION_STARTS"

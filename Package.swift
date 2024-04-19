@@ -25,15 +25,23 @@ let package = Package(
         .target(
             name: "MachOReaderLib"
         ),
+        .target(
+            name: "Env"
+        ),
         .testTarget(
             name: "MachOReaderLibTests",
             dependencies: [
                 "MachOReaderLib",
+                "Env",
             ],
             resources: [
                 .process("Fixtures/helloworld"),
                 .process("Fixtures/helloworld.swift.txt"),
             ]
+        ),
+        .testTarget(
+            name: "EnvTests",
+            dependencies: ["Env"]
         ),
     ]
 )
