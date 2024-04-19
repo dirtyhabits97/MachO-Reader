@@ -5,7 +5,12 @@ public let env = Env()
 @dynamicMemberLookup
 public final class Env {
 
-    private var envVars: [String: String] { ProcessInfo.processInfo.environment }
+    private let processInfo: ProcessInfo
+    private var envVars: [String: String] { processInfo.environment }
+
+    init(processInfo: ProcessInfo = .processInfo) {
+        self.processInfo = processInfo
+    }
 
     public subscript(key: String) -> String? {
         envVars[key]

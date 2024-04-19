@@ -39,5 +39,9 @@ let package = Package(
                 .process("Fixtures/helloworld.swift.txt"),
             ]
         ),
+        .testTarget(
+            name: "EnvTests",
+            dependencies: ["Env"]
+        ),
     ]
 )
