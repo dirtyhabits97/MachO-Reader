@@ -17,6 +17,9 @@ struct MachOReaderCommand: ParsableCommand {
     @Flag(help: "Only outputs information for LC_BUILD_VERSION.")
     var buildVersion: Bool = false
 
+    @Option(name: .customShort("c"), help: "The load command LC_* to inspect")
+    var loadCommandToInspect: String?
+
     @Flag(help: "Only outputs information for dylib-related commands.")
     var dylibs: Bool = false
 
@@ -42,6 +45,14 @@ struct MachOReaderCommand: ParsableCommand {
         }
 
         let reader = try MachOReader(binaryURL: url, arch: arch)
+        // loadCommand takes higher priority than the rest
+        if let loadCommandToInspect {
+            for loadCommand in reader.getLoadCommands(loadCommandToInspect) {
+                CLIFormatter.print(loadCommand.commandType())
+            }
+            return
+        }
+
         // print the FAT header if specified and it exists in the binary
         if fatHeader, let fatHeader = reader.getFatHeader() {
             return CLIFormatter.print(fatHeader)

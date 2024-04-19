@@ -170,11 +170,25 @@ extension DyldInfoCommand: CLIOutput {
     var detailed: [String] {
         [
             prefix, "\n",
-            "rebase: \(String(hex: self.rebase_off))-\(String(hex: self.rebase_off + self.rebase_size))(\(self.rebase_size))",
+            "\trebase: ".padding(20),
+            "\(String(hex: self.rebase_off))-\(String(hex: self.rebase_off + self.rebase_size))",
+            " (size: \(self.rebase_size))",
             "\n",
-            "bind: \(String(hex: self.bind_off))-\(String(hex: self.bind_off + self.bind_size))(\(self.bind_size))",
+            "\tbind: ".padding(20),
+            "\(String(hex: self.bind_off))-\(String(hex: self.bind_off + self.bind_size))",
+            " (size: \(self.bind_size))",
             "\n",
-            "weak_bind: \(String(hex: self.weak_bind_off))-\(String(hex: self.weak_bind_off + self.weak_bind_size))(\(self.weak_bind_off))",
+            "\tweak_bind: ".padding(20),
+            "\(String(hex: self.weak_bind_off))-\(String(hex: self.weak_bind_off + self.weak_bind_size))",
+            " (size: \(self.weak_bind_off))",
+            "\n",
+            "\tlazy_bind: ".padding(20),
+            "\(String(hex: self.lazy_bind_off))-\(String(hex: self.lazy_bind_off + self.lazy_bind_off))",
+            " (size: \(self.lazy_bind_off))",
+            "\n",
+            "\texport: ".padding(20),
+            "\(String(hex: self.export_off))-\(String(hex: self.export_off + self.export_size))",
+            " (size: \(self.export_size))",
         ]
     }
 }

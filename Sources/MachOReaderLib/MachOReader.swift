@@ -49,7 +49,7 @@ public final class MachOReader {
     }
 
     // TODO: Add tests to this
-    public func getCommand(_ cmd: String) -> [LoadCommand] {
+    public func getLoadCommands(_ cmd: String) -> [LoadCommand] {
         file.commands.filter { (loadCommand: LoadCommand) in
             loadCommand.cmd.readableValue == cmd
         }
