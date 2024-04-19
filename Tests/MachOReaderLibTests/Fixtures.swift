@@ -1,3 +1,4 @@
+import Env
 import Foundation
 
 // Using Bundle.module with Bazel results in a compilation error.
@@ -13,9 +14,7 @@ import Foundation
         // From the Bazel documentation: https://bazel.build/reference/test-encyclopedia
         // The initial working directory shall be $TEST_SRCDIR/$TEST_WORKSPACE.
         // Upon further review, it seems like $PWD points to the same directory, so I will inspect that instead
-        let env = ProcessInfo.processInfo.environment
-
-        guard let pwd = env["PWD"] else {
+        guard let pwd = env.PWD else {
             print("$PWD is not set")
             return nil
         }
