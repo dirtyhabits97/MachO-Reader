@@ -1,27 +1,26 @@
 import Foundation
-import MachOReaderLib
 
-final class MachOReader {
+public final class MachOReader {
 
     private let file: MachOFile
 
-    init(binaryURL: URL, arch: String?) throws {
+    public init(binaryURL: URL, arch: String?) throws {
         file = try MachOFile(from: binaryURL, arch: arch)
     }
 
-    func getParsedFile() -> MachOFile {
+    public func getParsedFile() -> MachOFile {
         file
     }
 
-    func getFatHeader() -> MachOFatHeader? {
+    public func getFatHeader() -> MachOFatHeader? {
         file.fatHeader
     }
 
-    func getHeader() -> MachOHeader {
+    public func getHeader() -> MachOHeader {
         file.header
     }
 
-    func getBuildVersionCommand() -> BuildVersionCommand? {
+    public func getBuildVersionCommand() -> BuildVersionCommand? {
         file.commands
             .lazy
             .compactMap { (loadCommand: LoadCommand) -> BuildVersionCommand? in
@@ -33,7 +32,7 @@ final class MachOReader {
             .first
     }
 
-    func getDylibCommands() -> [DylibCommand] {
+    public func getDylibCommands() -> [DylibCommand] {
         file.commands
             .compactMap { (loadCommand: LoadCommand) -> DylibCommand? in
                 guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
@@ -41,11 +40,18 @@ final class MachOReader {
             }
     }
 
-    func getSegmentCommands() -> [SegmentCommand] {
+    public func getSegmentCommands() -> [SegmentCommand] {
         file.commands
             .compactMap { (loadCommand: LoadCommand) -> SegmentCommand? in
                 guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
                 return segmentCommand
             }
+    }
+
+    // TODO: Add tests to this
+    public func getCommand(_ cmd: String) -> [LoadCommand] {
+        file.commands.filter { (loadCommand: LoadCommand) in
+            loadCommand.cmd.readableValue == cmd
+        }
     }
 }

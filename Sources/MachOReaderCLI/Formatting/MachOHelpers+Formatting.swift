@@ -2,33 +2,33 @@ import MachOReaderLib
 
 extension Cmd: CLIOutput {
 
-    var cli: String {
+    var summary: String {
         readableValue ?? .cmd(rawValue)
     }
 }
 
 extension CPUType: CLIOutput {
 
-    var cli: String {
-        if let readableValue = readableValue {
-            return "\(readableValue.padding(toLength: 7, withPad: " ", startingAt: 0)) (\(rawValue))"
-        }
-        return String(rawValue)
+    var summary: String {
+        readableValue ?? String(rawValue)
     }
 
-    var cliCompact: String { readableValue ?? String(rawValue) }
+    var detailed: [String] {
+        guard let readableValue else { return [String(rawValue)] }
+        return ["\(readableValue.padding(toLength: 7, withPad: " ", startingAt: 0)) (\(rawValue))"]
+    }
 }
 
 extension FileType: CLIOutput {
 
-    var cli: String {
+    var summary: String {
         readableValue ?? .filetype(rawValue)
     }
 }
 
 extension Magic: CLIOutput {
 
-    var cli: String {
+    var summary: String {
         if let readableValue = readableValue {
             return "\(readableValue) \(String.magic(rawValue))"
         }
@@ -36,16 +36,9 @@ extension Magic: CLIOutput {
     }
 }
 
-extension MachOHeader.Flags: CLIOutput {
-
-    var cli: String {
-        readableValue ?? .flags(rawValue)
-    }
-}
-
 extension Platform: CLIOutput {
 
-    var cli: String {
+    var summary: String {
         readableValue ?? String(rawValue)
     }
 }

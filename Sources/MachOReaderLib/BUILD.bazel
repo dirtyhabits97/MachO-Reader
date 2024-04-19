@@ -15,6 +15,7 @@ swift_library(
         "Helpers/Magic.swift",
         "Helpers/Platform.swift",
         "Helpers/Readable.swift",
+        "MachOReader.swift",
         "Models/FatHeader.swift",
         "Models/LoadCommand.swift",
         "Models/LoadCommandType.swift",
