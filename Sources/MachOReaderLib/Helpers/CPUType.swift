@@ -22,7 +22,6 @@ public struct CPUType: RawRepresentable, Equatable {
     // swiftlint:disable:next identifier_name
     static let x86_64 = CPUType(rawValue: CPU_TYPE_X86_64)
     static let arm = CPUType(rawValue: CPU_TYPE_ARM)
-    // swiftlint:disable:next identifier_name
     static let arm64 = CPUType(rawValue: CPU_TYPE_ARM64)
 }
 

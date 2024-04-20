@@ -3,16 +3,23 @@ import MachOReaderLib
 
 extension MachOFatHeader.Architecture: CLIOutput {
 
-    // TODO: for some reason, the cpu subtype is not matching otool
     var summary: String {
         var output = [
             "cputype: \(cputype.summary)".padding(20),
         ]
 
-        if let readableCPUSubType = cpuSubtype.readableValue(cpuType: cputype) {
-            output.append("cpusubtype: \(readableCPUSubType.padding(8))")
+        if let readableCpuSubType = cpuSubtype.readableValue(cpuType: cputype) {
+            output.append(contentsOf: [
+                "cpusubtype: ",
+                "\(cpuSubtype.rawValue)",
+                " ",
+                "(\(readableCpuSubType))".padding(8),
+            ])
         } else {
-            output.append("cpusubtype: \(String(cpuSubtype.rawValue).padding(8))")
+            output.append(contentsOf: [
+                "cpusubtype: ",
+                "\(cpuSubtype.rawValue)".padding(8),
+            ])
         }
 
         output.append(contentsOf: [

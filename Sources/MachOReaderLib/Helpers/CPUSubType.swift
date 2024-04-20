@@ -1,24 +1,31 @@
 import Foundation
 
+// NOTE: The cpu_subtype_t alone is not enough to determine the "label"
+// Example: CPU_SUBTYPE_X86_ALL and CPU_SUBTYPE_X86_64_ALL have the same value (3)
+// We only know the "label" once we know what's their CPUType
+//
 // Source: include/mach/machine.h
 public struct CPUSubType: RawRepresentable, Equatable {
 
     // MARK: - Properties
 
-    public let rawValue: UInt32
+    public let rawValue: cpu_subtype_t
 
     // MARK: - Lifecycle
 
-    public init(rawValue: UInt32) {
-        self.rawValue = rawValue
+    public init(rawValue: cpu_subtype_t) {
+        // WARN: Sometimes these values will come masked,
+        // we can unmask them before setting the rawValue
+        let mask = Int32(bitPattern: CPU_SUBTYPE_PTRAUTH_ABI)
+        let unmasked = rawValue & ~mask
+        self.rawValue = unmasked
     }
 
     public init(_ rawValue: cpu_subtype_t) {
-        self.rawValue = UInt32(bitPattern: rawValue)
+        self.init(rawValue: rawValue)
     }
 
-    // NOTE: Some of these have the same bitPattern / flags
-    // We only know the exact subtype if the cpu type is also provided
+    // MARK: - Constants
 
     // x86 CPU subtypes
     static let cpuSubTypeX86All = CPUSubType(CPU_SUBTYPE_X86_64_ALL)
@@ -36,11 +43,7 @@ public struct CPUSubType: RawRepresentable, Equatable {
         case .x86: return asX86CpuSubtype
         case .x86_64: return asX86_64CpuSubType
         case .arm: return asArmCpuSubType
-        case .arm64:
-            // Sometimes rawValue is masked with 0x80000000,
-            // we can remove the mask and check
-            return asArm64CpuSubType(self)
-                ?? asArm64CpuSubType(unmasked(self, mask: UInt32(CPU_SUBTYPE_PTRAUTH_ABI)))
+        case .arm64: return asArm64CpuSubType
         default: return nil
         }
     }
@@ -70,16 +73,12 @@ public struct CPUSubType: RawRepresentable, Equatable {
         nil
     }
 
-    func asArm64CpuSubType(_ cpuSubType: CPUSubType) -> String? {
-        switch cpuSubType {
+    var asArm64CpuSubType: String? {
+        switch self {
         case .cpuSubTypeArm64All: return "ALL"
         case .cpuSubTypeArm64V8: return "V8"
         case .cpuSubTypeArm64E: return "E"
         default: return nil
         }
-    }
-
-    private func unmasked(_ cpuSubType: CPUSubType, mask: UInt32) -> CPUSubType {
-        CPUSubType(rawValue: cpuSubType.rawValue & ~mask)
     }
 }
