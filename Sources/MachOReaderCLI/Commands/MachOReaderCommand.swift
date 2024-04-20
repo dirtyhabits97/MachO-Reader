@@ -5,9 +5,8 @@ import MachOReaderLib
 @main
 struct MachOReaderCommand: ParsableCommand {
 
-    // static let configuration = CommandConfiguration(commandName: "read",
-    //                                                 subcommands: [DyldChainedFixupsCommand.self])
-    static let configuration = CommandConfiguration(commandName: "read")
+    static let configuration = CommandConfiguration(commandName: "read",
+                                                    subcommands: [DyldChainedFixupsCommand.self])
 
     // MARK: - Properties
 

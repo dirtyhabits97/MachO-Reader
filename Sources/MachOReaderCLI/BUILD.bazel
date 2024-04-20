@@ -3,15 +3,15 @@ load("@build_bazel_rules_swift//swift:swift.bzl", "swift_binary")
 swift_binary(
     name = "MachOReaderCLI",
     srcs = [
-        "CLIFormatter+DyldChainedFixupsReport.swift",
-        "Commands/DyldChainedFixups.swift",
+        "Commands/DyldChainedFixupsCommand.swift",
         "Commands/MachOReaderCommand.swift",
+        "Extensions/String+Extensions.swift",
         "Formatting/CLIFormatter.swift",
+        "Formatting/DyldChainedFixups+Formatting.swift",
         "Formatting/LoadCommand+Formatting.swift",
         "Formatting/MachOFile+Formatting.swift",
         "Formatting/MachOHeader+Formatting.swift.swift",
         "Formatting/MachOHelpers+Formatting.swift",
-        "String+Extensions.swift",
     ],
     module_name = "MachOReaderCLI",
     visibility = ["//visibility:public"],
