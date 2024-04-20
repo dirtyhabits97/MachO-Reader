@@ -8,6 +8,7 @@ swift_library(
         "Extensions/BinaryInteger+Extensions.swift",
         "Extensions/Data+Extensions.swift",
         "Extensions/String+Extensions.swift",
+        "Helpers/CPUSubType.swift",
         "Helpers/CPUType.swift",
         "Helpers/Cmd.swift",
         "Helpers/FileType.swift",

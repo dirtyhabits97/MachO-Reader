@@ -5,14 +5,22 @@ extension MachOFatHeader.Architecture: CLIOutput {
 
     // TODO: for some reason, the cpu subtype is not matching otool
     var summary: String {
-        [
-            "cputype: \(cputype.summary)".padding(30),
-            "cpusubtype: \(String(cpuSubtype).padding(15))",
+        var output = [
+            "cputype: \(cputype.summary)".padding(20),
+        ]
+
+        if let readableCPUSubType = cpuSubtype.readableValue(cpuType: cputype) {
+            output.append("cpusubtype: \(readableCPUSubType.padding(8))")
+        } else {
+            output.append("cpusubtype: \(String(cpuSubtype.rawValue).padding(8))")
+        }
+
+        output.append(contentsOf: [
             "offset: \(String(offset).padding(10))",
             "size: \(String(size).padding(10))",
             "align: 2^\(align)",
-        ]
-        .joined()
+        ])
+        return output.joined()
     }
 }
 
@@ -53,8 +61,6 @@ extension MachOHeader: CLIOutput {
     var detailed: [String] {
         [
             "MACH_HEADER".padding(20),
-            "magic: \(magic.summary)",
-            "   ",
             "cputype: \(cputype.summary)",
             "   ",
             "filetype: \(filetype.summary)",

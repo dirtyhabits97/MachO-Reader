@@ -87,7 +87,7 @@ public extension MachOFatHeader {
     struct Architecture {
 
         public let cputype: CPUType
-        public let cpuSubtype: cpu_subtype_t
+        public let cpuSubtype: CPUSubType
         public let offset: UInt64
         public let size: UInt64
         public let align: UInt32
@@ -102,7 +102,7 @@ public extension MachOFatHeader {
         // };
         init(_ rawValue: fat_arch) {
             cputype = CPUType(rawValue.cputype)
-            cpuSubtype = rawValue.cpusubtype
+            cpuSubtype = CPUSubType(rawValue.cpusubtype)
             offset = UInt64(rawValue.offset)
             size = UInt64(rawValue.size)
             align = rawValue.align
@@ -119,7 +119,7 @@ public extension MachOFatHeader {
         // };
         init(_ rawValue: fat_arch_64) {
             cputype = CPUType(rawValue.cputype)
-            cpuSubtype = rawValue.cpusubtype
+            cpuSubtype = CPUSubType(rawValue.cpusubtype)
             offset = UInt64(rawValue.offset)
             size = UInt64(rawValue.size)
             align = rawValue.align

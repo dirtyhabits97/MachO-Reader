@@ -15,6 +15,6 @@ final class MachOHeaderTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        XCTAssertEqual(file.header.cputype, .arm_64)
+        XCTAssertEqual(file.header.cputype, .arm64)
     }
 }
