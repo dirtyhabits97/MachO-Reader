@@ -1,7 +1,7 @@
 import Foundation
 import MachO
 
-public struct Magic: RawRepresentable, Equatable {
+public struct Magic: RawRepresentable, Equatable, Sendable {
 
     // MARK: - Properties
 

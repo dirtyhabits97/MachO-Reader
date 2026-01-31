@@ -5,7 +5,7 @@ import Foundation
 // We only know the "label" once we know what's their CPUType
 //
 // Source: include/mach/machine.h
-public struct CPUSubType: RawRepresentable, Equatable {
+public struct CPUSubType: RawRepresentable, Equatable, Sendable {
 
     // MARK: - Properties
 

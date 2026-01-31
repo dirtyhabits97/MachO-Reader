@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FileType: RawRepresentable, Equatable {
+public struct FileType: RawRepresentable, Equatable, Sendable {
 
     // MARK: - Properties
 

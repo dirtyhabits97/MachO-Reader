@@ -100,7 +100,7 @@ public extension BuildVersionCommand {
         }
     }
 
-    struct Tool: RawRepresentable, Equatable, Readable {
+    struct Tool: RawRepresentable, Equatable, Readable, Sendable {
 
         public var rawValue: UInt32
 

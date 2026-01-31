@@ -72,7 +72,7 @@ public struct DyldChainedSegmentInfo {
 
 public extension DyldChainedSegmentInfo {
 
-    struct PointerFormat: RawRepresentable, Equatable, Readable {
+    struct PointerFormat: RawRepresentable, Equatable, Readable, Sendable {
 
         public let rawValue: UInt16
 

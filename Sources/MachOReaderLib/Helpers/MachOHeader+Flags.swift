@@ -2,7 +2,7 @@ import Foundation
 
 public extension MachOHeader {
 
-    struct Flags: OptionSet {
+    struct Flags: OptionSet, Sendable {
 
         // MARK: - Properties
 

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Cmd: RawRepresentable, Equatable, Hashable {
+public struct Cmd: RawRepresentable, Equatable, Hashable, Sendable {
 
     // MARK: - Properties
 

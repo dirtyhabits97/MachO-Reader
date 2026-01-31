@@ -1,6 +1,6 @@
 import Foundation
 
-public struct CPUType: RawRepresentable, Equatable {
+public struct CPUType: RawRepresentable, Equatable, Sendable {
 
     // MARK: - Properties
 

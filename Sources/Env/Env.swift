@@ -3,7 +3,7 @@ import Foundation
 public let env = Env()
 
 @dynamicMemberLookup
-public final class Env {
+public final class Env: Sendable {
 
     private let processInfo: ProcessInfo
     private var envVars: [String: String] {
