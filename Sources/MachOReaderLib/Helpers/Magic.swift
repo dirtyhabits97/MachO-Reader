@@ -19,6 +19,10 @@ public struct Magic: RawRepresentable, Equatable {
         [.cigam, .cigam64, .fatCigam, .fatCigam64].contains(self)
     }
 
+    var isValid: Bool {
+        [.magic, .cigam, .magic64, .cigam64, .fatMagic, .fatCigam, .fatMagic64, .fatCigam64].contains(self)
+    }
+
     // MARK: - Lifecycle
 
     public init(peek data: Data) {

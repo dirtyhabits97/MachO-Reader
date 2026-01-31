@@ -68,4 +68,24 @@ final class MagicTests: XCTestCase {
 
         XCTAssertNil(unknownMagic.readableValue)
     }
+
+    // MARK: - Validity Tests
+
+    func test_magic_isValid_returnsTrue_forValidMagics() {
+        XCTAssertTrue(Magic(MH_MAGIC).isValid)
+        XCTAssertTrue(Magic(MH_MAGIC_64).isValid)
+        XCTAssertTrue(Magic(MH_CIGAM).isValid)
+        XCTAssertTrue(Magic(MH_CIGAM_64).isValid)
+        XCTAssertTrue(Magic(FAT_MAGIC).isValid)
+        XCTAssertTrue(Magic(FAT_MAGIC_64).isValid)
+        XCTAssertTrue(Magic(FAT_CIGAM).isValid)
+        XCTAssertTrue(Magic(FAT_CIGAM_64).isValid)
+    }
+
+    func test_magic_isValid_returnsFalse_forInvalidMagic() {
+        // Shell script shebang read as little-endian: "#!/b" = 0x622f2123
+        let shellScriptMagic = Magic(0x622f2123)
+
+        XCTAssertFalse(shellScriptMagic.isValid)
+    }
 }
