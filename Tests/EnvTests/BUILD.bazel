@@ -1,8 +1,0 @@
-load("@build_bazel_rules_swift//swift:swift.bzl", "swift_test")
-
-swift_test(
-    name = "EnvTests",
-    srcs = ["EnvTests.swift"],
-    module_name = "EnvTests",
-    deps = ["//Sources/Env"],
-)
