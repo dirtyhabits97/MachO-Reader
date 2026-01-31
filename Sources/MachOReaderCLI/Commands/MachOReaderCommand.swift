@@ -31,48 +31,127 @@ struct MachOReaderCommand: ParsableCommand {
     @Flag(help: "Only outputs information for the segment commands.")
     var segments: Bool = false
 
+    @Option(name: .long, help: "Output format: text or json")
+    var format: OutputFormat = .text
+
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
     // MARK: - Methods
 
     func run() throws {
-        guard
-            let url = URL(string: "file://\(pathToBinary)")
-        else {
-            fatalError("Could not create url for \(pathToBinary)")
+        guard let url = URL(string: "file://\(pathToBinary)") else {
+            throw ValidationError("Invalid path: \(pathToBinary)")
         }
 
         let reader = try MachOReader(binaryURL: url, arch: arch)
+
+        switch format {
+        case .text:
+            printText(reader: reader)
+        case .json:
+            printJSON(reader: reader)
+        }
+    }
+
+    // MARK: - Text Output
+
+    private func printText(reader: MachOReader) {
+        let formatter = TextFormatter()
+
         // loadCommand takes higher priority than the rest
         if let loadCommandToInspect {
             for loadCommand in reader.getLoadCommands(loadCommandToInspect) {
-                CLIFormatter.print(loadCommand.commandType())
+                print(formatter.formatDetailed(loadCommand.commandType()))
             }
             return
         }
 
         // print the FAT header if specified and it exists in the binary
         if fatHeader, let fatHeader = reader.getFatHeader() {
-            return CLIFormatter.print(fatHeader)
+            print(formatter.format(fatHeader))
+            return
         }
+
         // print the header for a given architecture
         if header {
-            return CLIFormatter.print(reader.getHeader())
+            print(formatter.format(reader.getHeader()))
+            return
         }
+
         // print the build version if it exists
         if buildVersion, let command = reader.getBuildVersionCommand() {
-            return CLIFormatter.print(command)
+            print(formatter.formatDetailed(command))
+            return
         }
+
         // only print dylibs
         if dylibs {
-            return reader.getDylibCommands().forEach(CLIFormatter.print(_:))
+            for command in reader.getDylibCommands() {
+                print(formatter.formatDetailed(command))
+            }
+            return
         }
+
         // only print segments
         if segments {
-            return reader.getDylibCommands().forEach(CLIFormatter.print(_:))
+            for command in reader.getSegmentCommands() {
+                print(formatter.formatDetailed(command))
+            }
+            return
         }
+
         // print default information
-        CLIFormatter.print(reader.getParsedFile())
+        print(formatter.format(reader.getParsedFile()))
+    }
+
+    // MARK: - JSON Output
+
+    private func printJSON(reader: MachOReader) {
+        let formatter = JSONFormatter()
+
+        // loadCommand takes higher priority than the rest
+        if let loadCommandToInspect {
+            let commands = reader.getLoadCommands(loadCommandToInspect).map {
+                formatter.format($0.commandType())
+            }
+            print(formatter.toJSONString(commands))
+            return
+        }
+
+        // print the FAT header if specified and it exists in the binary
+        if fatHeader, let fatHeader = reader.getFatHeader() {
+            print(formatter.toJSONString(formatter.format(fatHeader)))
+            return
+        }
+
+        // print the header for a given architecture
+        if header {
+            print(formatter.toJSONString(formatter.format(reader.getHeader())))
+            return
+        }
+
+        // print the build version if it exists
+        if buildVersion, let command = reader.getBuildVersionCommand() {
+            print(formatter.toJSONString(formatter.format(command)))
+            return
+        }
+
+        // only print dylibs
+        if dylibs {
+            let commands = reader.getDylibCommands().map { formatter.format($0) }
+            print(formatter.toJSONString(commands))
+            return
+        }
+
+        // only print segments
+        if segments {
+            let commands = reader.getSegmentCommands().map { formatter.format($0) }
+            print(formatter.toJSONString(commands))
+            return
+        }
+
+        // print default information
+        print(formatter.toJSONString(formatter.format(reader.getParsedFile())))
     }
 }
