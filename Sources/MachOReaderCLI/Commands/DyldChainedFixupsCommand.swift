@@ -29,9 +29,8 @@ struct DyldChainedFixupsCommand: ParsableCommand {
     // MARK: - Methods
 
     func run() throws {
-        guard let url = URL(string: "file://\(pathToBinary)") else {
-            throw ValidationError("Invalid path: \(pathToBinary)")
-        }
+        let expandedPath = (pathToBinary as NSString).expandingTildeInPath
+        let url = URL(fileURLWithPath: expandedPath)
 
         let file = try MachOFile(from: url, arch: arch)
         let report = file.dyldChainedFixupsReport()
