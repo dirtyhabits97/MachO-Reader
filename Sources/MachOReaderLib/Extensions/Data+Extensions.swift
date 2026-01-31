@@ -2,18 +2,26 @@ import Foundation
 
 extension Data {
 
+    // MARK: - Deprecated Unsafe Methods
+    // These methods are kept for backward compatibility but will be removed in a future version.
+    // Use BinaryDecoder instead for safe, bounds-checked decoding.
+
+    @available(*, deprecated, message: "Use BinaryDecoder.decode(_:at:) instead for safe decoding")
     func extract<C: CustomExtractable>(_: C.Type) -> C {
         CustomExtractor().extract(from: self)
     }
 
+    @available(*, deprecated, message: "Use BinaryDecoder.decode(_:at:) instead for safe decoding")
     func extract<T>(_: T.Type) -> T {
         UnsafeExtractor().extract(from: self)
     }
 
+    @available(*, deprecated, message: "Use BinaryDecoder.decode(_:count:at:) instead for safe decoding")
     func extractArray<T>(_: T.Type, count: Int) -> [T] {
         ArrayExtractor(count: count).extract(from: self)
     }
 
+    @available(*, deprecated, message: "Use BinaryDecoder.decodeString(maxLength:at:) instead for safe decoding")
     func extractString() -> String? {
         StringExtractor().extract(from: self)
     }

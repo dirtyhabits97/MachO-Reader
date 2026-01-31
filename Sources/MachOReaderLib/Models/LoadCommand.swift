@@ -37,7 +37,9 @@ public struct LoadCommand {
         //   uint32_t cmd;		/* type of load command */
         //   uint32_t cmdsize;	/* total size of command in bytes */
         // };
-        var loadCommand = data.extract(load_command.self)
+        guard var loadCommand = try? data.decode(load_command.self, at: 0) else {
+            fatalError("Failed to decode load_command from data of size \(data.count)")
+        }
 
         if isSwapped {
             swap_load_command(&loadCommand, kByteSwapOrder)
