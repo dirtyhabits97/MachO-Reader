@@ -20,40 +20,85 @@ struct DyldChainedFixupsCommand: ParsableCommand {
     @Flag(help: "Only outputs the pages.")
     var pages: Bool = false
 
+    @Option(name: .long, help: "Output format: text or json")
+    var format: OutputFormat = .text
+
     @Argument(help: "The binary to inspect.")
     var pathToBinary: String
 
     // MARK: - Methods
 
     func run() throws {
-        guard
-            let url = URL(string: "file://\(pathToBinary)")
-        else {
-            fatalError(("Could not create url for \(pathToBinary)"))
+        guard let url = URL(string: "file://\(pathToBinary)") else {
+            throw ValidationError("Invalid path: \(pathToBinary)")
         }
 
         let file = try MachOFile(from: url, arch: arch)
         let report = file.dyldChainedFixupsReport()
 
+        switch format {
+        case .text:
+            printText(report: report)
+        case .json:
+            printJSON(report: report)
+        }
+    }
+
+    // MARK: - Text Output
+
+    private func printText(report: DyldChainedFixupsReport) {
+        let formatter = TextFormatter()
+
         if chainedHeader {
-            return CLIFormatter.print(report.header)
+            print(formatter.format(report.header))
+            return
         }
 
         if imports {
             for imp in report.imports {
-                CLIFormatter.print(imp)
+                print(formatter.format(imp))
             }
             return
         }
 
         if pages {
             for (segmentInfo, pages) in zip(report.segmentInfo, report.pageInfo()) {
-                CLIFormatter.print(segmentInfo)
-                CLIFormatter.print(pages)
+                print(formatter.format(segmentInfo))
+                print(formatter.format(pages))
             }
             return
         }
 
-        CLIFormatter.print(file.dyldChainedFixupsReport())
+        print(formatter.format(report))
+    }
+
+    // MARK: - JSON Output
+
+    private func printJSON(report: DyldChainedFixupsReport) {
+        let formatter = JSONFormatter()
+
+        if chainedHeader {
+            print(formatter.toJSONString(formatter.format(report.header)))
+            return
+        }
+
+        if imports {
+            let importsArray = report.imports.map { formatter.format($0) }
+            print(formatter.toJSONString(importsArray))
+            return
+        }
+
+        if pages {
+            var result: [[String: Any]] = []
+            for (segmentInfo, pages) in zip(report.segmentInfo, report.pageInfo()) {
+                var segmentDict = formatter.format(segmentInfo)
+                segmentDict["pages"] = formatter.format(pages)
+                result.append(segmentDict)
+            }
+            print(formatter.toJSONString(result))
+            return
+        }
+
+        print(formatter.toJSONString(formatter.format(report)))
     }
 }
