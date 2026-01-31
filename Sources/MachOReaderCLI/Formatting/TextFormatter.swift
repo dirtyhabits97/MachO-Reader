@@ -1,9 +1,8 @@
-// swiftlint:disable file_length
+// swiftlint:disable file_length type_body_length
 import Foundation
 import MachOReaderLib
 
 /// Formats Mach-O data structures as human-readable text
-// swiftlint:disable:next type_body_length
 final class TextFormatter {
 
     // MARK: - Properties
@@ -110,31 +109,31 @@ final class TextFormatter {
     // swiftlint:disable:next cyclomatic_complexity
     func formatSummary(_ commandType: LoadCommandType) -> String {
         switch commandType {
-        case .buildVersionCommand(let cmd):
+        case let .buildVersionCommand(cmd):
             return formatSummary(cmd)
-        case .dyldInfoCommand(let cmd):
+        case let .dyldInfoCommand(cmd):
             return formatSummary(cmd)
-        case .dylibCommand(let cmd):
+        case let .dylibCommand(cmd):
             return formatSummary(cmd)
-        case .dylinkerCommand(let cmd):
+        case let .dylinkerCommand(cmd):
             return formatSummary(cmd)
-        case .dysymtabCommand(let cmd):
+        case let .dysymtabCommand(cmd):
             return formatSummary(cmd)
-        case .entryPointCommand(let cmd):
+        case let .entryPointCommand(cmd):
             return formatSummary(cmd)
-        case .linkedItDataCommand(let cmd):
+        case let .linkedItDataCommand(cmd):
             return formatSummary(cmd)
-        case .segmentCommand(let cmd):
+        case let .segmentCommand(cmd):
             return formatSummary(cmd)
-        case .sourceVersionCommand(let cmd):
+        case let .sourceVersionCommand(cmd):
             return formatSummary(cmd)
-        case .symtabCommand(let cmd):
+        case let .symtabCommand(cmd):
             return formatSummary(cmd)
-        case .threadCommand(let cmd):
+        case let .threadCommand(cmd):
             return formatSummary(cmd)
-        case .uuidCommand(let cmd):
+        case let .uuidCommand(cmd):
             return formatSummary(cmd)
-        case .unspecified(let cmd):
+        case let .unspecified(cmd):
             return format(cmd)
         }
     }
@@ -142,31 +141,31 @@ final class TextFormatter {
     // swiftlint:disable:next cyclomatic_complexity
     func formatDetailed(_ commandType: LoadCommandType) -> String {
         switch commandType {
-        case .buildVersionCommand(let cmd):
+        case let .buildVersionCommand(cmd):
             return formatDetailed(cmd)
-        case .dyldInfoCommand(let cmd):
+        case let .dyldInfoCommand(cmd):
             return formatDetailed(cmd)
-        case .dylibCommand(let cmd):
+        case let .dylibCommand(cmd):
             return formatDetailed(cmd)
-        case .dylinkerCommand(let cmd):
+        case let .dylinkerCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .dysymtabCommand(let cmd):
+        case let .dysymtabCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .entryPointCommand(let cmd):
+        case let .entryPointCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .linkedItDataCommand(let cmd):
+        case let .linkedItDataCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .segmentCommand(let cmd):
+        case let .segmentCommand(cmd):
             return formatDetailed(cmd)
-        case .sourceVersionCommand(let cmd):
+        case let .sourceVersionCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .symtabCommand(let cmd):
+        case let .symtabCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .threadCommand(let cmd):
+        case let .threadCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .uuidCommand(let cmd):
+        case let .uuidCommand(cmd):
             return formatSummary(cmd) // No detailed version
-        case .unspecified(let cmd):
+        case let .unspecified(cmd):
             return format(cmd)
         }
     }
@@ -419,14 +418,17 @@ final class TextFormatter {
     }
 
     func formatSummary(_ startsInSegment: DyldChainedSegmentInfo.StartsInSegment) -> String {
-        [
-            "\(config.fieldSeparator)size: \(startsInSegment.size)",
-            "\(config.fieldSeparator)page_size: \(startsInSegment.pageSize)",
-            "\(config.fieldSeparator)pointer_format: \(startsInSegment.pointerFormat.readableValue ?? String(startsInSegment.pointerFormat.rawValue))",
-            "\(config.fieldSeparator)segment_offset: \(startsInSegment.segmentOffset)",
-            "\(config.fieldSeparator)max_valid_pointer: \(startsInSegment.maxValidPointer)",
-            "\(config.fieldSeparator)page_count: \(startsInSegment.pageCount)",
-            "\(config.fieldSeparator)page_start: \(startsInSegment.pageStart.first ?? 0)",
+        let sep = config.fieldSeparator
+        let pointerFormat = startsInSegment.pointerFormat
+        let pointerFormatStr = pointerFormat.readableValue ?? String(pointerFormat.rawValue)
+        return [
+            "\(sep)size: \(startsInSegment.size)",
+            "\(sep)page_size: \(startsInSegment.pageSize)",
+            "\(sep)pointer_format: \(pointerFormatStr)",
+            "\(sep)segment_offset: \(startsInSegment.segmentOffset)",
+            "\(sep)max_valid_pointer: \(startsInSegment.maxValidPointer)",
+            "\(sep)page_count: \(startsInSegment.pageCount)",
+            "\(sep)page_start: \(startsInSegment.pageStart.first ?? 0)",
         ].joined(separator: "\n")
     }
 
@@ -454,13 +456,13 @@ final class TextFormatter {
 
     func format(_ bindOrRebase: DyldChainedPtrBindOrRebase) -> String {
         switch bindOrRebase.underlyingValue {
-        case .bind32(let bind):
+        case let .bind32(bind):
             return format(bind)
-        case .bind64(let bind):
+        case let .bind64(bind):
             return format(bind)
-        case .rebase32(let rebase):
+        case let .rebase32(rebase):
             return format(rebase)
-        case .rebase64(let rebase):
+        case let .rebase64(rebase):
             return format(rebase)
         }
     }
@@ -538,3 +540,5 @@ final class TextFormatter {
         "<unable-to-format:\(type(of: value))>"
     }
 }
+
+// swiftlint:enable file_length type_body_length
