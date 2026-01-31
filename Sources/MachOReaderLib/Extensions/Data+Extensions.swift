@@ -3,6 +3,7 @@ import Foundation
 extension Data {
 
     // MARK: - Deprecated Unsafe Methods
+
     // These methods are kept for backward compatibility but will be removed in a future version.
     // Use BinaryDecoder instead for safe, bounds-checked decoding.
 

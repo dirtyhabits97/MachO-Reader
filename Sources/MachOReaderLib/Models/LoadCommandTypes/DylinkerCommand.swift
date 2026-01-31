@@ -31,12 +31,12 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
         self.init(dylinkerCommand, loadCommand: loadCommand)
     }
 
-    // struct dylinker_command {
-    //   uint32_t	cmd;		/* LC_ID_DYLINKER, LC_LOAD_DYLINKER or
-    //              LC_DYLD_ENVIRONMENT */
-    //   uint32_t	cmdsize;	/* includes pathname string */
-    //   union lc_str    name;		/* dynamic linker's path name */
-    // };
+    /// struct dylinker_command {
+    ///   uint32_t	cmd;		/* LC_ID_DYLINKER, LC_LOAD_DYLINKER or
+    ///              LC_DYLD_ENVIRONMENT */
+    ///   uint32_t	cmdsize;	/* includes pathname string */
+    ///   union lc_str    name;		/* dynamic linker's path name */
+    /// };
     private init(_ dylinkerCommand: dylinker_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
 

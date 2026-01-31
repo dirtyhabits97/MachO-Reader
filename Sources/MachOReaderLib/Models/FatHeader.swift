@@ -1,7 +1,7 @@
 import Foundation
 import MachO
 
-/*
+/**
  * This header file describes the structures of the file format for "fat"
  * architecture specific file (wrapper design).  At the begining of the file
  * there is one fat_header structure followed by a number of fat_arch
@@ -39,10 +39,10 @@ public struct MachOFatHeader {
         self.init(fatHeader: fatHeader, magic: magic, data: data)
     }
 
-    // struct fat_header {
-    //   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
-    //   uint32_t	nfat_arch;	/* number of structs that follow */
-    // };
+    /// struct fat_header {
+    ///   uint32_t	magic;		/* FAT_MAGIC or FAT_MAGIC_64 */
+    ///   uint32_t	nfat_arch;	/* number of structs that follow */
+    /// };
     private init(fatHeader: fat_header, magic: Magic, data: Data) {
         self.magic = magic
         nfat_arc = fatHeader.nfat_arch
@@ -93,13 +93,13 @@ public extension MachOFatHeader {
         public let align: UInt32
         public let reserved: UInt32?
 
-        // struct fat_arch {
-        //   cpu_type_t	cputype;	/* cpu specifier (int) */
-        //   cpu_subtype_t	cpusubtype;	/* machine specifier (int) */
-        //   uint32_t	offset;		/* file offset to this object file */
-        //   uint32_t	size;		/* size of this object file */
-        //   uint32_t	align;		/* alignment as a power of 2 */
-        // };
+        /// struct fat_arch {
+        ///   cpu_type_t	cputype;	/* cpu specifier (int) */
+        ///   cpu_subtype_t	cpusubtype;	/* machine specifier (int) */
+        ///   uint32_t	offset;		/* file offset to this object file */
+        ///   uint32_t	size;		/* size of this object file */
+        ///   uint32_t	align;		/* alignment as a power of 2 */
+        /// };
         init(_ rawValue: fat_arch) {
             cputype = CPUType(rawValue.cputype)
             cpuSubtype = CPUSubType(rawValue.cpusubtype)
@@ -109,14 +109,14 @@ public extension MachOFatHeader {
             reserved = nil
         }
 
-        // struct fat_arch_64 {
-        //   cpu_type_t	cputype;	/* cpu specifier (int) */
-        //   cpu_subtype_t	cpusubtype;	/* machine specifier (int) */
-        //   uint64_t	offset;		/* file offset to this object file */
-        //   uint64_t	size;		/* size of this object file */
-        //   uint32_t	align;		/* alignment as a power of 2 */
-        //   uint32_t	reserved;	/* reserved */
-        // };
+        /// struct fat_arch_64 {
+        ///   cpu_type_t	cputype;	/* cpu specifier (int) */
+        ///   cpu_subtype_t	cpusubtype;	/* machine specifier (int) */
+        ///   uint64_t	offset;		/* file offset to this object file */
+        ///   uint64_t	size;		/* size of this object file */
+        ///   uint32_t	align;		/* alignment as a power of 2 */
+        ///   uint32_t	reserved;	/* reserved */
+        /// };
         init(_ rawValue: fat_arch_64) {
             cputype = CPUType(rawValue.cputype)
             cpuSubtype = CPUSubType(rawValue.cpusubtype)

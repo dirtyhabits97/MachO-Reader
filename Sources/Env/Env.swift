@@ -6,7 +6,9 @@ public let env = Env()
 public final class Env {
 
     private let processInfo: ProcessInfo
-    private var envVars: [String: String] { processInfo.environment }
+    private var envVars: [String: String] {
+        processInfo.environment
+    }
 
     init(processInfo: ProcessInfo = .processInfo) {
         self.processInfo = processInfo

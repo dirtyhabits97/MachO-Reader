@@ -59,8 +59,10 @@ public struct DyldChainedSegmentInfo {
 
     public fileprivate(set) var startsInSegment: StartsInSegment?
 
-    // segInfoOffset == 0 means NO PAGES
-    var hasPages: Bool { segInfoOffset != 0 }
+    /// segInfoOffset == 0 means NO PAGES
+    var hasPages: Bool {
+        segInfoOffset != 0
+    }
 
     init(segmentName: String, segInfoOffset: UInt32) {
         self.segmentName = segmentName

@@ -3,7 +3,7 @@ import MachO
 
 let kByteSwapOrder = NXByteOrder(0)
 
-/*
+/**
  * The load commands directly follow the mach_header.  The total size of all
  * of the commands is given by the sizeofcmds field in the mach_header.  All
  * load commands must have as their first two fields cmd and cmdsize.  The cmd

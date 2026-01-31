@@ -25,7 +25,9 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
     // TODO: consider storing the data in a class to avoid copying it all the time
     private let loadCommand: LoadCommand
 
-    public var cmd: Cmd { loadCommand.cmd }
+    public var cmd: Cmd {
+        loadCommand.cmd
+    }
 
     public let segname: String
 
@@ -62,19 +64,19 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
         self.init(segmentCommand, loadCommand: loadCommand)
     }
 
-    // struct segment_command { /* for 32-bit architectures */
-    //   uint32_t	cmd;		/* LC_SEGMENT */
-    //   uint32_t	cmdsize;	/* includes sizeof section structs */
-    //   char		segname[16];	/* segment name */
-    //   uint32_t	vmaddr;		/* memory address of this segment */
-    //   uint32_t	vmsize;		/* memory size of this segment */
-    //   uint32_t	fileoff;	/* file offset of this segment */
-    //   uint32_t	filesize;	/* amount to map from the file */
-    //   vm_prot_t	maxprot;	/* maximum VM protection */
-    //   vm_prot_t	initprot;	/* initial VM protection */
-    //   uint32_t	nsects;		/* number of sections in segment */
-    //   uint32_t	flags;		/* flags */
-    // };
+    /// struct segment_command { /* for 32-bit architectures */
+    ///   uint32_t	cmd;		/* LC_SEGMENT */
+    ///   uint32_t	cmdsize;	/* includes sizeof section structs */
+    ///   char		segname[16];	/* segment name */
+    ///   uint32_t	vmaddr;		/* memory address of this segment */
+    ///   uint32_t	vmsize;		/* memory size of this segment */
+    ///   uint32_t	fileoff;	/* file offset of this segment */
+    ///   uint32_t	filesize;	/* amount to map from the file */
+    ///   vm_prot_t	maxprot;	/* maximum VM protection */
+    ///   vm_prot_t	initprot;	/* initial VM protection */
+    ///   uint32_t	nsects;		/* number of sections in segment */
+    ///   uint32_t	flags;		/* flags */
+    /// };
     private init(_ segmentCommand: segment_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
 
@@ -103,19 +105,19 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
         self.sections = sections
     }
 
-    // struct segment_command_64 { /* for 64-bit architectures */
-    //   uint32_t	cmd;		/* LC_SEGMENT_64 */
-    //   uint32_t	cmdsize;	/* includes sizeof section_64 structs */
-    //   char		segname[16];	/* segment name */
-    //   uint64_t	vmaddr;		/* memory address of this segment */
-    //   uint64_t	vmsize;		/* memory size of this segment */
-    //   uint64_t	fileoff;	/* file offset of this segment */
-    //   uint64_t	filesize;	/* amount to map from the file */
-    //   vm_prot_t	maxprot;	/* maximum VM protection */
-    //   vm_prot_t	initprot;	/* initial VM protection */
-    //   uint32_t	nsects;		/* number of sections in segment */
-    //   uint32_t	flags;		/* flags */
-    // };
+    /// struct segment_command_64 { /* for 64-bit architectures */
+    ///   uint32_t	cmd;		/* LC_SEGMENT_64 */
+    ///   uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+    ///   char		segname[16];	/* segment name */
+    ///   uint64_t	vmaddr;		/* memory address of this segment */
+    ///   uint64_t	vmsize;		/* memory size of this segment */
+    ///   uint64_t	fileoff;	/* file offset of this segment */
+    ///   uint64_t	filesize;	/* amount to map from the file */
+    ///   vm_prot_t	maxprot;	/* maximum VM protection */
+    ///   vm_prot_t	initprot;	/* initial VM protection */
+    ///   uint32_t	nsects;		/* number of sections in segment */
+    ///   uint32_t	flags;		/* flags */
+    /// };
     private init(_ segmentCommand: segment_command_64, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
 
@@ -146,7 +148,9 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.segment, .segment64] }
+    static var allowedCmds: Set<Cmd> {
+        [.segment, .segment64]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .segmentCommand(SegmentCommand(from: loadCommand))
@@ -205,19 +209,19 @@ public extension SegmentCommand {
         public let reserved2: UInt32
         public let reserved3: UInt32?
 
-        // struct section { /* for 32-bit architectures */
-        //   char		sectname[16];	/* name of this section */
-        //   char		segname[16];	/* segment this section goes in */
-        //   uint32_t	addr;		/* memory address of this section */
-        //   uint32_t	size;		/* size in bytes of this section */
-        //   uint32_t	offset;		/* file offset of this section */
-        //   uint32_t	align;		/* section alignment (power of 2) */
-        //   uint32_t	reloff;		/* file offset of relocation entries */
-        //   uint32_t	nreloc;		/* number of relocation entries */
-        //   uint32_t	flags;		/* flags (section type and attributes)*/
-        //   uint32_t	reserved1;	/* reserved (for offset or index) */
-        //   uint32_t	reserved2;	/* reserved (for count or sizeof) */
-        // };
+        /// struct section { /* for 32-bit architectures */
+        ///   char		sectname[16];	/* name of this section */
+        ///   char		segname[16];	/* segment this section goes in */
+        ///   uint32_t	addr;		/* memory address of this section */
+        ///   uint32_t	size;		/* size in bytes of this section */
+        ///   uint32_t	offset;		/* file offset of this section */
+        ///   uint32_t	align;		/* section alignment (power of 2) */
+        ///   uint32_t	reloff;		/* file offset of relocation entries */
+        ///   uint32_t	nreloc;		/* number of relocation entries */
+        ///   uint32_t	flags;		/* flags (section type and attributes)*/
+        ///   uint32_t	reserved1;	/* reserved (for offset or index) */
+        ///   uint32_t	reserved2;	/* reserved (for count or sizeof) */
+        /// };
         init(_ section: section) {
             sectname = String(char16: section.sectname)
             segname = String(char16: section.segname)
@@ -233,20 +237,20 @@ public extension SegmentCommand {
             reserved3 = nil
         }
 
-        // struct section_64 { /* for 64-bit architectures */
-        //   char		sectname[16];	/* name of this section */
-        //   char		segname[16];	/* segment this section goes in */
-        //   uint64_t	addr;		/* memory address of this section */
-        //   uint64_t	size;		/* size in bytes of this section */
-        //   uint32_t	offset;		/* file offset of this section */
-        //   uint32_t	align;		/* section alignment (power of 2) */
-        //   uint32_t	reloff;		/* file offset of relocation entries */
-        //   uint32_t	nreloc;		/* number of relocation entries */
-        //   uint32_t	flags;		/* flags (section type and attributes)*/
-        //   uint32_t	reserved1;	/* reserved (for offset or index) */
-        //   uint32_t	reserved2;	/* reserved (for count or sizeof) */
-        //   uint32_t	reserved3;	/* reserved */
-        // };
+        /// struct section_64 { /* for 64-bit architectures */
+        ///   char		sectname[16];	/* name of this section */
+        ///   char		segname[16];	/* segment this section goes in */
+        ///   uint64_t	addr;		/* memory address of this section */
+        ///   uint64_t	size;		/* size in bytes of this section */
+        ///   uint32_t	offset;		/* file offset of this section */
+        ///   uint32_t	align;		/* section alignment (power of 2) */
+        ///   uint32_t	reloff;		/* file offset of relocation entries */
+        ///   uint32_t	nreloc;		/* number of relocation entries */
+        ///   uint32_t	flags;		/* flags (section type and attributes)*/
+        ///   uint32_t	reserved1;	/* reserved (for offset or index) */
+        ///   uint32_t	reserved2;	/* reserved (for count or sizeof) */
+        ///   uint32_t	reserved3;	/* reserved */
+        /// };
         init(_ section: section_64) {
             sectname = String(char16: section.sectname)
             segname = String(char16: section.segname)

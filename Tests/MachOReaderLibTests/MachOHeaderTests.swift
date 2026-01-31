@@ -3,7 +3,9 @@ import XCTest
 
 final class MachOHeaderTests: XCTestCase {
 
-    var helloWorldURL: URL? { url(for: "helloworld") }
+    var helloWorldURL: URL? {
+        url(for: "helloworld")
+    }
 
     func test_defaultHeader_whenInvalidArch() throws {
         guard let url = helloWorldURL else { return }

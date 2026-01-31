@@ -1,5 +1,5 @@
-@testable import MachOReaderLib
 import MachO
+@testable import MachOReaderLib
 import XCTest
 
 final class MagicTests: XCTestCase {
@@ -8,7 +8,7 @@ final class MagicTests: XCTestCase {
 
     func test_magic_decodesValidMagic64() {
         // MH_MAGIC_64 = 0xfeedfacf (little-endian bytes: cf fa ed fe)
-        let data = Data([0xcf, 0xfa, 0xed, 0xfe])
+        let data = Data([0xCF, 0xFA, 0xED, 0xFE])
 
         let magic = Magic(peek: data)
 
@@ -20,7 +20,7 @@ final class MagicTests: XCTestCase {
 
     func test_magic_decodesValidMagic32() {
         // MH_MAGIC = 0xfeedface (little-endian bytes: ce fa ed fe)
-        let data = Data([0xce, 0xfa, 0xed, 0xfe])
+        let data = Data([0xCE, 0xFA, 0xED, 0xFE])
 
         let magic = Magic(peek: data)
 
@@ -32,7 +32,7 @@ final class MagicTests: XCTestCase {
     func test_magic_decodesFatMagic() {
         // FAT_MAGIC = 0xcafebabe
         // When read as little-endian UInt32 from bytes [be, ba, fe, ca], we get 0xcafebabe
-        let data = Data([0xbe, 0xba, 0xfe, 0xca])
+        let data = Data([0xBE, 0xBA, 0xFE, 0xCA])
 
         let magic = Magic(peek: data)
 
@@ -42,7 +42,7 @@ final class MagicTests: XCTestCase {
 
     func test_magic_decodesSwappedMagic() {
         // MH_CIGAM_64 = 0xcffaedfe (byte-swapped MH_MAGIC_64)
-        let data = Data([0xfe, 0xed, 0xfa, 0xcf])
+        let data = Data([0xFE, 0xED, 0xFA, 0xCF])
 
         let magic = Magic(peek: data)
 
@@ -64,7 +64,7 @@ final class MagicTests: XCTestCase {
     }
 
     func test_magic_readableValue_returnsNil_whenUnknown() {
-        let unknownMagic = Magic(0x12345678)
+        let unknownMagic = Magic(0x1234_5678)
 
         XCTAssertNil(unknownMagic.readableValue)
     }
@@ -84,7 +84,7 @@ final class MagicTests: XCTestCase {
 
     func test_magic_isValid_returnsFalse_forInvalidMagic() {
         // Shell script shebang read as little-endian: "#!/b" = 0x622f2123
-        let shellScriptMagic = Magic(0x622f2123)
+        let shellScriptMagic = Magic(0x622F_2123)
 
         XCTAssertFalse(shellScriptMagic.isValid)
     }

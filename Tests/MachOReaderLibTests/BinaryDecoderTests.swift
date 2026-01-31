@@ -12,7 +12,7 @@ final class BinaryDecoderTests: XCTestCase {
         let value = try decoder.decode(UInt32.self, at: 0)
 
         // Little-endian: 0x04030201
-        XCTAssertEqual(value, 0x04030201)
+        XCTAssertEqual(value, 0x0403_0201)
     }
 
     func test_decodeUInt64_returnsCorrectValue() throws {
@@ -22,7 +22,7 @@ final class BinaryDecoderTests: XCTestCase {
         let value = try decoder.decode(UInt64.self, at: 0)
 
         // Little-endian: 0x0807060504030201
-        XCTAssertEqual(value, 0x0807060504030201)
+        XCTAssertEqual(value, 0x0807_0605_0403_0201)
     }
 
     func test_decodeAtOffset_returnsCorrectValue() throws {
@@ -31,7 +31,7 @@ final class BinaryDecoderTests: XCTestCase {
 
         let value = try decoder.decode(UInt32.self, at: 2)
 
-        XCTAssertEqual(value, 0x04030201)
+        XCTAssertEqual(value, 0x0403_0201)
     }
 
     // MARK: - Streaming Decode Tests
@@ -98,9 +98,9 @@ final class BinaryDecoderTests: XCTestCase {
         let decoder = BinaryDecoder(data: data)
 
         XCTAssertThrowsError(
-            try decoder.decode(UInt8.self, count: 20_000, maxCount: 10_000, at: 0)
+            try decoder.decode(UInt8.self, count: 20000, maxCount: 10000, at: 0)
         ) { error in
-            guard case BinaryDecodingError.invalidArrayCount(20_000, max: 10_000) = error else {
+            guard case BinaryDecodingError.invalidArrayCount(20000, max: 10000) = error else {
                 XCTFail("Expected invalidArrayCount error, got \(error)")
                 return
             }
@@ -233,7 +233,7 @@ final class BinaryDecoderTests: XCTestCase {
         let subdecoder = try decoder.subdecoder(at: 2)
         let value = try subdecoder.decode(UInt32.self, at: 0)
 
-        XCTAssertEqual(value, 0x04030201)
+        XCTAssertEqual(value, 0x0403_0201)
     }
 
     func test_subdecoder_withLength_limitsSize() throws {
@@ -308,7 +308,7 @@ final class BinaryDecoderTests: XCTestCase {
 
         let value: UInt32 = try data.decode(UInt32.self)
 
-        XCTAssertEqual(value, 0x04030201)
+        XCTAssertEqual(value, 0x0403_0201)
     }
 
     func test_dataExtension_binaryDecoder() {
@@ -337,7 +337,7 @@ final class BinaryDecoderTests: XCTestCase {
 
         let value = try decoder.decode(TestStruct.self)
 
-        XCTAssertEqual(value.magic, 0x04030201)
+        XCTAssertEqual(value.magic, 0x0403_0201)
         XCTAssertEqual(value.version, 0x0605)
     }
 
@@ -353,6 +353,6 @@ final class BinaryDecoderTests: XCTestCase {
         // Decode UInt64 from offset 1 (likely misaligned)
         let value = try decoder.decode(UInt64.self, at: 1)
 
-        XCTAssertEqual(value, 0x0807060504030201)
+        XCTAssertEqual(value, 0x0807_0605_0403_0201)
     }
 }

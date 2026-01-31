@@ -9,7 +9,7 @@ public enum MachOFileError: Error, CustomStringConvertible {
 
     public var description: String {
         switch self {
-        case .invalidMagic(let value):
+        case let .invalidMagic(value):
             return "Invalid Mach-O magic: 0x\(String(value, radix: 16)). The file is not a valid Mach-O binary."
         }
     }

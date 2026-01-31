@@ -14,7 +14,9 @@ public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformab
 
     private let loadCommand: LoadCommand
 
-    public var cmd: Cmd { loadCommand.cmd }
+    public var cmd: Cmd {
+        loadCommand.cmd
+    }
 
     public let dylib: Dylib
 
@@ -33,12 +35,12 @@ public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformab
         self.init(dylibCommand, loadCommand: loadCommand)
     }
 
-    // struct dylib_command {
-    //   uint32_t	cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,
-    //              LC_REEXPORT_DYLIB */
-    //   uint32_t	cmdsize;	/* includes pathname string */
-    //   struct dylib	dylib;		/* the library identification */
-    // };
+    /// struct dylib_command {
+    ///   uint32_t	cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,
+    ///              LC_REEXPORT_DYLIB */
+    ///   uint32_t	cmdsize;	/* includes pathname string */
+    ///   struct dylib	dylib;		/* the library identification */
+    /// };
     init(_ dylibCommand: dylib_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         dylib = Dylib(command: dylibCommand, data: loadCommand.data)
@@ -81,12 +83,12 @@ public extension DylibCommand {
         public let currentVersion: SemanticVersion
         public let compatibilityVersion: SemanticVersion
 
-        // struct dylib {
-        //     union lc_str  name;			/* library's path name */
-        //     uint32_t timestamp;			/* library's build time stamp */
-        //     uint32_t current_version;		/* library's current version number */
-        //     uint32_t compatibility_version;	/* library's compatibility vers number*/
-        // };
+        /// struct dylib {
+        ///     union lc_str  name;			/* library's path name */
+        ///     uint32_t timestamp;			/* library's build time stamp */
+        ///     uint32_t current_version;		/* library's current version number */
+        ///     uint32_t compatibility_version;	/* library's compatibility vers number*/
+        /// };
         init(command: dylib_command, data: Data) {
             let offset = Int(command.dylib.name.offset)
             let data = data.advanced(by: offset)

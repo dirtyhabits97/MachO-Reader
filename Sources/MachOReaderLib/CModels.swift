@@ -39,32 +39,32 @@ struct dyld_chained_starts_in_image: CustomExtractable {
     }
 }
 
-// DYLD_CHAINED_IMPORT
-// struct dyld_chained_import
-// {
-//     uint32_t    lib_ordinal :  8,
-//                 weak_import :  1,
-//                 name_offset : 23;
-// };
+/// DYLD_CHAINED_IMPORT
+/// struct dyld_chained_import
+/// {
+///     uint32_t    lib_ordinal :  8,
+///                 weak_import :  1,
+///                 name_offset : 23;
+/// };
 typealias dyld_chained_import = UInt32
 
-// This struct is embedded in dyld_chain_starts_in_image
-// and passed down to the kernel for page-in linking
-// struct dyld_chained_starts_in_segment
-// {
-//     uint32_t    size;               size of this (amount kernel needs to copy)
-//     uint16_t    page_size;          0x1000 or 0x4000
-//     uint16_t    pointer_format;     DYLD_CHAINED_PTR_*
-//     uint64_t    segment_offset;     offset in memory to start of segment
-//     uint32_t    max_valid_pointer;  for 32-bit OS, any value beyond this is not a pointer
-//     uint16_t    page_count;         how many pages are in array
-//     uint16_t    page_start[1];      each entry is offset in each page of first element in chain
-//                                     or DYLD_CHAINED_PTR_START_NONE if no fixups on page
-//  uint16_t    chain_starts[1];    // some 32-bit formats may require multiple starts per page.
-//                                     for those, if high bit is set in page_starts[], then it
-//                                     is index into chain_starts[] which is a list of starts
-//                                     the last of which has the high bit set
-// };
+/// This struct is embedded in dyld_chain_starts_in_image
+/// and passed down to the kernel for page-in linking
+/// struct dyld_chained_starts_in_segment
+/// {
+///     uint32_t    size;               size of this (amount kernel needs to copy)
+///     uint16_t    page_size;          0x1000 or 0x4000
+///     uint16_t    pointer_format;     DYLD_CHAINED_PTR_*
+///     uint64_t    segment_offset;     offset in memory to start of segment
+///     uint32_t    max_valid_pointer;  for 32-bit OS, any value beyond this is not a pointer
+///     uint16_t    page_count;         how many pages are in array
+///     uint16_t    page_start[1];      each entry is offset in each page of first element in chain
+///                                     or DYLD_CHAINED_PTR_START_NONE if no fixups on page
+///  uint16_t    chain_starts[1];    // some 32-bit formats may require multiple starts per page.
+///                                     for those, if high bit is set in page_starts[], then it
+///                                     is index into chain_starts[] which is a list of starts
+///                                     the last of which has the high bit set
+/// };
 @dynamicMemberLookup
 struct dyld_chained_starts_in_segment: CustomExtractable {
 
@@ -93,43 +93,43 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     }
 }
 
-// struct dyld_chained_ptr_64_bind
-// {
-//     uint64_t    ordinal   : 24,
-//                 addend    :  8,   // 0 thru 255
-//                 reserved  : 19,   // all zeros
-//                 next      : 12,   // 4-byte stride
-//                 bind      :  1;   // == 1
-// };
+/// struct dyld_chained_ptr_64_bind
+/// {
+///     uint64_t    ordinal   : 24,
+///                 addend    :  8,   // 0 thru 255
+///                 reserved  : 19,   // all zeros
+///                 next      : 12,   // 4-byte stride
+///                 bind      :  1;   // == 1
+/// };
 typealias dyld_chained_ptr_64_bind = UInt64
 
-// DYLD_CHAINED_PTR_64/DYLD_CHAINED_PTR_64_OFFSET
-// struct dyld_chained_ptr_64_rebase
-// {
-//     uint64_t    target    : 36,    // 64GB max image size (DYLD_CHAINED_PTR_64 => vmAddr, DYLD_CHAINED_PTR_64_OFFSET => runtimeOffset)
-//                 high8     :  8,    // top 8 bits set to this (DYLD_CHAINED_PTR_64 => after slide added, DYLD_CHAINED_PTR_64_OFFSET => before slide added)
-//                 reserved  :  7,    // all zeros
-//                 next      : 12,    // 4-byte stride
-//                 bind      :  1;    // == 0
-// };
+/// DYLD_CHAINED_PTR_64/DYLD_CHAINED_PTR_64_OFFSET
+/// struct dyld_chained_ptr_64_rebase
+/// {
+///     uint64_t    target    : 36,    // 64GB max image size (DYLD_CHAINED_PTR_64 => vmAddr, DYLD_CHAINED_PTR_64_OFFSET => runtimeOffset)
+///                 high8     :  8,    // top 8 bits set to this (DYLD_CHAINED_PTR_64 => after slide added, DYLD_CHAINED_PTR_64_OFFSET => before slide added)
+///                 reserved  :  7,    // all zeros
+///                 next      : 12,    // 4-byte stride
+///                 bind      :  1;    // == 0
+/// };
 typealias dyld_chained_ptr_64_rebase = UInt64
 
-// DYLD_CHAINED_PTR_32
-// struct dyld_chained_ptr_32_bind
-// {
-//     uint32_t    ordinal   : 20,
-//                 addend    :  6,   // 0 thru 63
-//                 next      :  5,   // 4-byte stride
-//                 bind      :  1;   // == 1
-// };
+/// DYLD_CHAINED_PTR_32
+/// struct dyld_chained_ptr_32_bind
+/// {
+///     uint32_t    ordinal   : 20,
+///                 addend    :  6,   // 0 thru 63
+///                 next      :  5,   // 4-byte stride
+///                 bind      :  1;   // == 1
+/// };
 typealias dyld_chained_ptr_32_bind = UInt32
 
-// struct dyld_chained_ptr_32_rebase
-// {
-//     uint32_t    target    : 26,   // vmaddr, 64MB max image size
-//                 next      :  5,   // 4-byte stride
-//                 bind      :  1;   // == 0
-// };
+/// struct dyld_chained_ptr_32_rebase
+/// {
+///     uint32_t    target    : 26,   // vmaddr, 64MB max image size
+///                 next      :  5,   // 4-byte stride
+///                 bind      :  1;   // == 0
+/// };
 typealias dyld_chained_ptr_32_rebase = UInt32
 
 // swiftlint:enable type_name identifier_name

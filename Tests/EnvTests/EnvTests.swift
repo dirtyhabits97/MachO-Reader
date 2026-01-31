@@ -7,7 +7,7 @@ final class EnvTests: XCTestCase {
     private var processInfo = TestProcessInfo()
     private var env = Env()
 
-    func testReadEnvVars() throws {
+    func testReadEnvVars() {
         // given
         XCTAssertNil(env.FOO)
         XCTAssertNil(env.BAR)
@@ -32,5 +32,7 @@ private class TestProcessInfo: ProcessInfo {
 
     var testEnvironment = [String: String]()
 
-    override var environment: [String: String] { testEnvironment }
+    override var environment: [String: String] {
+        testEnvironment
+    }
 }

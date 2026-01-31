@@ -34,15 +34,15 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
         self.init(buildVersionCommand, loadCommand: loadCommand)
     }
 
-    // struct build_version_command {
-    //     uint32_t	cmd;		/* LC_BUILD_VERSION */
-    //     uint32_t	cmdsize;	/* sizeof(struct build_version_command) plus */
-    //         /* ntools * sizeof(struct build_tool_version) */
-    //     uint32_t	platform;	/* platform */
-    //     uint32_t	minos;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
-    //     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
-    //     uint32_t	ntools;		/* number of tool entries following this */
-    // };
+    /// struct build_version_command {
+    ///     uint32_t	cmd;		/* LC_BUILD_VERSION */
+    ///     uint32_t	cmdsize;	/* sizeof(struct build_version_command) plus */
+    ///         /* ntools * sizeof(struct build_tool_version) */
+    ///     uint32_t	platform;	/* platform */
+    ///     uint32_t	minos;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+    ///     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
+    ///     uint32_t	ntools;		/* number of tool entries following this */
+    /// };
     private init(_ buildVersionCommand: build_version_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
 
@@ -68,7 +68,9 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.buildVersion] }
+    static var allowedCmds: Set<Cmd> {
+        [.buildVersion]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .buildVersionCommand(BuildVersionCommand(from: loadCommand))
@@ -88,10 +90,10 @@ public extension BuildVersionCommand {
         public let tool: Tool
         public let version: SemanticVersion
 
-        // struct build_tool_version {
-        //     uint32_t	tool;		/* enum for the tool */
-        //     uint32_t	version;	/* version number of the tool */
-        // };
+        /// struct build_tool_version {
+        ///     uint32_t	tool;		/* enum for the tool */
+        ///     uint32_t	version;	/* version number of the tool */
+        /// };
         init(_ rawValue: build_tool_version) {
             tool = Tool(rawValue.tool)
             version = SemanticVersion(rawValue.version)

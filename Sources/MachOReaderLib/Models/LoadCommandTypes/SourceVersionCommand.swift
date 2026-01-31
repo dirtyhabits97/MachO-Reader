@@ -27,11 +27,11 @@ public struct SourceVersionCommand: LoadCommandTypeRepresentable, LoadCommandTra
         self.init(sourceVersionCommand, loadCommand: loadCommand)
     }
 
-    // struct source_version_command {
-    //     uint32_t  cmd;	/* LC_SOURCE_VERSION */
-    //     uint32_t  cmdsize;	/* 16 */
-    //     uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
-    // };
+    /// struct source_version_command {
+    ///     uint32_t  cmd;	/* LC_SOURCE_VERSION */
+    ///     uint32_t  cmdsize;	/* 16 */
+    ///     uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
+    /// };
     private init(_ sourceVersionCommand: source_version_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = sourceVersionCommand
@@ -39,7 +39,9 @@ public struct SourceVersionCommand: LoadCommandTypeRepresentable, LoadCommandTra
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.sourceVersion] }
+    static var allowedCmds: Set<Cmd> {
+        [.sourceVersion]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .sourceVersionCommand(SourceVersionCommand(from: loadCommand))
@@ -64,7 +66,7 @@ public extension SourceVersionCommand {
         E: Int
     )
 
-    // uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
+    /// uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
     var version: SourceVersion {
         // In order to get B through E, we need a 10bit mask
         let mask: UInt64 = 0b11_1111_1111
