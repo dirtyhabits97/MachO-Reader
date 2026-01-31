@@ -22,7 +22,10 @@ public struct Magic: RawRepresentable, Equatable {
     // MARK: - Lifecycle
 
     public init(peek data: Data) {
-        rawValue = data.extract(UInt32.self)
+        guard let value = try? data.decode(UInt32.self, at: 0) else {
+            fatalError("Failed to decode magic from data of size \(data.count)")
+        }
+        rawValue = value
     }
 
     public init(_ rawValue: UInt32) {

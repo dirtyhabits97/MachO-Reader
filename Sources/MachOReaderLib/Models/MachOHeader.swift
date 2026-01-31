@@ -21,7 +21,9 @@ public struct MachOHeader {
         let magic = Magic(peek: data)
 
         if magic.isMagic64 {
-            var header = data.extract(mach_header_64.self)
+            guard var header = try? data.decode(mach_header_64.self, at: 0) else {
+                fatalError("Failed to decode mach_header_64 from data of size \(data.count)")
+            }
 
             if magic.isSwapped {
                 swap_mach_header_64(&header, kByteSwapOrder)
@@ -29,7 +31,9 @@ public struct MachOHeader {
 
             self.init(header, magic: magic)
         } else {
-            var header = data.extract(mach_header.self)
+            guard var header = try? data.decode(mach_header.self, at: 0) else {
+                fatalError("Failed to decode mach_header from data of size \(data.count)")
+            }
 
             if magic.isSwapped {
                 swap_mach_header(&header, kByteSwapOrder)
