@@ -1,9 +1,9 @@
 import Foundation
 
-public let env = Env()
+public nonisolated(unsafe) let env = Env()
 
 @dynamicMemberLookup
-public final class Env: Sendable {
+public final class Env {
 
     private let processInfo: ProcessInfo
     private var envVars: [String: String] {

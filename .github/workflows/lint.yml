@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: SwiftLint
-        uses: realm/SwiftLint@v0.63.2
+        uses: norio-nomura/action-swiftlint@3.2.1
         with:
           args: --strict

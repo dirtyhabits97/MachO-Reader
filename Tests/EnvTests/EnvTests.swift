@@ -28,7 +28,7 @@ final class EnvTests: XCTestCase {
     }
 }
 
-private class TestProcessInfo: ProcessInfo {
+private class TestProcessInfo: ProcessInfo, @unchecked Sendable {
 
     var testEnvironment = [String: String]()
 
