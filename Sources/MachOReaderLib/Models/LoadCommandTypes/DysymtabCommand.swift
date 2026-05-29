@@ -75,7 +75,9 @@ public struct DysymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.dysymtab] }
+    static var allowedCmds: Set<Cmd> {
+        [.dysymtab]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .dysymtabCommand(DysymtabCommand(from: loadCommand))

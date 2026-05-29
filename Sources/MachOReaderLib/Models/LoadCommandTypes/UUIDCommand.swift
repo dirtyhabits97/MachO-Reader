@@ -12,7 +12,9 @@ public struct UUIDCommand: LoadCommandTypeRepresentable, LoadCommandTransformabl
     private let underlyingValue: uuid_command
     private let loadCommand: LoadCommand
 
-    public var uuid: UUID { UUID(uuid: underlyingValue.uuid) }
+    public var uuid: UUID {
+        UUID(uuid: underlyingValue.uuid)
+    }
 
     // MARK: - Lifecycle
 
@@ -29,11 +31,11 @@ public struct UUIDCommand: LoadCommandTypeRepresentable, LoadCommandTransformabl
         self.init(uuidCommand, loadCommand: loadCommand)
     }
 
-    // struct uuid_command {
-    //     uint32_t	cmd;		/* LC_UUID */
-    //     uint32_t	cmdsize;	/* sizeof(struct uuid_command) */
-    //     uint8_t	uuid[16];	/* the 128-bit uuid */
-    // };
+    /// struct uuid_command {
+    ///     uint32_t	cmd;		/* LC_UUID */
+    ///     uint32_t	cmdsize;	/* sizeof(struct uuid_command) */
+    ///     uint8_t	uuid[16];	/* the 128-bit uuid */
+    /// };
     private init(_ uuidCommand: uuid_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = uuidCommand
@@ -41,7 +43,9 @@ public struct UUIDCommand: LoadCommandTypeRepresentable, LoadCommandTransformabl
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.uuid] }
+    static var allowedCmds: Set<Cmd> {
+        [.uuid]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .uuidCommand(UUIDCommand(from: loadCommand))

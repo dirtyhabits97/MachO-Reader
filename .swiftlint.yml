@@ -2,5 +2,9 @@ included:
   - Sources
   - Tests
 disabled_rules:
+  - large_tuple
   - todo
   - trailing_comma
+strict: true
+line_length:
+  ignores_comments: true

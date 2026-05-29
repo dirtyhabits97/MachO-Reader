@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -12,7 +12,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.7.0"),
     ],
     targets: [
         .executableTarget(
@@ -25,15 +25,23 @@ let package = Package(
         .target(
             name: "MachOReaderLib"
         ),
+        .target(
+            name: "Env"
+        ),
         .testTarget(
             name: "MachOReaderLibTests",
             dependencies: [
                 "MachOReaderLib",
+                "Env",
             ],
             resources: [
                 .process("Fixtures/helloworld"),
-                .process("Fixtures/helloworld.swift"),
+                .process("Fixtures/helloworld.swift.txt"),
             ]
+        ),
+        .testTarget(
+            name: "EnvTests",
+            dependencies: ["Env"]
         ),
     ]
 )

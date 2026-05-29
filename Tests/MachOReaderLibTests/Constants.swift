@@ -5,7 +5,7 @@ import XCTest
 ///
 /// Triggers XCTFail if not found.
 func url(for resource: String) -> URL? {
-    if let url = Bundle.module.url(forResource: resource, withExtension: nil) {
+    if let url = getFixtureURL(resource) {
         return url
     }
     XCTFail("Failed to get URL for \(resource).")

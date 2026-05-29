@@ -25,7 +25,7 @@ public struct DyldChainedFixupsHeader {
 
 public extension DyldChainedFixupsHeader {
 
-    struct ImportsFormat: RawRepresentable, Equatable, Readable {
+    struct ImportsFormat: RawRepresentable, Equatable, Readable, Sendable {
 
         public let rawValue: UInt32
 
@@ -54,7 +54,7 @@ public extension DyldChainedFixupsHeader {
         }
     }
 
-    struct SymbolsFormat: RawRepresentable, Equatable, Readable {
+    struct SymbolsFormat: RawRepresentable, Equatable, Readable, Sendable {
 
         public let rawValue: UInt32
 

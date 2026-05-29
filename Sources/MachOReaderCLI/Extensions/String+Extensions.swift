@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Formatters
+// MARK: - Hex Formatters
 
 extension String {
 
@@ -15,21 +15,26 @@ extension String {
     init(hex: UInt64) {
         self.init("0x" + String(format: "%09llx", hex))
     }
+}
+
+// MARK: - CLI-specific Formatters
+
+extension String {
 
     static func cmd(_ cmd: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", cmd))
+        "0x" + String(format: "%08llx", cmd)
     }
 
     static func filetype(_ filetype: Int) -> String {
-        self.init("0x" + String(format: "%08llx", filetype))
+        "0x" + String(format: "%08llx", filetype)
     }
 
     static func flags(_ flags: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", flags))
+        "0x" + String(format: "%08llx", flags)
     }
 
     static func magic(_ magic: UInt32) -> String {
-        self.init("0x" + String(format: "%08llx", magic))
+        "0x" + String(format: "%08llx", magic)
     }
 }
 

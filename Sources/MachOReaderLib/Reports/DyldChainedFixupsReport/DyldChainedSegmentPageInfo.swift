@@ -25,6 +25,13 @@ struct DyldChainedSegmentPageInfoBuilder {
                     + UInt32(startsInSegment.pageSize * 0)
                     + UInt32(startsInSegment.pageStart[idx])
 
+                // Each fixup advances chainedOffset by `next * stride` bytes; the stride
+                // depends on the pointer format (e.g. arm64e uses 8, generic 64-bit uses 4).
+                // A page holds at most pageSize / stride fixups, which also bounds the walk
+                // against a malformed `next` that would otherwise loop forever.
+                let stride = startsInSegment.pointerFormat.stride
+                let maxFixupsPerPage = stride > 0 ? Int(startsInSegment.pageSize) / Int(stride) : 0
+
                 var done = false
                 while !done {
                     let data = fixupsReport.file.base.advanced(by: Int(chainedOffset))
@@ -40,10 +47,10 @@ struct DyldChainedSegmentPageInfoBuilder {
 
                     page.bindOrRebase.append(bindOrRebase)
 
-                    if bindOrRebase.next == 0 {
+                    if bindOrRebase.next == 0 || page.bindOrRebase.count >= maxFixupsPerPage {
                         done = true
                     } else {
-                        chainedOffset += UInt32(bindOrRebase.next) * 4
+                        chainedOffset += UInt32(bindOrRebase.next) * stride
                     }
                 }
 

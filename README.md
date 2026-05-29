@@ -4,7 +4,7 @@ Playground project to learn more about the Mach-O file format.
 
 ## How to run
 
-`swift run MachO-Reader <path-to-binary>`
+`swift run macho-reader <path-to-binary>`
 
 You should see a similar output:
 ![image](./images/example.png)

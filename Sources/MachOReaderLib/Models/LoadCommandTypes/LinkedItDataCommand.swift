@@ -28,17 +28,17 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTran
         self.init(linkedItDataCommand, loadCommand: loadCommand)
     }
 
-    // struct linkedit_data_command {
-    //     uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
-    //            LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
-    //            LC_DYLIB_CODE_SIGN_DRS,
-    //            LC_LINKER_OPTIMIZATION_HINT,
-    //            LC_DYLD_EXPORTS_TRIE, or
-    //            LC_DYLD_CHAINED_FIXUPS. */
-    //     uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
-    //     uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
-    //     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
-    // };
+    /// struct linkedit_data_command {
+    ///     uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+    ///            LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
+    ///            LC_DYLIB_CODE_SIGN_DRS,
+    ///            LC_LINKER_OPTIMIZATION_HINT,
+    ///            LC_DYLD_EXPORTS_TRIE, or
+    ///            LC_DYLD_CHAINED_FIXUPS. */
+    ///     uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
+    ///     uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
+    ///     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
+    /// };
     private init(_ linkedItDataCommand: linkedit_data_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = linkedItDataCommand

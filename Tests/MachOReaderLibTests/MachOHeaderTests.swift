@@ -3,7 +3,9 @@ import XCTest
 
 final class MachOHeaderTests: XCTestCase {
 
-    var helloWorldURL: URL? { url(for: "helloworld") }
+    var helloWorldURL: URL? {
+        url(for: "helloworld")
+    }
 
     func test_defaultHeader_whenInvalidArch() throws {
         guard let url = helloWorldURL else { return }
@@ -15,6 +17,6 @@ final class MachOHeaderTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        XCTAssertEqual(file.header.cputype, .arm_64)
+        XCTAssertEqual(file.header.cputype, .arm64)
     }
 }

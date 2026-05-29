@@ -30,3 +30,5 @@ extension LoadCommand {
         type.allowedCmds.contains(cmd)
     }
 }
+
+typealias LoadCommandModel = LoadCommandTransformable & LoadCommandTypeRepresentable

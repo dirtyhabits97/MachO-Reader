@@ -30,12 +30,12 @@ public struct EntryPointCommand: LoadCommandTypeRepresentable, LoadCommandTransf
         self.init(entryPointCommand, loadCommand: loadCommand)
     }
 
-    // struct entry_point_command {
-    //     uint32_t  cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
-    //     uint32_t  cmdsize;	/* 24 */
-    //     uint64_t  entryoff;	/* file (__TEXT) offset of main() */
-    //     uint64_t  stacksize;/* if not zero, initial stack size */
-    // };
+    /// struct entry_point_command {
+    ///     uint32_t  cmd;	/* LC_MAIN only used in MH_EXECUTE filetypes */
+    ///     uint32_t  cmdsize;	/* 24 */
+    ///     uint64_t  entryoff;	/* file (__TEXT) offset of main() */
+    ///     uint64_t  stacksize;/* if not zero, initial stack size */
+    /// };
     private init(_ entryPointCommand: entry_point_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = entryPointCommand
@@ -49,7 +49,9 @@ public struct EntryPointCommand: LoadCommandTypeRepresentable, LoadCommandTransf
 
     // MARK: - LoadCommandTypeRepresentable
 
-    static var allowedCmds: Set<Cmd> { [.main] }
+    static var allowedCmds: Set<Cmd> {
+        [.main]
+    }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {
         .entryPointCommand(EntryPointCommand(from: loadCommand))

@@ -3,7 +3,7 @@ import MachO
 
 let kByteSwapOrder = NXByteOrder(0)
 
-/*
+/**
  * The load commands directly follow the mach_header.  The total size of all
  * of the commands is given by the sizeofcmds field in the mach_header.  All
  * load commands must have as their first two fields cmd and cmdsize.  The cmd
@@ -37,7 +37,9 @@ public struct LoadCommand {
         //   uint32_t cmd;		/* type of load command */
         //   uint32_t cmdsize;	/* total size of command in bytes */
         // };
-        var loadCommand = data.extract(load_command.self)
+        guard var loadCommand = try? data.decode(load_command.self, at: 0) else {
+            fatalError("Failed to decode load_command from data of size \(data.count)")
+        }
 
         if isSwapped {
             swap_load_command(&loadCommand, kByteSwapOrder)
