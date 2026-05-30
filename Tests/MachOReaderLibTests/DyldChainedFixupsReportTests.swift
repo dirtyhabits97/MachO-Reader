@@ -46,6 +46,20 @@ final class DyldChainedFixupsReportTests: XCTestCase {
         XCTAssertGreaterThan(totalEntries, 0)
     }
 
+    func test_throwsWhenBinaryHasNoChainedFixups() throws {
+        // /bin/ls uses the older dyld-info / rebase-opcode style, so its x86_64
+        // slice has no LC_DYLD_CHAINED_FIXUPS command. Building the report must
+        // throw gracefully rather than crash with a fatalError.
+        // Fail loudly if the fixture is missing — otherwise moving/removing it
+        // would silently skip this test and let the crash regress unnoticed.
+        let url = try XCTUnwrap(url(for: "ls"), "Missing 'ls' fixture")
+
+        let file = try MachOFile(from: url, arch: "x86_64")
+        XCTAssertThrowsError(try DyldChainedFixupsReport(file: file)) { error in
+            XCTAssertEqual(error as? MachOFileError, .missingDyldChainedFixups)
+        }
+    }
+
     func test_fixtureUsesGeneric64OffsetFormat() {
         // The helloworld fixture is a plain arm64 binary, so its chained fixups use
         // the generic 64-bit offset format (4-byte stride) and decode to the

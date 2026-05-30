@@ -2,15 +2,20 @@ import Foundation
 import MachO
 
 /// Errors that can occur when parsing a Mach-O file.
-public enum MachOFileError: Error, CustomStringConvertible {
+public enum MachOFileError: Error, Equatable, CustomStringConvertible {
 
     /// The file does not have a valid Mach-O magic number.
     case invalidMagic(UInt32)
+
+    /// The file does not contain an `LC_DYLD_CHAINED_FIXUPS` load command.
+    case missingDyldChainedFixups
 
     public var description: String {
         switch self {
         case let .invalidMagic(value):
             return "Invalid Mach-O magic: 0x\(String(value, radix: 16)). The file is not a valid Mach-O binary."
+        case .missingDyldChainedFixups:
+            return "This Mach-O binary does not contain an LC_DYLD_CHAINED_FIXUPS load command."
         }
     }
 }
@@ -65,7 +70,7 @@ public struct MachOFile {
 
     // MARK: - Reports
 
-    public func dyldChainedFixupsReport() -> DyldChainedFixupsReport {
-        DyldChainedFixupsReport(file: self)
+    public func dyldChainedFixupsReport() throws -> DyldChainedFixupsReport {
+        try DyldChainedFixupsReport(file: self)
     }
 }

@@ -16,9 +16,9 @@ public final class DyldChainedFixupsReport {
 
     // MARK: - Lifecycle
 
-    init(file: MachOFile) {
+    init(file: MachOFile) throws {
         guard let dyldChainedFixups = file.commands.getDyldChainedFixups() else {
-            fatalError("Expected a DyldChainedFixups command in the macho file.")
+            throw MachOFileError.missingDyldChainedFixups
         }
         fixupData = file.base.advanced(by: Int(dyldChainedFixups.dataoff))
         self.file = file

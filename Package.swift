@@ -37,6 +37,7 @@ let package = Package(
             resources: [
                 .process("Fixtures/helloworld"),
                 .process("Fixtures/helloworld.swift.txt"),
+                .process("Fixtures/ls"),
             ]
         ),
         .testTarget(

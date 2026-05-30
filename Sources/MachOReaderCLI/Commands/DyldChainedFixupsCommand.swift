@@ -33,7 +33,7 @@ struct DyldChainedFixupsCommand: ParsableCommand {
         let url = URL(fileURLWithPath: expandedPath)
 
         let file = try MachOFile(from: url, arch: arch)
-        let report = file.dyldChainedFixupsReport()
+        let report = try file.dyldChainedFixupsReport()
 
         switch format {
         case .text:
