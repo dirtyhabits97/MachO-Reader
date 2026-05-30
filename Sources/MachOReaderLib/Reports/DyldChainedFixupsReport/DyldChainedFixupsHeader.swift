@@ -46,10 +46,10 @@ public extension DyldChainedFixupsHeader {
 
         public var readableValue: String? {
             switch self {
-            case .DYLD_CHAINED_IMPORT: return "DYLD_CHAINED_IMPORT"
-            case .DYLD_CHAINED_IMPORT_ADDEND: return "DYLD_CHAINED_IMPORT_ADDEND"
-            case .DYLD_CHAINED_IMPORT_ADDEND_64: return "DYLD_CHAINED_IMPORT_ADDEND_64"
-            default: return nil
+            case .DYLD_CHAINED_IMPORT: "DYLD_CHAINED_IMPORT"
+            case .DYLD_CHAINED_IMPORT_ADDEND: "DYLD_CHAINED_IMPORT_ADDEND"
+            case .DYLD_CHAINED_IMPORT_ADDEND_64: "DYLD_CHAINED_IMPORT_ADDEND_64"
+            default: nil
             }
         }
     }
@@ -72,9 +72,9 @@ public extension DyldChainedFixupsHeader {
 
         public var readableValue: String? {
             switch self {
-            case .uncompressed: return "UNCOMPRESSED"
-            case .zlibCompressed: return "ZLIB COMPRESSED"
-            default: return nil
+            case .uncompressed: "UNCOMPRESSED"
+            case .zlibCompressed: "ZLIB COMPRESSED"
+            default: nil
             }
         }
     }

@@ -110,31 +110,31 @@ final class TextFormatter {
     func formatSummary(_ commandType: LoadCommandType) -> String {
         switch commandType {
         case let .buildVersionCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .dyldInfoCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .dylibCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .dylinkerCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .dysymtabCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .entryPointCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .linkedItDataCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .segmentCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .sourceVersionCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .symtabCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .threadCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .uuidCommand(cmd):
-            return formatSummary(cmd)
+            formatSummary(cmd)
         case let .unspecified(cmd):
-            return format(cmd)
+            format(cmd)
         }
     }
 
@@ -142,31 +142,31 @@ final class TextFormatter {
     func formatDetailed(_ commandType: LoadCommandType) -> String {
         switch commandType {
         case let .buildVersionCommand(cmd):
-            return formatDetailed(cmd)
+            formatDetailed(cmd)
         case let .dyldInfoCommand(cmd):
-            return formatDetailed(cmd)
+            formatDetailed(cmd)
         case let .dylibCommand(cmd):
-            return formatDetailed(cmd)
+            formatDetailed(cmd)
         case let .dylinkerCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .dysymtabCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .entryPointCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .linkedItDataCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .segmentCommand(cmd):
-            return formatDetailed(cmd)
+            formatDetailed(cmd)
         case let .sourceVersionCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .symtabCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .threadCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .uuidCommand(cmd):
-            return formatSummary(cmd) // No detailed version
+            formatSummary(cmd) // No detailed version
         case let .unspecified(cmd):
-            return format(cmd)
+            format(cmd)
         }
     }
 
@@ -457,21 +457,21 @@ final class TextFormatter {
     func format(_ bindOrRebase: DyldChainedPtrBindOrRebase) -> String {
         switch bindOrRebase.underlyingValue {
         case let .bind32(bind):
-            return format(bind)
+            format(bind)
         case let .bind64(bind):
-            return format(bind)
+            format(bind)
         case let .rebase32(rebase):
-            return format(rebase)
+            format(rebase)
         case let .rebase64(rebase):
-            return format(rebase)
+            format(rebase)
         case let .arm64(arm64):
-            return format(arm64)
+            format(arm64)
         case let .kernelCacheRebase(rebase):
-            return format(rebase)
+            format(rebase)
         case let .cacheRebase(rebase):
-            return format(rebase)
+            format(rebase)
         case let .firmwareRebase(rebase):
-            return format(rebase)
+            format(rebase)
         }
     }
 
@@ -516,7 +516,7 @@ final class TextFormatter {
     func format(_ arm64: DyldChainedPtrBindOrRebase.Arm64) -> String {
         switch arm64 {
         case let .bind(bind):
-            return [
+            [
                 "BIND",
                 config.fieldSeparator,
                 "ordinal: \(bind.ordinal)",
@@ -524,7 +524,7 @@ final class TextFormatter {
                 "addend: \(bind.addend)",
             ].joined()
         case let .rebase(rebase):
-            return [
+            [
                 "REBASE",
                 config.fieldSeparator,
                 "target: \(rebase.target)",
@@ -532,7 +532,7 @@ final class TextFormatter {
                 "high8: \(rebase.high8)",
             ].joined()
         case let .authBind(bind):
-            return [
+            [
                 "AUTH BIND",
                 config.fieldSeparator,
                 "ordinal: \(bind.ordinal)",
@@ -540,7 +540,7 @@ final class TextFormatter {
                 "key: \(bind.key)",
             ].joined()
         case let .authRebase(rebase):
-            return [
+            [
                 "AUTH REBASE",
                 config.fieldSeparator,
                 "target: \(rebase.target)",
@@ -548,7 +548,7 @@ final class TextFormatter {
                 "key: \(rebase.key)",
             ].joined()
         case let .bind24(bind):
-            return [
+            [
                 "BIND24",
                 config.fieldSeparator,
                 "ordinal: \(bind.ordinal)",
@@ -556,7 +556,7 @@ final class TextFormatter {
                 "addend: \(bind.addend)",
             ].joined()
         case let .authBind24(bind):
-            return [
+            [
                 "AUTH BIND24",
                 config.fieldSeparator,
                 "ordinal: \(bind.ordinal)",

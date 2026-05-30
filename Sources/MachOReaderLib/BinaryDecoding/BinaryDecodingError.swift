@@ -21,15 +21,15 @@ public enum BinaryDecodingError: Error, CustomStringConvertible {
     public var description: String {
         switch self {
         case let .insufficientData(required, available):
-            return "Insufficient data: required \(required) bytes, but only \(available) available"
+            "Insufficient data: required \(required) bytes, but only \(available) available"
         case let .misalignedData(required, actual):
-            return "Data misaligned: requires \(required)-byte alignment, but got \(actual)"
+            "Data misaligned: requires \(required)-byte alignment, but got \(actual)"
         case let .invalidString(reason):
-            return "Invalid string: \(reason)"
+            "Invalid string: \(reason)"
         case let .invalidArrayCount(count, max):
-            return "Invalid array count: \(count) exceeds maximum \(max)"
+            "Invalid array count: \(count) exceeds maximum \(max)"
         case let .offsetOutOfBounds(offset, size):
-            return "Offset out of bounds: \(offset) >= \(size)"
+            "Offset out of bounds: \(offset) >= \(size)"
         }
     }
 }

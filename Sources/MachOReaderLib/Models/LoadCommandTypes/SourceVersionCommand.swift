@@ -63,7 +63,7 @@ public extension SourceVersionCommand {
         B: Int,
         C: Int,
         D: Int,
-        E: Int
+        E: Int,
     )
 
     /// uint64_t  version;	/* A.B.C.D.E packed as a24.b10.c10.d10.e10 */
@@ -75,7 +75,7 @@ public extension SourceVersionCommand {
             Int(underlyingValue.version >> 30 & mask),
             Int(underlyingValue.version >> 20 & mask),
             Int(underlyingValue.version >> 10 & mask),
-            Int(underlyingValue.version & mask)
+            Int(underlyingValue.version & mask),
         )
     }
 }

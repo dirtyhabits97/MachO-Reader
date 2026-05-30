@@ -7,24 +7,23 @@ public struct DyldChainedPtrBindOrRebase {
     let next: UInt32
 
     init?(from data: Data, pointerFormat: DyldChainedSegmentInfo.PointerFormat) {
-        let decoded: (UnderlyingValue, UInt32)?
-        switch pointerFormat {
+        let decoded: (UnderlyingValue, UInt32)? = switch pointerFormat {
         case .DYLD_CHAINED_PTR_ARM64E:
-            decoded = Self.decodeArm64(from: data, userland24: false)
+            Self.decodeArm64(from: data, userland24: false)
         case .DYLD_CHAINED_PTR_ARM64E_USERLAND24:
-            decoded = Self.decodeArm64(from: data, userland24: true)
+            Self.decodeArm64(from: data, userland24: true)
         case .DYLD_CHAINED_PTR_64, .DYLD_CHAINED_PTR_64_OFFSET:
-            decoded = Self.decode64(from: data)
+            Self.decode64(from: data)
         case .DYLD_CHAINED_PTR_64_KERNEL_CACHE, .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE:
-            decoded = Self.decodeKernelCache(from: data)
+            Self.decodeKernelCache(from: data)
         case .DYLD_CHAINED_PTR_32:
-            decoded = Self.decode32(from: data)
+            Self.decode32(from: data)
         case .DYLD_CHAINED_PTR_32_CACHE:
-            decoded = Self.decode32Cache(from: data)
+            Self.decode32Cache(from: data)
         case .DYLD_CHAINED_PTR_32_FIRMWARE:
-            decoded = Self.decode32Firmware(from: data)
+            Self.decode32Firmware(from: data)
         default:
-            decoded = nil
+            nil
         }
 
         guard let decoded else { return nil }

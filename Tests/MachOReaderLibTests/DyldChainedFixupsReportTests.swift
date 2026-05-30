@@ -14,7 +14,7 @@ final class DyldChainedFixupsReportTests: XCTestCase {
         super.setUp()
 
         XCTAssertNoThrow(
-            report = try DyldChainedFixupsReport(file: MachOFile(from: url(for: "helloworld")!, arch: nil))
+            report = try DyldChainedFixupsReport(file: MachOFile(from: url(for: "helloworld")!, arch: nil)),
         )
     }
 
@@ -85,6 +85,6 @@ final class DyldChainedFixupsReportTests: XCTestCase {
     }
 }
 
-func XCTAssertNotEmpty<C: Collection>(_ col: C) {
+func XCTAssertNotEmpty(_ col: some Collection) {
     XCTAssertNotEqual(col.count, 0)
 }

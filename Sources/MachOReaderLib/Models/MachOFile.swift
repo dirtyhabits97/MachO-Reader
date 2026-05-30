@@ -13,9 +13,9 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
     public var description: String {
         switch self {
         case let .invalidMagic(value):
-            return "Invalid Mach-O magic: 0x\(String(value, radix: 16)). The file is not a valid Mach-O binary."
+            "Invalid Mach-O magic: 0x\(String(value, radix: 16)). The file is not a valid Mach-O binary."
         case .missingDyldChainedFixups:
-            return "This Mach-O binary does not contain an LC_DYLD_CHAINED_FIXUPS load command."
+            "This Mach-O binary does not contain an LC_DYLD_CHAINED_FIXUPS load command."
         }
     }
 }

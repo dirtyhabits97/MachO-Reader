@@ -20,7 +20,7 @@ final class JSONFormatter {
     func toJSONString(_ dict: [String: Any]) -> String {
         guard let data = try? JSONSerialization.data(
             withJSONObject: dict,
-            options: [.prettyPrinted, .sortedKeys]
+            options: [.prettyPrinted, .sortedKeys],
         ), let string = String(data: data, encoding: .utf8) else {
             return "{\"error\": \"<unable-to-serialize>\"}"
         }
@@ -30,7 +30,7 @@ final class JSONFormatter {
     func toJSONString(_ array: [[String: Any]]) -> String {
         guard let data = try? JSONSerialization.data(
             withJSONObject: array,
-            options: [.prettyPrinted, .sortedKeys]
+            options: [.prettyPrinted, .sortedKeys],
         ), let string = String(data: data, encoding: .utf8) else {
             return "[{\"error\": \"<unable-to-serialize>\"}]"
         }
@@ -129,31 +129,31 @@ final class JSONFormatter {
     func format(_ commandType: LoadCommandType) -> [String: Any] {
         switch commandType {
         case let .buildVersionCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .dyldInfoCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .dylibCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .dylinkerCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .dysymtabCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .entryPointCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .linkedItDataCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .segmentCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .sourceVersionCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .symtabCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .threadCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .uuidCommand(cmd):
-            return format(cmd)
+            format(cmd)
         case let .unspecified(cmd):
-            return format(cmd)
+            format(cmd)
         }
     }
 
@@ -431,21 +431,21 @@ final class JSONFormatter {
     func format(_ bindOrRebase: DyldChainedPtrBindOrRebase) -> [String: Any] {
         switch bindOrRebase.underlyingValue {
         case let .bind32(bind):
-            return format(bind)
+            format(bind)
         case let .bind64(bind):
-            return format(bind)
+            format(bind)
         case let .rebase32(rebase):
-            return format(rebase)
+            format(rebase)
         case let .rebase64(rebase):
-            return format(rebase)
+            format(rebase)
         case let .arm64(arm64):
-            return format(arm64)
+            format(arm64)
         case let .kernelCacheRebase(rebase):
-            return format(rebase)
+            format(rebase)
         case let .cacheRebase(rebase):
-            return format(rebase)
+            format(rebase)
         case let .firmwareRebase(rebase):
-            return format(rebase)
+            format(rebase)
         }
     }
 
@@ -486,12 +486,12 @@ final class JSONFormatter {
 
     func format(_ arm64: DyldChainedPtrBindOrRebase.Arm64) -> [String: Any] {
         switch arm64 {
-        case let .bind(bind): return format(bind)
-        case let .rebase(rebase): return format(rebase)
-        case let .authBind(bind): return format(bind)
-        case let .authRebase(rebase): return format(rebase)
-        case let .bind24(bind): return format(bind)
-        case let .authBind24(bind): return format(bind)
+        case let .bind(bind): format(bind)
+        case let .rebase(rebase): format(rebase)
+        case let .authBind(bind): format(bind)
+        case let .authRebase(rebase): format(rebase)
+        case let .bind24(bind): format(bind)
+        case let .authBind24(bind): format(bind)
         }
     }
 

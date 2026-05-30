@@ -25,7 +25,7 @@ struct FormattingConfig {
         segmentNameWidth: 16,
         sectionNameWidth: 25,
         indent: "    ",
-        fieldSeparator: "   "
+        fieldSeparator: "   ",
     )
 
     static let compact = FormattingConfig(
@@ -35,6 +35,6 @@ struct FormattingConfig {
         segmentNameWidth: 12,
         sectionNameWidth: 20,
         indent: "  ",
-        fieldSeparator: " "
+        fieldSeparator: " ",
     )
 }

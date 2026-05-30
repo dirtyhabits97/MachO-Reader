@@ -164,7 +164,7 @@ private extension OptionSet where RawValue: BinaryInteger, Element == Self {
 
     func reduce<Result>(
         into initialResult: Result,
-        _ update: (inout Result, Self.Element) throws -> Void
+        _ update: (inout Result, Self.Element) throws -> Void,
     ) rethrows -> Result {
         var result = initialResult
         var maskIdx = 0

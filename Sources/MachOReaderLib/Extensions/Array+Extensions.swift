@@ -1,6 +1,6 @@
 import Foundation
 
-extension Array where Element == LoadCommand {
+extension [LoadCommand] {
 
     func getDyldChainedFixups() -> LinkedItDataCommand? {
         lazy

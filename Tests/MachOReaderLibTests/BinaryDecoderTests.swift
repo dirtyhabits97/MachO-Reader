@@ -98,7 +98,7 @@ final class BinaryDecoderTests: XCTestCase {
         let decoder = BinaryDecoder(data: data)
 
         XCTAssertThrowsError(
-            try decoder.decode(UInt8.self, count: 20000, maxCount: 10000, at: 0)
+            try decoder.decode(UInt8.self, count: 20000, maxCount: 10000, at: 0),
         ) { error in
             guard case BinaryDecodingError.invalidArrayCount(20000, max: 10000) = error else {
                 XCTFail("Expected invalidArrayCount error, got \(error)")

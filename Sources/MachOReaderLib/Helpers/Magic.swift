@@ -61,15 +61,15 @@ extension Magic: Readable {
 
     public var readableValue: String? {
         switch self {
-        case .fatMagic: return "FAT_MAGIC"
-        case .fatCigam: return "FAT_CIGAM"
-        case .fatMagic64: return "FAT_MAGIC_64"
-        case .fatCigam64: return "FAT_CIGAM_64"
-        case .magic: return "MH_MAGIC"
-        case .cigam: return "MH_CIGAM"
-        case .magic64: return "MH_MAGIC_64"
-        case .cigam64: return "MH_CIGAM_64"
-        default: return nil
+        case .fatMagic: "FAT_MAGIC"
+        case .fatCigam: "FAT_CIGAM"
+        case .fatMagic64: "FAT_MAGIC_64"
+        case .fatCigam64: "FAT_CIGAM_64"
+        case .magic: "MH_MAGIC"
+        case .cigam: "MH_CIGAM"
+        case .magic64: "MH_MAGIC_64"
+        case .cigam64: "MH_CIGAM_64"
+        default: nil
         }
     }
 }

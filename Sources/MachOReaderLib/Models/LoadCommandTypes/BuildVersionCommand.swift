@@ -124,11 +124,11 @@ public extension BuildVersionCommand {
 
         public var readableValue: String? {
             switch self {
-            case .clang: return "TOOL_CLANG"
-            case .swift: return "TOOL_SWIFT"
-            case .ld: return "TOOL_LD"
-            case .lld: return "TOOL_LLD"
-            default: return nil
+            case .clang: "TOOL_CLANG"
+            case .swift: "TOOL_SWIFT"
+            case .ld: "TOOL_LD"
+            case .lld: "TOOL_LLD"
+            default: nil
             }
         }
     }

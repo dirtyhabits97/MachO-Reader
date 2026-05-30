@@ -31,16 +31,16 @@ extension CPUType: Readable {
 
     public var readableValue: String? {
         switch self {
-        case .x86: return "x86"
-        case .x86_64: return "x86_64"
-        case .arm: return "ARM"
-        case .arm64: return "ARM64"
-        default: return nil
+        case .x86: "x86"
+        case .x86_64: "x86_64"
+        case .arm: "ARM"
+        case .arm64: "ARM64"
+        default: nil
         }
     }
 
     init?(from readableValue: String?) {
-        guard let readableValue = readableValue else { return nil }
+        guard let readableValue else { return nil }
         switch readableValue.lowercased() {
         case "x86": self = .x86
         case "x86_64": self = .x86_64

@@ -20,7 +20,7 @@ struct DyldChainedStartsInSegmentBuilder {
                 segmentInfo.startsInSegment = .init(
                     fixupsReport.fixupData
                         .advanced(by: segmentOffset)
-                        .extract(dyld_chained_starts_in_segment.self)
+                        .extract(dyld_chained_starts_in_segment.self),
                 )
             }
 
@@ -111,19 +111,19 @@ public extension DyldChainedSegmentInfo {
 
         public var readableValue: String? {
             switch self {
-            case .DYLD_CHAINED_PTR_ARM64E: return "DYLD_CHAINED_PTR_ARM64E"
-            case .DYLD_CHAINED_PTR_64: return "DYLD_CHAINED_PTR_64"
-            case .DYLD_CHAINED_PTR_32: return "DYLD_CHAINED_PTR_32"
-            case .DYLD_CHAINED_PTR_32_CACHE: return "DYLD_CHAINED_PTR_32_CACHE"
-            case .DYLD_CHAINED_PTR_32_FIRMWARE: return "DYLD_CHAINED_PTR_32_FIRMWARE"
-            case .DYLD_CHAINED_PTR_64_OFFSET: return "DYLD_CHAINED_PTR_64_OFFSET"
-            case .DYLD_CHAINED_PTR_ARM64E_KERNEL: return "DYLD_CHAINED_PTR_ARM64E_KERNEL"
-            case .DYLD_CHAINED_PTR_64_KERNEL_CACHE: return "DYLD_CHAINED_PTR_64_KERNEL_CACHE"
-            case .DYLD_CHAINED_PTR_ARM64E_USERLAND: return "DYLD_CHAINED_PTR_ARM64E_USERLAND"
-            case .DYLD_CHAINED_PTR_ARM64E_FIRMWARE: return "DYLD_CHAINED_PTR_ARM64E_FIRMWARE"
-            case .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE: return "DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE"
-            case .DYLD_CHAINED_PTR_ARM64E_USERLAND24: return "DYLD_CHAINED_PTR_ARM64E_USERLAND24"
-            default: return nil
+            case .DYLD_CHAINED_PTR_ARM64E: "DYLD_CHAINED_PTR_ARM64E"
+            case .DYLD_CHAINED_PTR_64: "DYLD_CHAINED_PTR_64"
+            case .DYLD_CHAINED_PTR_32: "DYLD_CHAINED_PTR_32"
+            case .DYLD_CHAINED_PTR_32_CACHE: "DYLD_CHAINED_PTR_32_CACHE"
+            case .DYLD_CHAINED_PTR_32_FIRMWARE: "DYLD_CHAINED_PTR_32_FIRMWARE"
+            case .DYLD_CHAINED_PTR_64_OFFSET: "DYLD_CHAINED_PTR_64_OFFSET"
+            case .DYLD_CHAINED_PTR_ARM64E_KERNEL: "DYLD_CHAINED_PTR_ARM64E_KERNEL"
+            case .DYLD_CHAINED_PTR_64_KERNEL_CACHE: "DYLD_CHAINED_PTR_64_KERNEL_CACHE"
+            case .DYLD_CHAINED_PTR_ARM64E_USERLAND: "DYLD_CHAINED_PTR_ARM64E_USERLAND"
+            case .DYLD_CHAINED_PTR_ARM64E_FIRMWARE: "DYLD_CHAINED_PTR_ARM64E_FIRMWARE"
+            case .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE: "DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE"
+            case .DYLD_CHAINED_PTR_ARM64E_USERLAND24: "DYLD_CHAINED_PTR_ARM64E_USERLAND24"
+            default: nil
             }
         }
 
@@ -133,13 +133,13 @@ public extension DyldChainedSegmentInfo {
         var stride: UInt32 {
             switch self {
             case .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE:
-                return 1
+                1
             case .DYLD_CHAINED_PTR_ARM64E,
                  .DYLD_CHAINED_PTR_ARM64E_USERLAND,
                  .DYLD_CHAINED_PTR_ARM64E_USERLAND24:
-                return 8
+                8
             default:
-                return 4
+                4
             }
         }
     }

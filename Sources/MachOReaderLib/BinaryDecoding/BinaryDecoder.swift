@@ -71,7 +71,7 @@ public struct BinaryDecoder {
         guard offset >= 0, offset < data.count else {
             throw BinaryDecodingError.offsetOutOfBounds(
                 offset: offset,
-                size: data.count
+                size: data.count,
             )
         }
 
@@ -79,7 +79,7 @@ public struct BinaryDecoder {
         guard offset + size <= data.count else {
             throw BinaryDecodingError.insufficientData(
                 required: size,
-                available: data.count - offset
+                available: data.count - offset,
             )
         }
 
@@ -92,7 +92,7 @@ public struct BinaryDecoder {
             guard let baseAddress = buffer.baseAddress else {
                 throw BinaryDecodingError.insufficientData(
                     required: size,
-                    available: 0
+                    available: 0,
                 )
             }
 
@@ -119,7 +119,7 @@ public struct BinaryDecoder {
     public mutating func decode<T>(
         _ type: T.Type,
         count: Int,
-        maxCount: Int = 10000
+        maxCount: Int = 10000,
     ) throws -> [T] {
         let array: [T] = try decode(type, count: count, maxCount: maxCount, at: position)
         position += MemoryLayout<T>.size * count
@@ -139,7 +139,7 @@ public struct BinaryDecoder {
         _ type: T.Type,
         count: Int,
         maxCount: Int = 10000,
-        at offset: Int
+        at offset: Int,
     ) throws -> [T] {
         // Validate count
         guard count >= 0 else {
@@ -157,7 +157,7 @@ public struct BinaryDecoder {
         guard offset + totalSize <= data.count else {
             throw BinaryDecodingError.insufficientData(
                 required: totalSize,
-                available: data.count - offset
+                available: data.count - offset,
             )
         }
 
@@ -198,7 +198,7 @@ public struct BinaryDecoder {
         guard offset >= 0, offset < data.count else {
             throw BinaryDecodingError.offsetOutOfBounds(
                 offset: offset,
-                size: data.count
+                size: data.count,
             )
         }
 
@@ -224,7 +224,7 @@ public struct BinaryDecoder {
 
         // No null terminator found within limit
         throw BinaryDecodingError.invalidString(
-            reason: "No null terminator found within \(maxLength) bytes"
+            reason: "No null terminator found within \(maxLength) bytes",
         )
     }
 
@@ -239,16 +239,16 @@ public struct BinaryDecoder {
         guard offset >= 0, offset < data.count else {
             throw BinaryDecodingError.offsetOutOfBounds(
                 offset: offset,
-                size: data.count
+                size: data.count,
             )
         }
 
         let endOffset: Int
-        if let length = length {
+        if let length {
             guard offset + length <= data.count else {
                 throw BinaryDecodingError.insufficientData(
                     required: length,
-                    available: data.count - offset
+                    available: data.count - offset,
                 )
             }
             endOffset = offset + length
@@ -275,7 +275,7 @@ public struct BinaryDecoder {
         guard offset >= 0, offset <= data.count else {
             throw BinaryDecodingError.offsetOutOfBounds(
                 offset: offset,
-                size: data.count
+                size: data.count,
             )
         }
         position = offset

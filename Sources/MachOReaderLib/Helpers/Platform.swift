@@ -39,16 +39,16 @@ extension Platform: Readable {
 
     public var readableValue: String? {
         switch self {
-        case .macOS: return "macOS"
-        case .iOS: return "iOS"
-        case .watchOS: return "watchOS"
-        case .bridgeOS: return "bridgeOS"
-        case .macCatalyst: return "macCatalyst"
-        case .iOSSimulator: return "iOSSimulator"
-        case .tvOSSimulator: return "tvOSSimulator"
-        case .watchOSSimulator: return "watchOSSimulator"
-        case .driverKit: return "driverKit"
-        default: return nil
+        case .macOS: "macOS"
+        case .iOS: "iOS"
+        case .watchOS: "watchOS"
+        case .bridgeOS: "bridgeOS"
+        case .macCatalyst: "macCatalyst"
+        case .iOSSimulator: "iOSSimulator"
+        case .tvOSSimulator: "tvOSSimulator"
+        case .watchOSSimulator: "watchOSSimulator"
+        case .driverKit: "driverKit"
+        default: nil
         }
     }
 }

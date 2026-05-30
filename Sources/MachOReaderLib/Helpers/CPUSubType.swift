@@ -40,11 +40,11 @@ public struct CPUSubType: RawRepresentable, Equatable, Sendable {
 
     public func readableValue(cpuType: CPUType) -> String? {
         switch cpuType {
-        case .x86: return asX86CpuSubtype
-        case .x86_64: return asX86_64CpuSubType
-        case .arm: return asArmCpuSubType
-        case .arm64: return asArm64CpuSubType
-        default: return nil
+        case .x86: asX86CpuSubtype
+        case .x86_64: asX86_64CpuSubType
+        case .arm: asArmCpuSubType
+        case .arm64: asArm64CpuSubType
+        default: nil
         }
     }
 
@@ -52,18 +52,18 @@ public struct CPUSubType: RawRepresentable, Equatable, Sendable {
 
     var asX86CpuSubtype: String? {
         switch self {
-        case .cpuSubTypeX8664All: return "ALL"
-        case .cpuSubTypeX86Arch1: return "ARCH1"
-        default: return nil
+        case .cpuSubTypeX8664All: "ALL"
+        case .cpuSubTypeX86Arch1: "ARCH1"
+        default: nil
         }
     }
 
     // swiftlint:disable:next identifier_name
     var asX86_64CpuSubType: String? {
         switch self {
-        case .cpuSubTypeX8664All: return "ALL"
-        case .cpuSubTypeX8664H: return "H"
-        default: return nil
+        case .cpuSubTypeX8664All: "ALL"
+        case .cpuSubTypeX8664H: "H"
+        default: nil
         }
     }
 
@@ -75,10 +75,10 @@ public struct CPUSubType: RawRepresentable, Equatable, Sendable {
 
     var asArm64CpuSubType: String? {
         switch self {
-        case .cpuSubTypeArm64All: return "ALL"
-        case .cpuSubTypeArm64V8: return "V8"
-        case .cpuSubTypeArm64E: return "E"
-        default: return nil
+        case .cpuSubTypeArm64All: "ALL"
+        case .cpuSubTypeArm64V8: "V8"
+        case .cpuSubTypeArm64E: "E"
+        default: nil
         }
     }
 }

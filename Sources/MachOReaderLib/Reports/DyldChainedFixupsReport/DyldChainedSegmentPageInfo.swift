@@ -38,7 +38,7 @@ struct DyldChainedSegmentPageInfoBuilder {
 
                     guard let bindOrRebase = DyldChainedPtrBindOrRebase(
                         from: data,
-                        pointerFormat: startsInSegment.pointerFormat
+                        pointerFormat: startsInSegment.pointerFormat,
                     ) else {
                         print("Unsupported format", startsInSegment.pointerFormat)
                         done = true

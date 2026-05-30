@@ -20,13 +20,13 @@ let package = Package(
             dependencies: [
                 .target(name: "MachOReaderLib"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
+            ],
         ),
         .target(
-            name: "MachOReaderLib"
+            name: "MachOReaderLib",
         ),
         .target(
-            name: "Env"
+            name: "Env",
         ),
         .testTarget(
             name: "MachOReaderLibTests",
@@ -38,11 +38,11 @@ let package = Package(
                 .process("Fixtures/helloworld"),
                 .process("Fixtures/helloworld.swift.txt"),
                 .process("Fixtures/ls"),
-            ]
+            ],
         ),
         .testTarget(
             name: "EnvTests",
-            dependencies: ["Env"]
+            dependencies: ["Env"],
         ),
-    ]
+    ],
 )

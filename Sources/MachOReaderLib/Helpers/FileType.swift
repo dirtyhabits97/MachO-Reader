@@ -36,13 +36,13 @@ extension FileType: Readable {
 
     public var readableValue: String? {
         switch self {
-        case .object: return "MH_OBJECT"
-        case .execute: return "MH_EXECUTE"
-        case .dylib: return "MH_DYLIB"
-        case .dylinker: return "MH_DYLINKER"
-        case .bundle: return "MH_BUNDLE"
-        case .dsym: return "MH_DSYM"
-        default: return nil
+        case .object: "MH_OBJECT"
+        case .execute: "MH_EXECUTE"
+        case .dylib: "MH_DYLIB"
+        case .dylinker: "MH_DYLINKER"
+        case .bundle: "MH_BUNDLE"
+        case .dsym: "MH_DSYM"
+        default: nil
         }
     }
 }
