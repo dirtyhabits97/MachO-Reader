@@ -126,5 +126,21 @@ public extension DyldChainedSegmentInfo {
             default: return nil
             }
         }
+
+        /// The byte multiplier applied to a pointer's `next` field when walking a
+        /// fixup chain. Per mach-o/fixup-chains.h: arm64e userland formats use an
+        /// 8-byte stride, the x86_64 kernel cache uses 1, everything else uses 4.
+        var stride: UInt32 {
+            switch self {
+            case .DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE:
+                return 1
+            case .DYLD_CHAINED_PTR_ARM64E,
+                 .DYLD_CHAINED_PTR_ARM64E_USERLAND,
+                 .DYLD_CHAINED_PTR_ARM64E_USERLAND24:
+                return 8
+            default:
+                return 4
+            }
+        }
     }
 }

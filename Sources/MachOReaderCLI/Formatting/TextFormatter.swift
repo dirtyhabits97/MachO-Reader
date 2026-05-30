@@ -464,6 +464,14 @@ final class TextFormatter {
             return format(rebase)
         case let .rebase64(rebase):
             return format(rebase)
+        case let .arm64(arm64):
+            return format(arm64)
+        case let .kernelCacheRebase(rebase):
+            return format(rebase)
+        case let .cacheRebase(rebase):
+            return format(rebase)
+        case let .firmwareRebase(rebase):
+            return format(rebase)
         }
     }
 
@@ -500,6 +508,87 @@ final class TextFormatter {
     func format(_ rebase: DyldChainedPtr32Rebase) -> String {
         [
             "REBASE",
+            config.fieldSeparator,
+            "target: \(rebase.target)",
+        ].joined()
+    }
+
+    func format(_ arm64: DyldChainedPtrBindOrRebase.Arm64) -> String {
+        switch arm64 {
+        case let .bind(bind):
+            return [
+                "BIND",
+                config.fieldSeparator,
+                "ordinal: \(bind.ordinal)",
+                config.fieldSeparator,
+                "addend: \(bind.addend)",
+            ].joined()
+        case let .rebase(rebase):
+            return [
+                "REBASE",
+                config.fieldSeparator,
+                "target: \(rebase.target)",
+                config.fieldSeparator,
+                "high8: \(rebase.high8)",
+            ].joined()
+        case let .authBind(bind):
+            return [
+                "AUTH BIND",
+                config.fieldSeparator,
+                "ordinal: \(bind.ordinal)",
+                config.fieldSeparator,
+                "key: \(bind.key)",
+            ].joined()
+        case let .authRebase(rebase):
+            return [
+                "AUTH REBASE",
+                config.fieldSeparator,
+                "target: \(rebase.target)",
+                config.fieldSeparator,
+                "key: \(rebase.key)",
+            ].joined()
+        case let .bind24(bind):
+            return [
+                "BIND24",
+                config.fieldSeparator,
+                "ordinal: \(bind.ordinal)",
+                config.fieldSeparator,
+                "addend: \(bind.addend)",
+            ].joined()
+        case let .authBind24(bind):
+            return [
+                "AUTH BIND24",
+                config.fieldSeparator,
+                "ordinal: \(bind.ordinal)",
+                config.fieldSeparator,
+                "key: \(bind.key)",
+            ].joined()
+        }
+    }
+
+    func format(_ rebase: DyldChainedPtr64KernelCacheRebase) -> String {
+        [
+            "CACHE REBASE",
+            config.fieldSeparator,
+            "target: \(rebase.target)",
+            config.fieldSeparator,
+            "cacheLevel: \(rebase.cacheLevel)",
+            config.fieldSeparator,
+            "isAuth: \(rebase.isAuth)",
+        ].joined()
+    }
+
+    func format(_ rebase: DyldChainedPtr32CacheRebase) -> String {
+        [
+            "CACHE REBASE",
+            config.fieldSeparator,
+            "target: \(rebase.target)",
+        ].joined()
+    }
+
+    func format(_ rebase: DyldChainedPtr32FirmwareRebase) -> String {
+        [
+            "FIRMWARE REBASE",
             config.fieldSeparator,
             "target: \(rebase.target)",
         ].joined()

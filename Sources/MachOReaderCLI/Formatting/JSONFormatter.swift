@@ -438,6 +438,14 @@ final class JSONFormatter {
             return format(rebase)
         case let .rebase64(rebase):
             return format(rebase)
+        case let .arm64(arm64):
+            return format(arm64)
+        case let .kernelCacheRebase(rebase):
+            return format(rebase)
+        case let .cacheRebase(rebase):
+            return format(rebase)
+        case let .firmwareRebase(rebase):
+            return format(rebase)
         }
     }
 
@@ -472,6 +480,76 @@ final class JSONFormatter {
         [
             "type": "REBASE",
             "bits": 32,
+            "target": rebase.target,
+        ]
+    }
+
+    func format(_ arm64: DyldChainedPtrBindOrRebase.Arm64) -> [String: Any] {
+        switch arm64 {
+        case let .bind(bind): return format(bind)
+        case let .rebase(rebase): return format(rebase)
+        case let .authBind(bind): return format(bind)
+        case let .authRebase(rebase): return format(rebase)
+        case let .bind24(bind): return format(bind)
+        case let .authBind24(bind): return format(bind)
+        }
+    }
+
+    func format(_ bind: DyldChainedPtrArm64eBind) -> [String: Any] {
+        ["type": "BIND", "bits": 64, "subtype": "arm64e", "ordinal": bind.ordinal, "addend": bind.addend]
+    }
+
+    func format(_ rebase: DyldChainedPtrArm64eRebase) -> [String: Any] {
+        ["type": "REBASE", "bits": 64, "subtype": "arm64e", "target": rebase.target, "high8": rebase.high8]
+    }
+
+    func format(_ bind: DyldChainedPtrArm64eAuthBind) -> [String: Any] {
+        ["type": "BIND", "bits": 64, "subtype": "arm64e_auth", "ordinal": bind.ordinal,
+         "diversity": bind.diversity, "addrDiv": bind.addrDiv, "key": bind.key]
+    }
+
+    func format(_ rebase: DyldChainedPtrArm64eAuthRebase) -> [String: Any] {
+        ["type": "REBASE", "bits": 64, "subtype": "arm64e_auth", "target": rebase.target,
+         "diversity": rebase.diversity, "addrDiv": rebase.addrDiv, "key": rebase.key]
+    }
+
+    func format(_ bind: DyldChainedPtrArm64eBind24) -> [String: Any] {
+        ["type": "BIND", "bits": 64, "subtype": "arm64e_userland24", "ordinal": bind.ordinal, "addend": bind.addend]
+    }
+
+    func format(_ bind: DyldChainedPtrArm64eAuthBind24) -> [String: Any] {
+        ["type": "BIND", "bits": 64, "subtype": "arm64e_auth_userland24", "ordinal": bind.ordinal,
+         "diversity": bind.diversity, "addrDiv": bind.addrDiv, "key": bind.key]
+    }
+
+    func format(_ rebase: DyldChainedPtr64KernelCacheRebase) -> [String: Any] {
+        [
+            "type": "REBASE",
+            "bits": 64,
+            "subtype": "kernel_cache",
+            "target": rebase.target,
+            "cacheLevel": rebase.cacheLevel,
+            "diversity": rebase.diversity,
+            "addrDiv": rebase.addrDiv,
+            "key": rebase.key,
+            "isAuth": rebase.isAuth,
+        ]
+    }
+
+    func format(_ rebase: DyldChainedPtr32CacheRebase) -> [String: Any] {
+        [
+            "type": "REBASE",
+            "bits": 32,
+            "subtype": "cache",
+            "target": rebase.target,
+        ]
+    }
+
+    func format(_ rebase: DyldChainedPtr32FirmwareRebase) -> [String: Any] {
+        [
+            "type": "REBASE",
+            "bits": 32,
+            "subtype": "firmware",
             "target": rebase.target,
         ]
     }
