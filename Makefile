@@ -13,7 +13,7 @@ ifeq (run,$(firstword $(MAKECMDGOALS)))
 $(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: all build run test lint format dev-deps help
+.PHONY: all build build-release run install uninstall test lint format dev-deps help
 
 all: help
 
@@ -21,9 +21,27 @@ all: help
 build:
 	swift build
 
-## run: Run the CLI against a binary (`make run <path>`, defaults to the fixture)
+## build-release: Compile the entire package in release mode
+build-release:
+	swift build -c release
+
+## run: Run the CLI against a binary (`make run [subcommand] <path>`, defaults to the fixture)
 run:
 	swift run macho-reader $(or $(RUN_ARGS),$(BINARY))
+
+## install: Build and install macho-reader into $HOME/bin (no sudo)
+install: build-release
+	@mkdir -p $$HOME/bin
+	@install -m 0755 .build/release/macho-reader $$HOME/bin/macho-reader
+	@echo "Installed macho-reader to $$HOME/bin/macho-reader"
+	@which macho-reader >/dev/null 2>&1 || ( \
+		echo 'export PATH="$$HOME/bin:$$PATH"' >> $$HOME/.zshrc && \
+		echo 'Added $$HOME/bin to PATH in ~/.zshrc — restart your shell or run: source ~/.zshrc' )
+
+## uninstall: Remove macho-reader from $HOME/bin
+uninstall:
+	@rm -f $$HOME/bin/macho-reader
+	@echo "Removed $$HOME/bin/macho-reader"
 
 ## test: Run the full test suite
 test:
