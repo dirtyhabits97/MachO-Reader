@@ -43,9 +43,19 @@ uninstall:
 	@rm -f $$HOME/bin/macho-reader
 	@echo "Removed $$HOME/bin/macho-reader"
 
-## test: Run the full test suite
+## test: Run the full test suite and print a code-coverage report
 test:
-	swift test
+	swift test --enable-code-coverage
+	@BIN=$$(swift build --show-bin-path); \
+	XCTEST=$$(find $$BIN -name '*.xctest' | head -1); \
+	NAME=$$(basename $$XCTEST .xctest); \
+	xcrun llvm-cov report \
+		"$$XCTEST/Contents/MacOS/$$NAME" \
+		-instr-profile="$$BIN/codecov/default.profdata" \
+		-ignore-filename-regex='\.build|Tests' \
+	| awk 'BEGIN { printf "%-72s %8s\n", "File", "Cover" } \
+		$$1 ~ /\.swift$$/ && $$(NF-3) != "100.00%" { printf "%-72s %8s\n", $$1, $$(NF-3) } \
+		$$1 == "TOTAL" { printf "%-72s %8s\n", "----", "----"; printf "%-72s %8s\n", $$1, $$(NF-3) }'
 
 ## lint: Check formatting and linting without modifying files
 lint: dev-deps
