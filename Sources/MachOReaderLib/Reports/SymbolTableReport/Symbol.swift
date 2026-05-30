@@ -61,8 +61,11 @@ public struct Symbol {
     /// A human-readable description of the set flags and the symbol type,
     /// e.g. `"N_EXT | N_SECT"`.
     public var readableType: String {
+        // STAB (debug) entries repurpose the whole n_type byte as a stab code,
+        // so the N_TYPE mask and the N_EXT / N_PEXT bits are not meaningful here.
+        if isStab { return "N_STAB" }
+
         var parts: [String] = []
-        if isStab { parts.append("N_STAB") }
         if isPrivateExternal { parts.append("N_PEXT") }
         if isExternal { parts.append("N_EXT") }
         parts.append(type.readableValue ?? String(type.rawValue))

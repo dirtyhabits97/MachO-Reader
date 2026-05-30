@@ -1,4 +1,5 @@
 import Foundation
+import MachO
 @testable import MachOReaderLib
 import XCTest
 
@@ -73,5 +74,17 @@ final class SymbolTableReportTests: XCTestCase {
         let main = try XCTUnwrap(report.symbols.first { $0.name == "_main" })
         XCTAssertTrue(main.readableType.contains("N_EXT"))
         XCTAssertTrue(main.readableType.contains("N_SECT"))
+    }
+
+    func test_readableType_forStabSymbol_reportsOnlyNStab() {
+        // STAB (debug) entries repurpose n_type as a stab code, so the masked
+        // N_TYPE / N_EXT / N_PEXT bits are not meaningful — report N_STAB only.
+        var nlist = nlist_64()
+        nlist.n_type = UInt8(N_OSO) // a real stab code (0x66); its high bits set N_STAB
+
+        let symbol = Symbol(nlist)
+
+        XCTAssertTrue(symbol.isStab)
+        XCTAssertEqual(symbol.readableType, "N_STAB")
     }
 }

@@ -54,6 +54,7 @@ struct SymbolsCommand: ParsableCommand {
     private func printText(symbols: [Symbol]) {
         let formatter = TextFormatter()
 
+        print("SYMBOLS (\(symbols.count)):")
         for (idx, symbol) in symbols.enumerated() {
             print("[\(idx)]".padding(6) + formatter.format(symbol))
         }
