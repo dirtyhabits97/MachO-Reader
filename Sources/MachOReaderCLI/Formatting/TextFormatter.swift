@@ -353,6 +353,28 @@ final class TextFormatter {
         ].joined()
     }
 
+    // MARK: - Symbol Table
+
+    func format(_ report: SymbolTableReport) -> String {
+        var output = "SYMBOLS (\(report.symbols.count)):"
+        for (idx, symbol) in report.symbols.enumerated() {
+            output += "\n" + "[\(idx)]".padding(6) + format(symbol)
+        }
+        return output
+    }
+
+    func format(_ symbol: Symbol) -> String {
+        [
+            "value: \(String(hex: symbol.value))",
+            config.fieldSeparator,
+            "type: \(symbol.readableType.padding(20))",
+            config.fieldSeparator,
+            "sect: \(String(symbol.sectionNumber).padding(4))",
+            config.fieldSeparator,
+            symbol.name ?? "<no name>",
+        ].joined()
+    }
+
     // MARK: - Dyld Chained Fixups
 
     func format(_ report: DyldChainedFixupsReport) -> String {

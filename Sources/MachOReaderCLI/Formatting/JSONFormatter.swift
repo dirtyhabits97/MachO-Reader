@@ -345,6 +345,37 @@ final class JSONFormatter {
         return result
     }
 
+    // MARK: - Symbol Table
+
+    func format(_ report: SymbolTableReport) -> [String: Any] {
+        [
+            "symbols": report.symbols.enumerated().map { idx, symbol in
+                var result = format(symbol)
+                result["index"] = idx
+                return result
+            },
+        ]
+    }
+
+    func format(_ symbol: Symbol) -> [String: Any] {
+        var result: [String: Any] = [
+            "string_table_index": symbol.stringTableIndex,
+            "type": symbol.type.readableValue ?? String(symbol.type.rawValue),
+            "is_external": symbol.isExternal,
+            "is_private_external": symbol.isPrivateExternal,
+            "is_stab": symbol.isStab,
+            "section": symbol.sectionNumber,
+            "value": symbol.value,
+            "value_hex": String(hex: symbol.value),
+        ]
+
+        if let name = symbol.name {
+            result["name"] = name
+        }
+
+        return result
+    }
+
     // MARK: - Dyld Chained Fixups
 
     func format(_ report: DyldChainedFixupsReport) -> [String: Any] {
