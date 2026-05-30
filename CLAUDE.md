@@ -11,43 +11,37 @@ MachO-Reader is a Swift package for parsing Mach-O (Mach Object) binary file for
 
 ## Build & Test Commands
 
-### Building
+Prefer the `make` targets — they wrap the underlying `swift`/tooling commands so
+local and CI runs stay in sync. Run `make help` to list available targets.
+
+### Building & Running
 ```bash
 # Build entire package
-swift build
+make build
 
-# Build specific targets
-swift build --target MachOReaderCLI
-swift build --target MachOReaderLib
-
-# Run the CLI
-swift run macho-reader <path-to-binary>
+# Run the CLI (defaults to the helloworld fixture if no path is given)
+make run <path-to-binary>
 ```
 
 ### Testing
 ```bash
 # Run all tests
-swift test
+make test
 
-# Run specific test target
+# For granular runs, invoke swift directly:
 swift test --filter MachOReaderLibTests
-swift test --filter EnvTests
-
-# Run single test class
 swift test --filter MachOHeaderTests
-
-# Run single test method
 swift test --filter MachOHeaderTests.test_oneHeader_whenOnlyOneArchIsSupported
 ```
 
 ### Linting & Formatting
 ```bash
-# SwiftLint (installed separately)
-swiftlint lint --strict
+# Check linting + formatting without modifying files
+# (installs swiftlint/swiftformat via the dev-deps target if missing)
+make lint
 
-# SwiftFormat (installed separately)
-swiftformat --lint .
-swiftformat .
+# Apply formatting to all sources
+make format
 ```
 
 ## Code Style Guidelines
@@ -227,7 +221,7 @@ Mach-O header definitions are in Xcode SDK:
 
 ## Additional Notes
 
-- Swift version: 5.6+
+- Swift version: 6.2+
 - Platform: macOS (primary), supports Darwin platforms
 - Dependencies: swift-argument-parser (CLI only)
 - Test fixtures are in `Tests/MachOReaderLibTests/Fixtures/`
