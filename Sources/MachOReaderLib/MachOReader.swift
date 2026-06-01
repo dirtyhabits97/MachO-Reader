@@ -48,6 +48,10 @@ public final class MachOReader {
             }
     }
 
+    public func getSymbolTableReport() throws -> SymbolTableReport {
+        try file.symbolTableReport()
+    }
+
     // TODO: Add tests to this
     public func getLoadCommands(_ cmd: String) -> [LoadCommand] {
         file.commands.filter { (loadCommand: LoadCommand) in

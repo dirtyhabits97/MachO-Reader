@@ -12,6 +12,16 @@ extension [LoadCommand] {
             .first
     }
 
+    func getSymtabCommand() -> SymtabCommand? {
+        lazy
+            .filter { loadCommand in loadCommand.cmd == .symtab }
+            .compactMap { loadCommand -> SymtabCommand? in
+                guard case let .symtabCommand(symtabCommand) = loadCommand.commandType() else { return nil }
+                return symtabCommand
+            }
+            .first
+    }
+
     func getDylibCommands() -> [DylibCommand] {
         compactMap { loadCommand -> DylibCommand? in
             guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
