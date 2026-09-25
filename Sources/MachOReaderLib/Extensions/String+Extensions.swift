@@ -15,23 +15,4 @@ extension String {
             }
         })
     }
-
-    init(hex: UInt64) {
-        self.init("0x" + String(format: "%09llx", hex))
-    }
-
-    init(hex: UInt32) {
-        self.init("0x" + String(format: "%08llx", hex))
-    }
-
-    init(hex: Int32) {
-        self.init("0x" + String(format: "%08llx", hex))
-    }
-}
-
-extension String.SubSequence {
-
-    func toString() -> String {
-        String(self)
-    }
 }

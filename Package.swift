@@ -5,13 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "MachO-Reader",
+    platforms: [.macOS(.v13)],
     products: [
         .executable(name: "macho-reader", targets: ["MachOReaderCLI"]),
         .library(name: "MachOReaderLib", targets: ["MachOReaderLib"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.7.0"),
     ],
     targets: [
@@ -25,24 +24,16 @@ let package = Package(
         .target(
             name: "MachOReaderLib",
         ),
-        .target(
-            name: "Env",
-        ),
         .testTarget(
             name: "MachOReaderLibTests",
             dependencies: [
                 "MachOReaderLib",
-                "Env",
             ],
             resources: [
                 .process("Fixtures/helloworld"),
                 .process("Fixtures/helloworld.swift.txt"),
                 .process("Fixtures/ls"),
             ],
-        ),
-        .testTarget(
-            name: "EnvTests",
-            dependencies: ["Env"],
         ),
     ],
 )

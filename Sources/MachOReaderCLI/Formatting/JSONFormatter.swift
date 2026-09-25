@@ -5,16 +5,6 @@ import MachOReaderLib
 /// Formats Mach-O data structures as JSON dictionaries
 final class JSONFormatter {
 
-    // MARK: - Properties
-
-    private let includeRawValues: Bool
-
-    // MARK: - Lifecycle
-
-    init(includeRawValues: Bool = false) {
-        self.includeRawValues = includeRawValues
-    }
-
     // MARK: - Output Helpers
 
     func toJSONString(_ dict: [String: Any]) -> String {
@@ -55,18 +45,12 @@ final class JSONFormatter {
     // MARK: - Fat Header
 
     func format(_ fatHeader: MachOFatHeader) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "type": "FAT_HEADER",
             "magic": formatMagic(fatHeader.magic),
             "nfat_archs": fatHeader.archs.count,
             "architectures": fatHeader.archs.map { format($0) },
         ]
-
-        if includeRawValues {
-            result["magic_raw"] = fatHeader.magic.rawValue
-        }
-
-        return result
     }
 
     func format(_ arch: MachOFatHeader.Architecture) -> [String: Any] {
@@ -82,17 +66,13 @@ final class JSONFormatter {
             result["cpusubtype_name"] = readableCpuSubType
         }
 
-        if includeRawValues {
-            result["cputype_raw"] = arch.cputype.rawValue
-        }
-
         return result
     }
 
     // MARK: - Mach-O Header
 
     func format(_ header: MachOHeader) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "type": "MACH_HEADER",
             "cputype": formatCPUType(header.cputype),
             "filetype": formatFileType(header.filetype),
@@ -100,29 +80,15 @@ final class JSONFormatter {
             "sizeofcmds": header.sizeofcmds,
             "flags": formatFlags(header.flags),
         ]
-
-        if includeRawValues {
-            result["cputype_raw"] = header.cputype.rawValue
-            result["filetype_raw"] = header.filetype.rawValue
-            result["flags_raw"] = header.flags.rawValue
-        }
-
-        return result
     }
 
     // MARK: - Load Commands
 
     func format(_ command: LoadCommand) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "cmd": formatCmd(command.cmd),
             "cmdsize": command.cmdsize,
         ]
-
-        if includeRawValues {
-            result["cmd_raw"] = command.cmd.rawValue
-        }
-
-        return result
     }
 
     // swiftlint:disable:next cyclomatic_complexity
@@ -171,10 +137,6 @@ final class JSONFormatter {
                 "tool": tool.tool.readableValue ?? String(tool.tool.rawValue),
                 "version": "\(tool.version)",
             ]
-        }
-
-        if includeRawValues {
-            result["platform_raw"] = command.platform.rawValue
         }
 
         return result

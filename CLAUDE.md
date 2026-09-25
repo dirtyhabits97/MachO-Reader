@@ -4,10 +4,9 @@ This file provides guidance for working with code in this repository.
 
 ## Project Overview
 
-MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Three targets:
+MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Two targets:
 - **MachOReaderLib** — the parsing library (no third-party deps; uses the system `MachO` module)
 - **MachOReaderCLI** — the `macho-reader` executable (depends on the lib + swift-argument-parser)
-- **Env** — a small standalone environment-variable utility used only by tests
 
 ## Build, Test, Lint
 
@@ -76,7 +75,7 @@ Enum-like wrappers (`Magic`, `Cmd`, `CPUType`, `FileType`, `Platform`, …) in `
 
 ### CLI layer
 
-`MachOReader` (`MachOReaderLib/MachOReader.swift`) is a thin facade over `MachOFile` with `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`). The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
+`MachOFile` is the single entry point the CLI uses directly; `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`) live as a `public extension [LoadCommand]` in `MachOReaderLib/Extensions/Array+Extensions.swift`. The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
 
 ## Code Style
 
