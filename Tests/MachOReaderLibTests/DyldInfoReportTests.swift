@@ -96,7 +96,7 @@ final class DyldOpcodeStreamParserTests: XCTestCase {
     // MARK: - Rebase opcodes
 
     func test_rebase_doRebaseUlebTimesSkippingUleb() throws {
-        let segment = makeSegment(segname: "__DATA", vmaddr: 0x1000, sections: [
+        let segment = try makeSegment(segname: "__DATA", vmaddr: 0x1000, sections: [
             (sectname: "__data", addr: 0x1000, size: 0x100),
         ])
 
@@ -127,10 +127,10 @@ final class DyldOpcodeStreamParserTests: XCTestCase {
     // MARK: - Bind opcodes
 
     func test_bind_ordinalSymbolAddendAndDoBind() throws {
-        let segment = makeSegment(segname: "__DATA", vmaddr: 0x2000, sections: [
+        let segment = try makeSegment(segname: "__DATA", vmaddr: 0x2000, sections: [
             (sectname: "__got", addr: 0x2000, size: 0x100),
         ])
-        let dylib = makeDylib(name: "/usr/lib/libFoo.dylib")
+        let dylib = try makeDylib(name: "/usr/lib/libFoo.dylib")
 
         // SET_DYLIB_ORDINAL_IMM(1), SET_SYMBOL_TRAILING_FLAGS_IMM(0, "hello"),
         // SET_SEGMENT_AND_OFFSET_ULEB(seg:0, off:0x10), SET_ADDEND_SLEB(-8), DO_BIND
@@ -151,8 +151,8 @@ final class DyldOpcodeStreamParserTests: XCTestCase {
     }
 
     func test_lazyBind_twoEntriesSeparatedByDone() throws {
-        let segment = makeSegment(segname: "__DATA", vmaddr: 0x3000, sections: [])
-        let dylib = makeDylib(name: "/usr/lib/libFoo.dylib")
+        let segment = try makeSegment(segname: "__DATA", vmaddr: 0x3000, sections: [])
+        let dylib = try makeDylib(name: "/usr/lib/libFoo.dylib")
 
         func entryBytes(symbol: String, offset: UInt8) -> [UInt8] {
             [0x11, 0x40] + Array(symbol.utf8) + [0x00, 0x70, offset, 0x90, 0x00]
@@ -202,7 +202,7 @@ private func makeSegment(
     segname: String,
     vmaddr: UInt64,
     sections: [(sectname: String, addr: UInt64, size: UInt64)],
-) -> SegmentCommand {
+) throws -> SegmentCommand {
     var body = Data()
     body += packedString16(segname)
     body += packed(vmaddr) // vmaddr
@@ -233,12 +233,12 @@ private func makeSegment(
     header += packed(UInt32(LC_SEGMENT_64))
     header += packed(UInt32(8 + body.count))
 
-    return SegmentCommand(from: LoadCommand(from: header + body, isSwapped: false))
+    return try SegmentCommand(from: LoadCommand(from: header + body, isSwapped: false))
 }
 
 /// Hand-builds a `DylibCommand` from raw little-endian bytes matching
 /// `dylib_command`'s memory layout.
-private func makeDylib(name: String) -> DylibCommand {
+private func makeDylib(name: String) throws -> DylibCommand {
     let nameBytes = Array(name.utf8) + [0]
     let nameOffset: UInt32 = 24
 
@@ -251,7 +251,7 @@ private func makeDylib(name: String) -> DylibCommand {
     data += packed(UInt32(0)) // dylib.compatibility_version
     data += Data(nameBytes)
 
-    return DylibCommand(from: LoadCommand(from: data, isSwapped: false))
+    return try DylibCommand(from: LoadCommand(from: data, isSwapped: false))
 }
 
 private func packedString16(_ string: String) -> Data {
