@@ -9,11 +9,13 @@ public enum LoadCommandType {
     case dysymtabCommand(DysymtabCommand)
     case entryPointCommand(EntryPointCommand)
     case linkedItDataCommand(LinkedItDataCommand)
+    case rpathCommand(RpathCommand)
     case segmentCommand(SegmentCommand)
     case sourceVersionCommand(SourceVersionCommand)
     case symtabCommand(SymtabCommand)
     case threadCommand(ThreadCommand)
     case uuidCommand(UUIDCommand)
+    case versionMinCommand(VersionMinCommand)
 
     case unspecified(LoadCommand)
 
@@ -26,11 +28,13 @@ public enum LoadCommandType {
             DysymtabCommand.self,
             EntryPointCommand.self,
             LinkedItDataCommand.self,
+            RpathCommand.self,
             SegmentCommand.self,
             SourceVersionCommand.self,
             SymtabCommand.self,
             ThreadCommand.self,
             UUIDCommand.self,
+            VersionMinCommand.self,
         ]
 
         for commandType in commandTypes where loadCommand.is(commandType) {

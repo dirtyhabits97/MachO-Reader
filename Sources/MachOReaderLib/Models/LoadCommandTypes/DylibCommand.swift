@@ -49,7 +49,7 @@ public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformab
     // MARK: - LoadCommandTypeRepresentable
 
     static var allowedCmds: Set<Cmd> {
-        [.idDylib, .loadDylib, .loadWeakDylib, .reexportDylib]
+        [.idDylib, .loadDylib, .loadWeakDylib, .reexportDylib, .loadUpwardDylib, .lazyLoadDylib]
     }
 
     static func build(from loadCommand: LoadCommand) -> LoadCommandType {

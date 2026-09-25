@@ -123,6 +123,8 @@ final class TextFormatter {
             formatSummary(cmd)
         case let .linkedItDataCommand(cmd):
             formatSummary(cmd)
+        case let .rpathCommand(cmd):
+            formatSummary(cmd)
         case let .segmentCommand(cmd):
             formatSummary(cmd)
         case let .sourceVersionCommand(cmd):
@@ -132,6 +134,8 @@ final class TextFormatter {
         case let .threadCommand(cmd):
             formatSummary(cmd)
         case let .uuidCommand(cmd):
+            formatSummary(cmd)
+        case let .versionMinCommand(cmd):
             formatSummary(cmd)
         case let .unspecified(cmd):
             format(cmd)
@@ -155,6 +159,8 @@ final class TextFormatter {
             formatSummary(cmd) // No detailed version
         case let .linkedItDataCommand(cmd):
             formatSummary(cmd) // No detailed version
+        case let .rpathCommand(cmd):
+            formatSummary(cmd) // No detailed version
         case let .segmentCommand(cmd):
             formatDetailed(cmd)
         case let .sourceVersionCommand(cmd):
@@ -164,6 +170,8 @@ final class TextFormatter {
         case let .threadCommand(cmd):
             formatSummary(cmd) // No detailed version
         case let .uuidCommand(cmd):
+            formatSummary(cmd) // No detailed version
+        case let .versionMinCommand(cmd):
             formatSummary(cmd) // No detailed version
         case let .unspecified(cmd):
             format(cmd)
@@ -254,6 +262,12 @@ final class TextFormatter {
         ].joined()
     }
 
+    // MARK: - Rpath Command
+
+    func formatSummary(_ command: RpathCommand) -> String {
+        format(command.asLoadCommand()) + "path: \(command.path)"
+    }
+
     // MARK: - Segment Command
 
     func formatSummary(_ command: SegmentCommand) -> String {
@@ -264,7 +278,7 @@ final class TextFormatter {
             config.fieldSeparator,
             "vm: \(String(hex: command.vmaddr))-\(String(hex: command.vmaddr + command.vmsize))",
             config.fieldSeparator,
-            "prot: \(command.initprot)/\(command.maxprot)",
+            "prot: \(readableVMProt(command.initprot))/\(readableVMProt(command.maxprot))",
         ].joined()
     }
 
@@ -272,6 +286,7 @@ final class TextFormatter {
         var output = [formatSummary(command)]
 
         for (idx, section) in command.sections.enumerated() {
+            let flags = ([section.type].compactMap(\.self) + section.attributes).joined(separator: ", ")
             output.append(contentsOf: [
                 "\n\(config.indent)[\(idx)] ",
                 "addr: \(String(hex: section.addr))-\(String(hex: section.addr + section.size))",
@@ -279,7 +294,7 @@ final class TextFormatter {
                 section.sectname.padding(config.sectionNameWidth),
                 "align: 2^\(section.align) (\(1 << section.align))",
                 config.fieldSeparator,
-                "flags: \(String.flags(section.flags))",
+                "flags: \(flags.isEmpty ? String.flags(section.flags) : flags)",
                 config.fieldSeparator,
                 "offset: \(section.offset)",
             ])
@@ -320,6 +335,15 @@ final class TextFormatter {
 
     func formatSummary(_ command: UUIDCommand) -> String {
         format(command.asLoadCommand()) + command.uuid.uuidString
+    }
+
+    // MARK: - Version Min Command
+
+    func formatSummary(_ command: VersionMinCommand) -> String {
+        format(command.asLoadCommand())
+            + "version: \(command.version)"
+            + config.fieldSeparator
+            + "sdk: \(command.sdk)"
     }
 
     // MARK: - Dyld Info Command
