@@ -6,7 +6,7 @@ import MachO
  * of data in the __LINKEDIT segment.
  */
 @dynamicMemberLookup
-public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct LinkedItDataCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -14,19 +14,6 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTran
     private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
-
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(LinkedItDataCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(LinkedItDataCommand.allowedCmds)")
-
-        var linkedItDataCommand = loadCommand.data.extract(linkedit_data_command.self)
-
-        if loadCommand.isSwapped {
-            swap_linkedit_data_command(&linkedItDataCommand, kByteSwapOrder)
-        }
-
-        self.init(linkedItDataCommand, loadCommand: loadCommand)
-    }
 
     /// struct linkedit_data_command {
     ///     uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
@@ -39,7 +26,13 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTran
     ///     uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
     ///     uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
     /// };
-    private init(_ linkedItDataCommand: linkedit_data_command, loadCommand: LoadCommand) {
+    init(from loadCommand: LoadCommand) throws {
+        var linkedItDataCommand = try loadCommand.data.decode(linkedit_data_command.self)
+
+        if loadCommand.isSwapped {
+            swap_linkedit_data_command(&linkedItDataCommand, kByteSwapOrder)
+        }
+
         self.loadCommand = loadCommand
         underlyingValue = linkedItDataCommand
     }
@@ -48,25 +41,6 @@ public struct LinkedItDataCommand: LoadCommandTypeRepresentable, LoadCommandTran
 
     public subscript<T>(dynamicMember keyPath: KeyPath<linkedit_data_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [
-            .codeSignature,
-            .segmentSplitInfo,
-            .functionStarts,
-            .dataInCode,
-            .dylibCodeSignDrs,
-            .linkerOptimizationHint,
-            .dyldExportsTrie,
-            .dyldChainedFixups,
-        ]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .linkedItDataCommand(LinkedItDataCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

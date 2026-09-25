@@ -6,7 +6,7 @@ import MachO
  * binary was built to run for its platform.  The list of known platforms and
  * tool values following it.
  */
-public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct BuildVersionCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -21,17 +21,14 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
 
     // MARK: - Lifecycle
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(BuildVersionCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(BuildVersionCommand.allowedCmds)")
-
-        var buildVersionCommand = loadCommand.data.extract(build_version_command.self)
+    init(from loadCommand: LoadCommand) throws {
+        var buildVersionCommand = try loadCommand.data.decode(build_version_command.self)
 
         if loadCommand.isSwapped {
             swap_build_version_command(&buildVersionCommand, kByteSwapOrder)
         }
 
-        self.init(buildVersionCommand, loadCommand: loadCommand)
+        try self.init(buildVersionCommand, loadCommand: loadCommand)
     }
 
     /// struct build_version_command {
@@ -43,7 +40,7 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
     ///     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
     ///     uint32_t	ntools;		/* number of tool entries following this */
     /// };
-    private init(_ buildVersionCommand: build_version_command, loadCommand: LoadCommand) {
+    private init(_ buildVersionCommand: build_version_command, loadCommand: LoadCommand) throws {
         self.loadCommand = loadCommand
 
         platform = Platform(buildVersionCommand.platform)
@@ -57,23 +54,12 @@ public struct BuildVersionCommand: LoadCommandTypeRepresentable, LoadCommandTran
 
         var offset = MemoryLayout.size(ofValue: buildVersionCommand)
         for _ in 0 ..< ntools {
-            let data = loadCommand.data.advanced(by: offset)
-            let buildToolVersion = BuildToolVersion(data.extract(build_tool_version.self))
+            let buildToolVersion = try BuildToolVersion(loadCommand.data.decode(build_tool_version.self, at: offset))
             buildToolVersions.append(buildToolVersion)
             offset += MemoryLayout<build_tool_version>.size
         }
 
         self.buildToolVersions = buildToolVersions
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.buildVersion]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .buildVersionCommand(BuildVersionCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

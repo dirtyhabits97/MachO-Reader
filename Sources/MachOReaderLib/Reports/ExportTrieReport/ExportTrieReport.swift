@@ -32,11 +32,11 @@ public final class ExportTrieReport {
     // MARK: - Methods
 
     private static func exportTrieRange(in file: MachOFile) throws -> (offset: Int, size: Int) {
-        if let trie = file.commands.getDyldExportsTrie() {
+        if let trie = try file.commands.getDyldExportsTrie() {
             return (Int(trie.dataoff), Int(trie.datasize))
         }
 
-        if let dyldInfo = file.commands.getDyldInfoCommand() {
+        if let dyldInfo = try file.commands.getDyldInfoCommand() {
             return (Int(dyldInfo.export_off), Int(dyldInfo.export_size))
         }
 

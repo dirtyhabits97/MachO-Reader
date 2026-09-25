@@ -32,14 +32,12 @@ public struct LoadCommand {
 
     // MARK: - Lifecycle
 
-    init(from data: Data, isSwapped: Bool) {
+    init(from data: Data, isSwapped: Bool) throws {
         // struct load_command {
         //   uint32_t cmd;		/* type of load command */
         //   uint32_t cmdsize;	/* total size of command in bytes */
         // };
-        guard var loadCommand = try? data.decode(load_command.self, at: 0) else {
-            fatalError("Failed to decode load_command from data of size \(data.count)")
-        }
+        var loadCommand = try data.decode(load_command.self, at: 0)
 
         if isSwapped {
             swap_load_command(&loadCommand, kByteSwapOrder)
@@ -54,7 +52,7 @@ public struct LoadCommand {
 
     // MARK: - Methods
 
-    public func commandType() -> LoadCommandType {
-        LoadCommandType(from: self)
+    public func commandType() throws -> LoadCommandType {
+        try LoadCommandType(from: self)
     }
 }

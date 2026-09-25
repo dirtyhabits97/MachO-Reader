@@ -5,16 +5,6 @@ import MachOReaderLib
 /// Formats Mach-O data structures as JSON dictionaries
 final class JSONFormatter {
 
-    // MARK: - Properties
-
-    private let includeRawValues: Bool
-
-    // MARK: - Lifecycle
-
-    init(includeRawValues: Bool = false) {
-        self.includeRawValues = includeRawValues
-    }
-
     // MARK: - Output Helpers
 
     func toJSONString(_ dict: [String: Any]) -> String {
@@ -39,10 +29,10 @@ final class JSONFormatter {
 
     // MARK: - MachOFile
 
-    func format(_ file: MachOFile) -> [String: Any] {
-        var result: [String: Any] = [
+    func format(_ file: MachOFile) throws -> [String: Any] {
+        var result: [String: Any] = try [
             "header": format(file.header),
-            "loadCommands": file.commands.map { format($0.commandType()) },
+            "loadCommands": file.commands.map { try format($0.commandType()) },
         ]
 
         if let fatHeader = file.fatHeader {
@@ -55,18 +45,12 @@ final class JSONFormatter {
     // MARK: - Fat Header
 
     func format(_ fatHeader: MachOFatHeader) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "type": "FAT_HEADER",
             "magic": formatMagic(fatHeader.magic),
             "nfat_archs": fatHeader.archs.count,
             "architectures": fatHeader.archs.map { format($0) },
         ]
-
-        if includeRawValues {
-            result["magic_raw"] = fatHeader.magic.rawValue
-        }
-
-        return result
     }
 
     func format(_ arch: MachOFatHeader.Architecture) -> [String: Any] {
@@ -82,17 +66,13 @@ final class JSONFormatter {
             result["cpusubtype_name"] = readableCpuSubType
         }
 
-        if includeRawValues {
-            result["cputype_raw"] = arch.cputype.rawValue
-        }
-
         return result
     }
 
     // MARK: - Mach-O Header
 
     func format(_ header: MachOHeader) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "type": "MACH_HEADER",
             "cputype": formatCPUType(header.cputype),
             "filetype": formatFileType(header.filetype),
@@ -100,29 +80,15 @@ final class JSONFormatter {
             "sizeofcmds": header.sizeofcmds,
             "flags": formatFlags(header.flags),
         ]
-
-        if includeRawValues {
-            result["cputype_raw"] = header.cputype.rawValue
-            result["filetype_raw"] = header.filetype.rawValue
-            result["flags_raw"] = header.flags.rawValue
-        }
-
-        return result
     }
 
     // MARK: - Load Commands
 
     func format(_ command: LoadCommand) -> [String: Any] {
-        var result: [String: Any] = [
+        [
             "cmd": formatCmd(command.cmd),
             "cmdsize": command.cmdsize,
         ]
-
-        if includeRawValues {
-            result["cmd_raw"] = command.cmd.rawValue
-        }
-
-        return result
     }
 
     // swiftlint:disable:next cyclomatic_complexity
@@ -142,6 +108,8 @@ final class JSONFormatter {
             format(cmd)
         case let .linkedItDataCommand(cmd):
             format(cmd)
+        case let .rpathCommand(cmd):
+            format(cmd)
         case let .segmentCommand(cmd):
             format(cmd)
         case let .sourceVersionCommand(cmd):
@@ -151,6 +119,8 @@ final class JSONFormatter {
         case let .threadCommand(cmd):
             format(cmd)
         case let .uuidCommand(cmd):
+            format(cmd)
+        case let .versionMinCommand(cmd):
             format(cmd)
         case let .unspecified(cmd):
             format(cmd)
@@ -171,10 +141,6 @@ final class JSONFormatter {
                 "tool": tool.tool.readableValue ?? String(tool.tool.rawValue),
                 "version": "\(tool.version)",
             ]
-        }
-
-        if includeRawValues {
-            result["platform_raw"] = command.platform.rawValue
         }
 
         return result
@@ -252,6 +218,14 @@ final class JSONFormatter {
         return result
     }
 
+    // MARK: - Rpath Command
+
+    func format(_ command: RpathCommand) -> [String: Any] {
+        var result = format(command.asLoadCommand())
+        result["path"] = command.path
+        return result
+    }
+
     // MARK: - Segment Command
 
     func format(_ command: SegmentCommand) -> [String: Any] {
@@ -265,7 +239,9 @@ final class JSONFormatter {
         result["fileoff_hex"] = String(hex: command.fileoff)
         result["filesize"] = command.filesize
         result["maxprot"] = command.maxprot
+        result["maxprot_readable"] = readableVMProt(command.maxprot)
         result["initprot"] = command.initprot
+        result["initprot_readable"] = readableVMProt(command.initprot)
         result["nsects"] = command.nsects
         result["flags"] = command.flags
         result["sections"] = command.sections.map { format($0) }
@@ -274,7 +250,7 @@ final class JSONFormatter {
     }
 
     func format(_ section: SegmentCommand.Section) -> [String: Any] {
-        [
+        var result: [String: Any] = [
             "sectname": section.sectname,
             "segname": section.segname,
             "addr": section.addr,
@@ -286,7 +262,14 @@ final class JSONFormatter {
             "nreloc": section.nreloc,
             "flags": section.flags,
             "flags_hex": String.flags(section.flags),
+            "attributes": section.attributes,
         ]
+
+        if let type = section.type {
+            result["type"] = type
+        }
+
+        return result
     }
 
     // MARK: - Source Version Command
@@ -323,6 +306,15 @@ final class JSONFormatter {
     func format(_ command: UUIDCommand) -> [String: Any] {
         var result = format(command.asLoadCommand())
         result["uuid"] = command.uuid.uuidString
+        return result
+    }
+
+    // MARK: - Version Min Command
+
+    func format(_ command: VersionMinCommand) -> [String: Any] {
+        var result = format(command.asLoadCommand())
+        result["version"] = "\(command.version)"
+        result["sdk"] = "\(command.sdk)"
         return result
     }
 

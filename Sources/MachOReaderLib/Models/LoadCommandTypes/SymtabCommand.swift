@@ -7,7 +7,7 @@ import MachO
  * <nlist.h> and <stab.h>.
  */
 @dynamicMemberLookup
-public struct SymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct SymtabCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -15,19 +15,6 @@ public struct SymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransforma
     private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
-
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(SymtabCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(SymtabCommand.allowedCmds)")
-
-        var symtabCommand = loadCommand.data.extract(symtab_command.self)
-
-        if loadCommand.isSwapped {
-            swap_symtab_command(&symtabCommand, kByteSwapOrder)
-        }
-
-        self.init(symtabCommand, loadCommand: loadCommand)
-    }
 
     /// struct symtab_command {
     ///   uint32_t	cmd;		/* LC_SYMTAB */
@@ -37,7 +24,13 @@ public struct SymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransforma
     ///   uint32_t	stroff;		/* string table offset */
     ///   uint32_t	strsize;	/* string table size in bytes */
     /// };
-    private init(_ symtabCommand: symtab_command, loadCommand: LoadCommand) {
+    init(from loadCommand: LoadCommand) throws {
+        var symtabCommand = try loadCommand.data.decode(symtab_command.self)
+
+        if loadCommand.isSwapped {
+            swap_symtab_command(&symtabCommand, kByteSwapOrder)
+        }
+
         self.loadCommand = loadCommand
         underlyingValue = symtabCommand
     }
@@ -46,16 +39,6 @@ public struct SymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransforma
 
     public subscript<T>(dynamicMember keyPath: KeyPath<symtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.symtab]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .symtabCommand(SymtabCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

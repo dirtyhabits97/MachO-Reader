@@ -13,6 +13,17 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
     /// The file does not contain an `LC_SYMTAB` load command.
     case missingSymbolTable
 
+    /// The file is too short to contain data expected at the given offset.
+    case truncated(offset: Int, size: Int)
+
+    /// A load command's `cmdsize` is smaller than a `load_command` header.
+    case invalidLoadCommandSize(cmdsize: UInt32, minimum: Int)
+
+    /// The given `--arch` string is not a recognized CPU type.
+    case unknownArch(String)
+
+    /// The requested architecture has no matching slice in this binary.
+    case archNotFound(CPUType)
     /// The file does not contain an `LC_DYLD_EXPORTS_TRIE` load command, nor an
     /// `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command with an export blob.
     case missingExportTrie
@@ -25,6 +36,15 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
             "This Mach-O binary does not contain an LC_DYLD_CHAINED_FIXUPS load command."
         case .missingSymbolTable:
             "This Mach-O binary does not contain an LC_SYMTAB load command."
+        case let .truncated(offset, size):
+            "The file is truncated: expected data at offset \(offset), but the file is only \(size) bytes."
+        case let .invalidLoadCommandSize(cmdsize, minimum):
+            "Invalid load command: cmdsize \(cmdsize) is smaller than the minimum of \(minimum) bytes."
+        case let .unknownArch(arch):
+            "Unknown architecture \"\(arch)\". Expected one of: x86, x86_64, arm, arm64, arm64e."
+        case let .archNotFound(cpuType):
+            "This Mach-O binary does not contain a slice for architecture " +
+                "\(cpuType.readableValue ?? String(cpuType.rawValue))."
         case .missingExportTrie:
             "This Mach-O binary does not contain an LC_DYLD_EXPORTS_TRIE or LC_DYLD_INFO(_ONLY) load command."
         }
@@ -48,35 +68,94 @@ public struct MachOFile {
         try self.init(from: Data(contentsOf: url), arch: arch)
     }
 
-    init(from data: Data, arch: String?) throws {
+    public init(from data: Data, arch: String?) throws {
         // Validate magic before attempting to parse
-        let magic = Magic(peek: data)
+        let magic = try Magic(peek: data)
         guard magic.isValid else {
             throw MachOFileError.invalidMagic(magic.rawValue)
         }
 
-        fatHeader = MachOFatHeader(from: data)
+        // Resolve the requested arch up front, and reject unknown ones strictly.
+        let requestedCPUType = try MachOFile.resolveCPUType(from: arch)
 
-        var data = data
-        if let offset = fatHeader?.offset(for: CPUType(from: arch)) {
-            data = data.advanced(by: Int(offset))
+        fatHeader = MachOFatHeader(from: data)
+        let sliceData = try MachOFile.slice(data, fatHeader: fatHeader, requestedCPUType: requestedCPUType)
+        base = sliceData
+
+        header = try MachOHeader(from: sliceData)
+
+        // A thin binary must match the requested arch exactly, since there is no slice to select.
+        if fatHeader == nil, let requestedCPUType, header.cputype != requestedCPUType {
+            throw MachOFileError.archNotFound(requestedCPUType)
         }
 
-        base = data
+        commands = try MachOFile.parseLoadCommands(from: sliceData, header: header)
+    }
 
-        header = MachOHeader(from: data)
+    // MARK: - Private Methods
+
+    /// Resolves an `--arch` string to a `CPUType`, throwing if it isn't recognized.
+    private static func resolveCPUType(from arch: String?) throws -> CPUType? {
+        guard let arch else { return nil }
+        guard let cpuType = CPUType(from: arch) else {
+            throw MachOFileError.unknownArch(arch)
+        }
+        return cpuType
+    }
+
+    /// Returns the slice of `data` for the requested arch, or `data` unchanged for a thin binary.
+    private static func slice(_ data: Data, fatHeader: MachOFatHeader?, requestedCPUType: CPUType?) throws -> Data {
+        guard let fatHeader else { return data }
+
+        let offset: UInt64
+        if let requestedCPUType {
+            guard let matched = fatHeader.offset(for: requestedCPUType) else {
+                throw MachOFileError.archNotFound(requestedCPUType)
+            }
+            offset = matched
+        } else {
+            guard let firstOffset = fatHeader.offset(for: nil) else {
+                throw MachOFileError.truncated(offset: 0, size: data.count)
+            }
+            offset = firstOffset
+        }
+
+        guard offset <= UInt64(data.count) else {
+            throw MachOFileError.truncated(offset: Int(offset), size: data.count)
+        }
+        return data.advanced(by: Int(offset))
+    }
+
+    /// Walks and validates the load commands following `header` in `data`.
+    private static func parseLoadCommands(from data: Data, header: MachOHeader) throws -> [LoadCommand] {
+        guard header.size <= data.count else {
+            throw MachOFileError.truncated(offset: header.size, size: data.count)
+        }
 
         var commands = [LoadCommand]()
         var offset = header.size
 
         for _ in 0 ..< header.ncmds {
-            let data = data.advanced(by: offset)
-            let loadCommand = LoadCommand(from: data, isSwapped: header.magic.isSwapped)
+            guard offset + MemoryLayout<load_command>.size <= data.count else {
+                throw MachOFileError.truncated(offset: offset, size: data.count)
+            }
+
+            let commandData = data.advanced(by: offset)
+            let loadCommand = try LoadCommand(from: commandData, isSwapped: header.magic.isSwapped)
+
+            guard loadCommand.cmdsize >= MemoryLayout<load_command>.size else {
+                throw MachOFileError.invalidLoadCommandSize(cmdsize: loadCommand.cmdsize,
+                                                            minimum: MemoryLayout<load_command>.size)
+            }
+            guard offset + Int(loadCommand.cmdsize) <= data.count else {
+                throw MachOFileError.truncated(offset: offset, size: data.count)
+            }
+
             commands.append(loadCommand)
             offset += Int(loadCommand.cmdsize)
         }
 
-        self.commands = commands
+        return commands
     }
 
     // MARK: - Reports
