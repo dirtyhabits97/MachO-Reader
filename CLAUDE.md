@@ -41,10 +41,11 @@ swift run macho-reader chained-fixups <path> --imports
 
 ### Parsing pipeline (the core flow)
 
-`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything:
-1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:)`), throwing `MachOFileError.invalidMagic` if unrecognized.
-2. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`). The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
-3. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations.
+`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything. Parsing is strict: malformed or truncated input throws `MachOFileError` (or a `BinaryDecodingError` from `BinaryDecoder`) rather than crashing.
+1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:) throws`), throwing `MachOFileError.invalidMagic` if unrecognized.
+2. **Resolve the requested arch** — an unrecognized `--arch` string throws `MachOFileError.unknownArch` before any parsing happens.
+3. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`); a fat binary with no matching slice throws `MachOFileError.archNotFound`, and a slice offset past the end of the file throws `MachOFileError.truncated`. A thin binary whose header `cputype` doesn't match an explicitly requested arch also throws `archNotFound`. The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
+4. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations. Each command's `cmdsize` is checked against the minimum `load_command` size and against the remaining data before it's trusted, throwing `MachOFileError.invalidLoadCommandSize` / `.truncated` otherwise.
 
 A `LoadCommand` (`Models/LoadCommand.swift`) holds only the common `cmd`/`cmdsize` plus the raw `data` slice and an `isSwapped` flag (set when the magic indicates opposite endianness — byte-swapping uses the system `swap_*` functions with `kByteSwapOrder`).
 
