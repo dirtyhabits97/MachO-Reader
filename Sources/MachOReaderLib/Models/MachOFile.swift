@@ -24,6 +24,11 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
 
     /// The requested architecture has no matching slice in this binary.
     case archNotFound(CPUType)
+    /// The file does not contain an `LC_DYLD_EXPORTS_TRIE` load command, nor an
+    /// `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command with an export blob.
+    case missingExportTrie
+    /// The file does not contain an `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command.
+    case missingDyldInfo
 
     public var description: String {
         switch self {
@@ -38,10 +43,14 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
         case let .invalidLoadCommandSize(cmdsize, minimum):
             "Invalid load command: cmdsize \(cmdsize) is smaller than the minimum of \(minimum) bytes."
         case let .unknownArch(arch):
-            "Unknown architecture \"\(arch)\". Expected one of: x86, x86_64, arm, arm64."
+            "Unknown architecture \"\(arch)\". Expected one of: x86, x86_64, arm, arm64, arm64e."
         case let .archNotFound(cpuType):
             "This Mach-O binary does not contain a slice for architecture " +
                 "\(cpuType.readableValue ?? String(cpuType.rawValue))."
+        case .missingExportTrie:
+            "This Mach-O binary does not contain an LC_DYLD_EXPORTS_TRIE or LC_DYLD_INFO(_ONLY) load command."
+        case .missingDyldInfo:
+            "This Mach-O binary does not contain an LC_DYLD_INFO or LC_DYLD_INFO_ONLY load command."
         }
     }
 }
@@ -161,5 +170,13 @@ public struct MachOFile {
 
     public func symbolTableReport() throws -> SymbolTableReport {
         try SymbolTableReport(file: self)
+    }
+
+    public func exportTrieReport() throws -> ExportTrieReport {
+        try ExportTrieReport(file: self)
+    }
+
+    public func dyldInfoReport() throws -> DyldInfoReport {
+        try DyldInfoReport(file: self)
     }
 }

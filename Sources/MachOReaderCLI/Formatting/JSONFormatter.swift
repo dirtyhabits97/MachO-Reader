@@ -577,6 +577,44 @@ final class JSONFormatter {
         ]
     }
 
+    // MARK: - Export Trie
+
+    func format(_ symbol: ExportedSymbol) -> [String: Any] {
+        var result: [String: Any] = [
+            "name": symbol.name,
+            "flags": symbol.flags,
+            "kind": symbol.kind.readableValue ?? String(symbol.kind.rawValue),
+            "is_weak_definition": symbol.isWeakDefinition,
+            "is_reexport": symbol.isReexport,
+            "is_stub_and_resolver": symbol.isStubAndResolver,
+        ]
+
+        if let address = symbol.address {
+            result["address"] = address
+            result["address_hex"] = String(hex: address)
+        }
+
+        if let reexportOrdinal = symbol.reexportOrdinal {
+            result["reexport_ordinal"] = reexportOrdinal
+        }
+
+        if let reexportName = symbol.reexportName {
+            result["reexport_name"] = reexportName
+        }
+
+        if let stubOffset = symbol.stubOffset {
+            result["stub_offset"] = stubOffset
+            result["stub_offset_hex"] = String(hex: stubOffset)
+        }
+
+        if let resolverOffset = symbol.resolverOffset {
+            result["resolver_offset"] = resolverOffset
+            result["resolver_offset_hex"] = String(hex: resolverOffset)
+        }
+
+        return result
+    }
+
     // MARK: - Helper Formatters
 
     func formatCmd(_ cmd: Cmd) -> String {
@@ -607,6 +645,66 @@ final class JSONFormatter {
 
     func formatUnknown(_ value: Any) -> [String: Any] {
         ["error": "<unable-to-format>", "type": "\(type(of: value))"]
+    }
+
+    // MARK: - Dyld Info
+
+    func format(_ report: DyldInfoReport) -> [String: Any] {
+        [
+            "rebases": report.rebases.map { format($0) },
+            "binds": report.binds.map { format($0) },
+            "weakBinds": report.weakBinds.map { format($0) },
+            "lazyBinds": report.lazyBinds.map { format($0) },
+        ]
+    }
+
+    func format(_ rebase: RebaseEntry) -> [String: Any] {
+        var result: [String: Any] = [
+            "segment_index": rebase.segmentIndex,
+            "segment": rebase.segmentName,
+            "address": rebase.address,
+            "address_hex": String(hex: rebase.address),
+            "type": rebase.type.readableValue ?? String(rebase.type.rawValue),
+        ]
+
+        if let section = rebase.sectionName {
+            result["section"] = section
+        }
+
+        return result
+    }
+
+    func format(_ bind: BindEntry) -> [String: Any] {
+        var result: [String: Any] = [
+            "kind": format(bind.kind),
+            "segment_index": bind.segmentIndex,
+            "segment": bind.segmentName,
+            "address": bind.address,
+            "address_hex": String(hex: bind.address),
+            "type": bind.type.readableValue ?? String(bind.type.rawValue),
+            "dylib_ordinal": bind.dylibOrdinal,
+            "symbol": bind.symbolName,
+            "addend": bind.addend,
+            "weak_import": bind.isWeakImport,
+        ]
+
+        if let section = bind.sectionName {
+            result["section"] = section
+        }
+
+        if let dylibName = bind.dylibName {
+            result["dylib"] = dylibName
+        }
+
+        return result
+    }
+
+    func format(_ kind: BindEntry.Kind) -> String {
+        switch kind {
+        case .bind: "bind"
+        case .weak: "weak"
+        case .lazy: "lazy"
+        }
     }
 }
 
