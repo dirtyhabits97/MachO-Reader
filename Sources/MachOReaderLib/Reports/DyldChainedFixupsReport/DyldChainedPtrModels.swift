@@ -3,7 +3,7 @@ import Foundation
 // Swift models for the raw C dyld_chained_ptr_* bitfield structs.
 // Each maps a fixed-width integer into its named bit fields via split(using:).
 
-public struct DyldChainedPtr64Bind: CustomExtractable {
+public struct DyldChainedPtr64Bind: BinaryDecodable {
 
     public let ordinal: UInt64
     public let addend: UInt64
@@ -20,12 +20,12 @@ public struct DyldChainedPtr64Bind: CustomExtractable {
         bind = values[4] == 1
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_64_bind.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_64_bind.self))
     }
 }
 
-public struct DyldChainedPtr32Bind: CustomExtractable {
+public struct DyldChainedPtr32Bind: BinaryDecodable {
 
     public let ordinal: UInt32
     public let addend: UInt8
@@ -40,12 +40,12 @@ public struct DyldChainedPtr32Bind: CustomExtractable {
         bind = values[3] == 1
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_32_bind.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_32_bind.self))
     }
 }
 
-public struct DyldChainedPtr64Rebase: CustomExtractable {
+public struct DyldChainedPtr64Rebase: BinaryDecodable {
 
     public let target: UInt64
     public let high8: UInt8
@@ -62,12 +62,12 @@ public struct DyldChainedPtr64Rebase: CustomExtractable {
         bind = values[4] == 1
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_64_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_64_rebase.self))
     }
 }
 
-public struct DyldChainedPtr32Rebase: CustomExtractable {
+public struct DyldChainedPtr32Rebase: BinaryDecodable {
 
     public let target: UInt32
     public let next: UInt32
@@ -80,12 +80,12 @@ public struct DyldChainedPtr32Rebase: CustomExtractable {
         bind = values[2] == 1
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_32_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_32_rebase.self))
     }
 }
 
-public struct DyldChainedPtrArm64eRebase: CustomExtractable {
+public struct DyldChainedPtrArm64eRebase: BinaryDecodable {
 
     public let target: UInt64
     public let high8: UInt8
@@ -105,12 +105,12 @@ public struct DyldChainedPtrArm64eRebase: CustomExtractable {
         assert(auth == false)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_rebase.self))
     }
 }
 
-public struct DyldChainedPtrArm64eAuthRebase: CustomExtractable {
+public struct DyldChainedPtrArm64eAuthRebase: BinaryDecodable {
 
     public let target: UInt32
     public let diversity: UInt16
@@ -134,12 +134,12 @@ public struct DyldChainedPtrArm64eAuthRebase: CustomExtractable {
         assert(auth == true)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_auth_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_auth_rebase.self))
     }
 }
 
-public struct DyldChainedPtrArm64eBind: CustomExtractable {
+public struct DyldChainedPtrArm64eBind: BinaryDecodable {
 
     public let ordinal: UInt16
     public let zero: UInt16
@@ -161,12 +161,12 @@ public struct DyldChainedPtrArm64eBind: CustomExtractable {
         assert(auth == false)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_bind.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_bind.self))
     }
 }
 
-public struct DyldChainedPtrArm64eAuthBind: CustomExtractable {
+public struct DyldChainedPtrArm64eAuthBind: BinaryDecodable {
 
     public let ordinal: UInt16
     public let zero: UInt16
@@ -192,12 +192,12 @@ public struct DyldChainedPtrArm64eAuthBind: CustomExtractable {
         assert(auth == true)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_auth_bind.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_auth_bind.self))
     }
 }
 
-public struct DyldChainedPtrArm64eBind24: CustomExtractable {
+public struct DyldChainedPtrArm64eBind24: BinaryDecodable {
 
     public let ordinal: UInt32
     public let zero: UInt8
@@ -219,12 +219,12 @@ public struct DyldChainedPtrArm64eBind24: CustomExtractable {
         assert(auth == false)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_bind24.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_bind24.self))
     }
 }
 
-public struct DyldChainedPtrArm64eAuthBind24: CustomExtractable {
+public struct DyldChainedPtrArm64eAuthBind24: BinaryDecodable {
 
     public let ordinal: UInt32
     public let zero: UInt8
@@ -250,12 +250,12 @@ public struct DyldChainedPtrArm64eAuthBind24: CustomExtractable {
         assert(auth == true)
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_arm64e_auth_bind24.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_arm64e_auth_bind24.self))
     }
 }
 
-public struct DyldChainedPtr64KernelCacheRebase: CustomExtractable {
+public struct DyldChainedPtr64KernelCacheRebase: BinaryDecodable {
 
     public let target: UInt32
     public let cacheLevel: UInt8
@@ -276,12 +276,12 @@ public struct DyldChainedPtr64KernelCacheRebase: CustomExtractable {
         isAuth = values[6] == 1
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_64_kernel_cache_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_64_kernel_cache_rebase.self))
     }
 }
 
-public struct DyldChainedPtr32CacheRebase: CustomExtractable {
+public struct DyldChainedPtr32CacheRebase: BinaryDecodable {
 
     public let target: UInt32
     public let next: UInt32
@@ -292,12 +292,12 @@ public struct DyldChainedPtr32CacheRebase: CustomExtractable {
         next = values[1]
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_32_cache_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_32_cache_rebase.self))
     }
 }
 
-public struct DyldChainedPtr32FirmwareRebase: CustomExtractable {
+public struct DyldChainedPtr32FirmwareRebase: BinaryDecodable {
 
     public let target: UInt32
     public let next: UInt32
@@ -308,7 +308,7 @@ public struct DyldChainedPtr32FirmwareRebase: CustomExtractable {
         next = values[1]
     }
 
-    init(from data: Data) {
-        self.init(data.extract(dyld_chained_ptr_32_firmware_rebase.self))
+    public init(from decoder: inout BinaryDecoder) throws {
+        try self.init(decoder.decode(dyld_chained_ptr_32_firmware_rebase.self))
     }
 }

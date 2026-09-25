@@ -8,7 +8,7 @@ import MachO
  * dylib_command (cmd == LC_LOAD_DYLIB, LC_LOAD_WEAK_DYLIB, or
  * LC_REEXPORT_DYLIB) for each library it uses.
  */
-public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct DylibCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -22,38 +22,21 @@ public struct DylibCommand: LoadCommandTypeRepresentable, LoadCommandTransformab
 
     // MARK: - Init
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(DylibCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(DylibCommand.allowedCmds)")
-
-        var dylibCommand = loadCommand.data.extract(dylib_command.self)
-
-        if loadCommand.isSwapped {
-            swap_dylib_command(&dylibCommand, kByteSwapOrder)
-        }
-
-        self.init(dylibCommand, loadCommand: loadCommand)
-    }
-
     /// struct dylib_command {
     ///   uint32_t	cmd;		/* LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB,
     ///              LC_REEXPORT_DYLIB */
     ///   uint32_t	cmdsize;	/* includes pathname string */
     ///   struct dylib	dylib;		/* the library identification */
     /// };
-    init(_ dylibCommand: dylib_command, loadCommand: LoadCommand) {
+    init(from loadCommand: LoadCommand) throws {
+        var dylibCommand = try loadCommand.data.decode(dylib_command.self)
+
+        if loadCommand.isSwapped {
+            swap_dylib_command(&dylibCommand, kByteSwapOrder)
+        }
+
         self.loadCommand = loadCommand
         dylib = Dylib(command: dylibCommand, data: loadCommand.data)
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.idDylib, .loadDylib, .loadWeakDylib, .reexportDylib]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .dylibCommand(DylibCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

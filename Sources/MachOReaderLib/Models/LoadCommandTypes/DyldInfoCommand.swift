@@ -11,43 +11,26 @@ import MachO
  */
 
 @dynamicMemberLookup
-public struct DyldInfoCommand: LoadCommandModel {
+public struct DyldInfoCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
     private let loadCommand: LoadCommand
     private let underlyingValue: dyld_info_command
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(DyldInfoCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(DyldInfoCommand.allowedCmds)")
-
-        var dyldInfoCommand = loadCommand.data.extract(dyld_info_command.self)
+    init(from loadCommand: LoadCommand) throws {
+        var dyldInfoCommand = try loadCommand.data.decode(dyld_info_command.self)
 
         if loadCommand.isSwapped {
             swap_dyld_info_command(&dyldInfoCommand, kByteSwapOrder)
         }
 
-        self.init(dyldInfoCommand, loadCommand: loadCommand)
-    }
-
-    private init(_ dyldInfoCommand: dyld_info_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = dyldInfoCommand
     }
 
     public subscript<T>(dynamicMember keyPath: KeyPath<dyld_info_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.dyldInfo, .dyldInfoOnly]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .dyldInfoCommand(DyldInfoCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

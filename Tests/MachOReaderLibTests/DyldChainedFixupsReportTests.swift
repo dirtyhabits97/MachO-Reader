@@ -28,19 +28,19 @@ final class DyldChainedFixupsReportTests: XCTestCase {
         XCTAssertNotEmpty(report.segmentInfo)
     }
 
-    func test_matchesPagesWithSegmentInfo() {
-        let pageInfo = report.pageInfo()
+    func test_matchesPagesWithSegmentInfo() throws {
+        let pageInfo = try report.pageInfo()
         XCTAssertEqual(report.segmentInfo.count, pageInfo.count)
 
-        for (segmentInfo, pageInfo) in zip(report.segmentInfo, report.pageInfo()) {
+        for (segmentInfo, pageInfo) in try zip(report.segmentInfo, report.pageInfo()) {
             XCTAssertEqual(segmentInfo.hasPages, pageInfo.pages.count > 0)
         }
     }
 
-    func test_pagesContainBindOrRebaseEntries() {
+    func test_pagesContainBindOrRebaseEntries() throws {
         // Walking the chains must yield fixup entries; with the wrong stride the
         // chain mis-walks and terminates early (often with zero entries).
-        let totalEntries = report.pageInfo().reduce(0) { acc, pages in
+        let totalEntries = try report.pageInfo().reduce(0) { acc, pages in
             acc + pages.pages.reduce(0) { $0 + $1.bindOrRebase.count }
         }
         XCTAssertGreaterThan(totalEntries, 0)
@@ -60,7 +60,7 @@ final class DyldChainedFixupsReportTests: XCTestCase {
         }
     }
 
-    func test_fixtureUsesGeneric64OffsetFormat() {
+    func test_fixtureUsesGeneric64OffsetFormat() throws {
         // The helloworld fixture is a plain arm64 binary, so its chained fixups use
         // the generic 64-bit offset format (4-byte stride) and decode to the
         // bind64 / rebase64 variants.
@@ -70,7 +70,7 @@ final class DyldChainedFixupsReportTests: XCTestCase {
             XCTAssertEqual(startsInSegment.pointerFormat, .DYLD_CHAINED_PTR_64_OFFSET)
         }
 
-        for pages in report.pageInfo() {
+        for pages in try report.pageInfo() {
             for page in pages.pages {
                 for entry in page.bindOrRebase {
                     switch entry.underlyingValue {

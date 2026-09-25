@@ -4,8 +4,8 @@ struct DyldChainedStartsInSegmentBuilder {
 
     let segmentInfo: [DyldChainedSegmentInfo]
 
-    init(_ fixupsReport: DyldChainedFixupsReport) {
-        let segmentCommands = fixupsReport.file.commands.getSegmentCommands()
+    init(_ fixupsReport: DyldChainedFixupsReport) throws {
+        let segmentCommands = try fixupsReport.file.commands.getSegmentCommands()
         var result: [DyldChainedSegmentInfo] = []
 
         for idx in 0 ..< Int(fixupsReport.startsInImage.segCount) {
@@ -17,10 +17,9 @@ struct DyldChainedStartsInSegmentBuilder {
             if segmentInfo.hasPages {
                 // calculate offset
                 let segmentOffset = Int(fixupsReport.header.startsOffset) + Int(offset)
-                segmentInfo.startsInSegment = .init(
-                    fixupsReport.fixupData
-                        .advanced(by: segmentOffset)
-                        .extract(dyld_chained_starts_in_segment.self),
+                segmentInfo.startsInSegment = try .init(
+                    BinaryDecoder(data: fixupsReport.fixupData)
+                        .decode(dyld_chained_starts_in_segment.self, at: segmentOffset),
                 )
             }
 

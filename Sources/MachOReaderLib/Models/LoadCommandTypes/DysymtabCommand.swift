@@ -40,7 +40,7 @@ import MachO
  * off the section structures.
  */
 @dynamicMemberLookup
-public struct DysymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct DysymtabCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -49,20 +49,13 @@ public struct DysymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
 
     // MARK: - Lifecycle
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(DysymtabCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(DysymtabCommand.allowedCmds)")
-
-        var dysymtabCommand = loadCommand.data.extract(dysymtab_command.self)
+    init(from loadCommand: LoadCommand) throws {
+        var dysymtabCommand = try loadCommand.data.decode(dysymtab_command.self)
 
         if loadCommand.isSwapped {
             swap_dysymtab_command(&dysymtabCommand, kByteSwapOrder)
         }
 
-        self.init(dysymtabCommand, loadCommand: loadCommand)
-    }
-
-    private init(_ dysymtabCommand: dysymtab_command, loadCommand: LoadCommand) {
         self.loadCommand = loadCommand
         underlyingValue = dysymtabCommand
     }
@@ -71,16 +64,6 @@ public struct DysymtabCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
 
     public subscript<T>(dynamicMember keyPath: KeyPath<dysymtab_command, T>) -> T {
         underlyingValue[keyPath: keyPath]
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.dysymtab]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .dysymtabCommand(DysymtabCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

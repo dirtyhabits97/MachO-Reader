@@ -52,7 +52,7 @@ final class MachOFileTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        let segmentCommands = file.commands.getSegmentCommands()
+        let segmentCommands = try file.commands.getSegmentCommands()
 
         XCTAssertEqual(segmentCommands.count, 4)
         XCTAssertEqual(segmentCommands[0].segname, "__PAGEZERO")
@@ -66,7 +66,7 @@ final class MachOFileTests: XCTestCase {
         guard let url = helloWorldURL else { return }
 
         let file = try MachOFile(from: url, arch: nil)
-        let segmentCommands = file.commands.getSegmentCommands()
+        let segmentCommands = try file.commands.getSegmentCommands()
 
         XCTAssertEqual(segmentCommands[1].segname, "__TEXT")
         let textSegment = segmentCommands[1]

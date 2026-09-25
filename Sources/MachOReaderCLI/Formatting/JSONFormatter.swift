@@ -39,10 +39,10 @@ final class JSONFormatter {
 
     // MARK: - MachOFile
 
-    func format(_ file: MachOFile) -> [String: Any] {
-        var result: [String: Any] = [
+    func format(_ file: MachOFile) throws -> [String: Any] {
+        var result: [String: Any] = try [
             "header": format(file.header),
-            "loadCommands": file.commands.map { format($0.commandType()) },
+            "loadCommands": file.commands.map { try format($0.commandType()) },
         ]
 
         if let fatHeader = file.fatHeader {

@@ -24,18 +24,16 @@ struct dyld_chained_fixups_header {
 }
 
 /// This struct is embedded in LC_DYLD_CHAINED_FIXUPS payload
-struct dyld_chained_starts_in_image: CustomExtractable {
+struct dyld_chained_starts_in_image: BinaryDecodable {
 
     let segCount: UInt32
     /// each entry is offset into this struct for that segment
     /// followed by pool of dyld_chain_starts_in_segment data
     let segInfoOffset: [UInt32]
 
-    init(from data: Data) {
-        segCount = data.extract(UInt32.self)
-        segInfoOffset = data
-            .advanced(by: MemoryLayout.size(ofValue: segCount))
-            .extractArray(UInt32.self, count: Int(segCount))
+    init(from decoder: inout BinaryDecoder) throws {
+        segCount = try decoder.decode(UInt32.self)
+        segInfoOffset = try decoder.decode(UInt32.self, count: Int(segCount))
     }
 }
 
@@ -66,7 +64,7 @@ typealias dyld_chained_import = UInt32
 ///                                     the last of which has the high bit set
 /// };
 @dynamicMemberLookup
-struct dyld_chained_starts_in_segment: CustomExtractable {
+struct dyld_chained_starts_in_segment: BinaryDecodable {
 
     struct UnderlyingValue {
         let size: UInt32
@@ -81,11 +79,9 @@ struct dyld_chained_starts_in_segment: CustomExtractable {
     // TODO: figure out a better way to handle array pointers in swift
     let pageStart: [UInt16]
 
-    init(from data: Data) {
-        underlyingValue = data.extract(UnderlyingValue.self)
-        pageStart = data
-            .advanced(by: MemoryLayout.size(ofValue: underlyingValue))
-            .extractArray(UInt16.self, count: Int(underlyingValue.pageCount))
+    init(from decoder: inout BinaryDecoder) throws {
+        underlyingValue = try decoder.decode(UnderlyingValue.self)
+        pageStart = try decoder.decode(UInt16.self, count: Int(underlyingValue.pageCount))
     }
 
     subscript<T>(dynamicMember keyPath: KeyPath<UnderlyingValue, T>) -> T {
