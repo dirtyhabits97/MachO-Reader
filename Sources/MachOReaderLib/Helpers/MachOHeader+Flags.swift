@@ -153,7 +153,9 @@ extension MachOHeader.Flags: Readable {
             }
         }
 
-        if readableValues.isEmpty { return nil }
+        if readableValues.isEmpty {
+            return nil
+        }
         return readableValues.joined(separator: ", ")
     }
 }

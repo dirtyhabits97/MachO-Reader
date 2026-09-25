@@ -45,7 +45,9 @@ extension String {
     func padding(_ length: Int) -> String {
         // if the current string is equal or greater than the length,
         // add 3 trailing whitespaces as padding
-        if count >= length { return self + "   " }
+        if count >= length {
+            return self + "   "
+        }
         return padding(toLength: length, withPad: " ", startingAt: 0)
     }
 }

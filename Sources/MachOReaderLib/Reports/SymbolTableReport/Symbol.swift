@@ -63,11 +63,17 @@ public struct Symbol {
     public var readableType: String {
         // STAB (debug) entries repurpose the whole n_type byte as a stab code,
         // so the N_TYPE mask and the N_EXT / N_PEXT bits are not meaningful here.
-        if isStab { return "N_STAB" }
+        if isStab {
+            return "N_STAB"
+        }
 
         var parts: [String] = []
-        if isPrivateExternal { parts.append("N_PEXT") }
-        if isExternal { parts.append("N_EXT") }
+        if isPrivateExternal {
+            parts.append("N_PEXT")
+        }
+        if isExternal {
+            parts.append("N_EXT")
+        }
         parts.append(type.readableValue ?? String(type.rawValue))
         return parts.joined(separator: " | ")
     }

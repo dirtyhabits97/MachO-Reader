@@ -52,7 +52,9 @@ struct StringExtractor: Extracting {
         var bytes = [Data.Element]()
         for byte in data {
             // get all the chars until we hit '\0' delimiter.
-            if byte == 0 { break }
+            if byte == 0 {
+                break
+            }
             bytes.append(byte)
         }
         return String(bytes: bytes, encoding: .utf8)

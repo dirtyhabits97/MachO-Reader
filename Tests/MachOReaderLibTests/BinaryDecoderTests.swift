@@ -356,3 +356,42 @@ final class BinaryDecoderTests: XCTestCase {
         XCTAssertEqual(value, 0x0807_0605_0403_0201)
     }
 }
+
+// MARK: - LEB128
+
+final class BinaryDecoderLEB128Tests: XCTestCase {
+
+    func test_decodeULEB128_decodesMultiByteValue() throws {
+        // 624485 encoded as ULEB128
+        let decoder = BinaryDecoder(data: Data([0xE5, 0x8E, 0x26, 0xFF]))
+
+        let (value, size) = try decoder.decodeULEB128(at: 0)
+
+        XCTAssertEqual(value, 624_485)
+        XCTAssertEqual(size, 3)
+    }
+
+    func test_decodeSLEB128_decodesNegativeValue() throws {
+        // -123456 encoded as SLEB128
+        let decoder = BinaryDecoder(data: Data([0xC0, 0xBB, 0x78]))
+
+        let (value, size) = try decoder.decodeSLEB128(at: 0)
+
+        XCTAssertEqual(value, -123_456)
+        XCTAssertEqual(size, 3)
+    }
+
+    func test_decodeULEB128_streaming_advancesPosition() throws {
+        var decoder = BinaryDecoder(data: Data([0x7F, 0x80, 0x01]))
+
+        XCTAssertEqual(try decoder.decodeULEB128(), 127)
+        XCTAssertEqual(try decoder.decodeULEB128(), 128)
+        XCTAssertEqual(decoder.currentPosition, 3)
+    }
+
+    func test_decodeULEB128_throwsWhenTruncated() {
+        let decoder = BinaryDecoder(data: Data([0x80, 0x80]))
+
+        XCTAssertThrowsError(try decoder.decodeULEB128(at: 0))
+    }
+}
