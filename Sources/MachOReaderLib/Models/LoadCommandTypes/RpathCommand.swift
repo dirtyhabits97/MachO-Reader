@@ -28,10 +28,9 @@ public struct RpathCommand: LoadCommandTransformable {
         }
 
         self.loadCommand = loadCommand
-        path = try loadCommand.data.decodeString(
-            maxLength: Int(rpathCommand.cmdsize) - Int(rpathCommand.path.offset),
-            at: Int(rpathCommand.path.offset),
-        )
+        let offset = Int(rpathCommand.path.offset)
+        path = try BinaryDecoder(data: loadCommand.data)
+            .decodeString(maxLength: Int(rpathCommand.cmdsize) - offset, at: offset)
     }
 
     // MARK: - LoadCommandTransformable

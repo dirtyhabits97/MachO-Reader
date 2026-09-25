@@ -6,21 +6,17 @@ final class RpathCommandTests: XCTestCase {
 
     // MARK: - Tests
 
-    func test_decodesPath_fromRawBytes() {
+    func test_decodesPath_fromRawBytes() throws {
         let path = "@executable_path/../Frameworks"
-        let loadCommand = makeRpathLoadCommand(path: path)
+        let loadCommand = try makeRpathLoadCommand(path: path)
 
         let rpathCommand = try RpathCommand(from: loadCommand)
 
         XCTAssertEqual(rpathCommand.path, path)
     }
 
-    func test_allowedCmds_containsRpath() {
-        XCTAssertTrue(RpathCommand.allowedCmds.contains(.rpath))
-    }
-
-    func test_commandType_buildsRpathCommand() {
-        let loadCommand = makeRpathLoadCommand(path: "@loader_path")
+    func test_commandType_buildsRpathCommand() throws {
+        let loadCommand = try makeRpathLoadCommand(path: "@loader_path")
 
         guard case let .rpathCommand(rpathCommand) = try loadCommand.commandType() else {
             XCTFail("Expected .rpathCommand")
@@ -33,7 +29,7 @@ final class RpathCommandTests: XCTestCase {
 
 // MARK: - Helpers
 
-private func makeRpathLoadCommand(path: String) -> LoadCommand {
+private func makeRpathLoadCommand(path: String) throws -> LoadCommand {
     let headerSize = 12 // cmd (4) + cmdsize (4) + path.offset (4)
     let stringBytes = Array(path.utf8) + [0] // null terminator
     let unpaddedSize = headerSize + stringBytes.count

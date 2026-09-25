@@ -9,11 +9,13 @@ public enum LoadCommandType {
     case dysymtabCommand(DysymtabCommand)
     case entryPointCommand(EntryPointCommand)
     case linkedItDataCommand(LinkedItDataCommand)
+    case rpathCommand(RpathCommand)
     case segmentCommand(SegmentCommand)
     case sourceVersionCommand(SourceVersionCommand)
     case symtabCommand(SymtabCommand)
     case threadCommand(ThreadCommand)
     case uuidCommand(UUIDCommand)
+    case versionMinCommand(VersionMinCommand)
 
     case unspecified(LoadCommand)
 

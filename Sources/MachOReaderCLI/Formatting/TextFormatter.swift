@@ -634,6 +634,44 @@ final class TextFormatter {
         ].joined()
     }
 
+    // MARK: - Export Trie
+
+    func format(_ symbol: ExportedSymbol) -> String {
+        var parts: [String] = [
+            "address: \((symbol.address.map { String(hex: $0) } ?? "-").padding(11))",
+            config.fieldSeparator,
+            "kind: \((symbol.kind.readableValue ?? String(symbol.kind.rawValue)).padding(14))",
+            config.fieldSeparator,
+            "flags: \(formatExportSymbolFlags(symbol).padding(24))",
+            config.fieldSeparator,
+            symbol.name,
+        ]
+
+        if let ordinal = symbol.reexportOrdinal {
+            parts.append(" (reexport of \(symbol.reexportName ?? symbol.name) from dylib #\(ordinal))")
+        }
+
+        if let stubOffset = symbol.stubOffset, let resolverOffset = symbol.resolverOffset {
+            parts.append(" (stub: \(String(hex: stubOffset)), resolver: \(String(hex: resolverOffset)))")
+        }
+
+        return parts.joined()
+    }
+
+    private func formatExportSymbolFlags(_ symbol: ExportedSymbol) -> String {
+        var flags: [String] = []
+        if symbol.isWeakDefinition {
+            flags.append("WEAK_DEFINITION")
+        }
+        if symbol.isReexport {
+            flags.append("REEXPORT")
+        }
+        if symbol.isStubAndResolver {
+            flags.append("STUB_AND_RESOLVER")
+        }
+        return flags.isEmpty ? "-" : flags.joined(separator: " | ")
+    }
+
     // MARK: - Helper Formatters
 
     func formatCmd(_ cmd: Cmd) -> String {
