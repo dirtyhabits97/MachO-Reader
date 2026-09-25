@@ -55,7 +55,7 @@ Load commands are parsed lazily into concrete types via `LoadCommand.commandType
 **To add support for a new load command**, create a type in `Models/LoadCommandTypes/` conforming to `LoadCommandTransformable` with a throwing `init(from loadCommand: LoadCommand) throws`, then add a case to the `LoadCommandType` enum's case list and a matching `case` (mapping the relevant `Cmd` value(s)) to its initializer's `switch`. The protocol contract:
 - `func asLoadCommand() -> LoadCommand` — round-trips back to the raw command
 
-Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws `BinaryDecodingError` on truncated or malformed data instead of crashing. That error propagates through `commandType()` and every caller — `Array+Extensions.swift`'s `getDylibCommands()`/`getSegmentCommands()`/`getSymtabCommand()`/`getDyldChainedFixups()`, `MachOReader`'s accessors, the `Reports/`, and the CLI formatters/commands — so don't swallow it with `try?` on the parse path; let it surface to the CLI.
+Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws `BinaryDecodingError` on truncated or malformed data instead of crashing. That error propagates through `commandType()` and every caller — `Array+Extensions.swift`'s `getDylibCommands()`/`getSegmentCommands()`/`getSymtabCommand()`/`getDyldChainedFixups()`, the `Reports/`, and the CLI formatters/commands — so don't swallow it with `try?` on the parse path; let it surface to the CLI.
 
 ### Reports (higher-level analyses)
 
