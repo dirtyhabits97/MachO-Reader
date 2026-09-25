@@ -577,6 +577,44 @@ final class JSONFormatter {
         ]
     }
 
+    // MARK: - Export Trie
+
+    func format(_ symbol: ExportedSymbol) -> [String: Any] {
+        var result: [String: Any] = [
+            "name": symbol.name,
+            "flags": symbol.flags,
+            "kind": symbol.kind.readableValue ?? String(symbol.kind.rawValue),
+            "is_weak_definition": symbol.isWeakDefinition,
+            "is_reexport": symbol.isReexport,
+            "is_stub_and_resolver": symbol.isStubAndResolver,
+        ]
+
+        if let address = symbol.address {
+            result["address"] = address
+            result["address_hex"] = String(hex: address)
+        }
+
+        if let reexportOrdinal = symbol.reexportOrdinal {
+            result["reexport_ordinal"] = reexportOrdinal
+        }
+
+        if let reexportName = symbol.reexportName {
+            result["reexport_name"] = reexportName
+        }
+
+        if let stubOffset = symbol.stubOffset {
+            result["stub_offset"] = stubOffset
+            result["stub_offset_hex"] = String(hex: stubOffset)
+        }
+
+        if let resolverOffset = symbol.resolverOffset {
+            result["resolver_offset"] = resolverOffset
+            result["resolver_offset_hex"] = String(hex: resolverOffset)
+        }
+
+        return result
+    }
+
     // MARK: - Helper Formatters
 
     func formatCmd(_ cmd: Cmd) -> String {

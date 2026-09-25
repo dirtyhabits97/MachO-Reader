@@ -55,11 +55,13 @@ Load commands are parsed lazily into concrete types via `LoadCommand.commandType
 **To add support for a new load command**, create a type in `Models/LoadCommandTypes/` conforming to `LoadCommandTransformable` with a throwing `init(from loadCommand: LoadCommand) throws`, then add a case to the `LoadCommandType` enum's case list and a matching `case` (mapping the relevant `Cmd` value(s)) to its initializer's `switch`. The protocol contract:
 - `func asLoadCommand() -> LoadCommand` — round-trips back to the raw command
 
-Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws `BinaryDecodingError` on truncated or malformed data instead of crashing. That error propagates through `commandType()` and every caller — `Array+Extensions.swift`'s `getDylibCommands()`/`getSegmentCommands()`/`getSymtabCommand()`/`getDyldChainedFixups()`, `MachOReader`'s accessors, the `Reports/`, and the CLI formatters/commands — so don't swallow it with `try?` on the parse path; let it surface to the CLI.
+Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws `BinaryDecodingError` on truncated or malformed data instead of crashing. That error propagates through `commandType()` and every caller — `Array+Extensions.swift`'s `getDylibCommands()`/`getSegmentCommands()`/`getSymtabCommand()`/`getDyldChainedFixups()`, the `Reports/`, and the CLI formatters/commands — so don't swallow it with `try?` on the parse path; let it surface to the CLI.
 
 ### Reports (higher-level analyses)
 
 Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of `throws` builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
+
+`ExportTrieReport` (exposed via `exportTrieReport()`) reads the export trie from `LC_DYLD_EXPORTS_TRIE`, falling back to the `export_off`/`export_size` blob of `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` on older binaries, and walks it depth-first (`ExportTrieBuilder`) into a sorted list of `ExportedSymbol`s — an `nm -gU`/`dyld_info -exports`-style view of a binary's exports.
 
 ### Binary decoding
 
