@@ -27,11 +27,9 @@ public struct MachOFatHeader {
     // MARK: - Lifecycle
 
     init?(from data: Data) {
-        let magic = Magic(peek: data)
+        guard let magic = try? Magic(peek: data), magic.isFat else { return nil }
 
-        guard magic.isFat else { return nil }
-
-        var fatHeader = data.extract(fat_header.self)
+        guard var fatHeader = try? data.decode(fat_header.self) else { return nil }
         if magic.isSwapped {
             swap_fat_header(&fatHeader, kByteSwapOrder)
         }
@@ -53,14 +51,14 @@ public struct MachOFatHeader {
 
         for _ in 0 ..< fatHeader.nfat_arch {
             if magic.isMagic64 {
-                var fatArch = data.advanced(by: offset).extract(fat_arch_64.self)
+                guard var fatArch = try? data.decode(fat_arch_64.self, at: offset) else { break }
                 if magic.isSwapped {
                     swap_fat_arch_64(&fatArch, 1, kByteSwapOrder)
                 }
                 offset += MemoryLayout.size(ofValue: fatArch)
                 archs.append(Architecture(fatArch))
             } else {
-                var fatArch = data.advanced(by: offset).extract(fat_arch.self)
+                guard var fatArch = try? data.decode(fat_arch.self, at: offset) else { break }
                 if magic.isSwapped {
                     swap_fat_arch(&fatArch, 1, kByteSwapOrder)
                 }
@@ -74,10 +72,13 @@ public struct MachOFatHeader {
 
     // MARK: - Methods
 
-    func offset(for cputype: CPUType? = nil) -> UInt64 {
-        archs.first(where: { $0.cputype == cputype })?.offset
-            ?? archs.first?.offset
-            ?? 0
+    /// Returns the file offset of the slice matching `cputype`, or the first slice when `cputype` is `nil`.
+    /// Returns `nil` if `cputype` was given but no matching slice exists.
+    func offset(for cputype: CPUType?) -> UInt64? {
+        guard let cputype else {
+            return archs.first?.offset
+        }
+        return archs.first(where: { $0.cputype == cputype })?.offset
     }
 }
 

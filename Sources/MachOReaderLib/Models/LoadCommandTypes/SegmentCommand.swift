@@ -16,7 +16,7 @@ import MachO
  * section structures directly follow the segment command and their size is
  * reflected in cmdsize.
  */
-public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct SegmentCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -44,24 +44,21 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
 
     // MARK: - Lifecycle
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(SegmentCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(SegmentCommand.allowedCmds)")
-
+    init(from loadCommand: LoadCommand) throws {
         if loadCommand.cmd == .segment64 {
-            var segmentCommand = loadCommand.data.extract(segment_command_64.self)
+            var segmentCommand = try loadCommand.data.decode(segment_command_64.self)
             if loadCommand.isSwapped {
                 swap_segment_command_64(&segmentCommand, kByteSwapOrder)
             }
-            self.init(segmentCommand, loadCommand: loadCommand)
+            try self.init(segmentCommand, loadCommand: loadCommand)
             return
         }
 
-        var segmentCommand = loadCommand.data.extract(segment_command.self)
+        var segmentCommand = try loadCommand.data.decode(segment_command.self)
         if loadCommand.isSwapped {
             swap_segment_command(&segmentCommand, kByteSwapOrder)
         }
-        self.init(segmentCommand, loadCommand: loadCommand)
+        try self.init(segmentCommand, loadCommand: loadCommand)
     }
 
     /// struct segment_command { /* for 32-bit architectures */
@@ -77,7 +74,7 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
     ///   uint32_t	nsects;		/* number of sections in segment */
     ///   uint32_t	flags;		/* flags */
     /// };
-    private init(_ segmentCommand: segment_command, loadCommand: LoadCommand) {
+    private init(_ segmentCommand: segment_command, loadCommand: LoadCommand) throws {
         self.loadCommand = loadCommand
 
         segname = String(char16: segmentCommand.segname)
@@ -96,8 +93,7 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
 
         var offset = MemoryLayout.size(ofValue: segmentCommand)
         for _ in 0 ..< segmentCommand.nsects {
-            let data = loadCommand.data.advanced(by: offset)
-            let section = Section(data.extract(section.self))
+            let section = try Section(loadCommand.data.decode(section.self, at: offset))
             sections.append(section)
             offset += MemoryLayout<section>.size
         }
@@ -118,7 +114,7 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
     ///   uint32_t	nsects;		/* number of sections in segment */
     ///   uint32_t	flags;		/* flags */
     /// };
-    private init(_ segmentCommand: segment_command_64, loadCommand: LoadCommand) {
+    private init(_ segmentCommand: segment_command_64, loadCommand: LoadCommand) throws {
         self.loadCommand = loadCommand
 
         segname = String(char16: segmentCommand.segname)
@@ -137,23 +133,12 @@ public struct SegmentCommand: LoadCommandTypeRepresentable, LoadCommandTransform
 
         var offset = MemoryLayout.size(ofValue: segmentCommand)
         for _ in 0 ..< segmentCommand.nsects {
-            let data = loadCommand.data.advanced(by: offset)
-            let section = Section(data.extract(section_64.self))
+            let section = try Section(loadCommand.data.decode(section_64.self, at: offset))
             sections.append(section)
             offset += MemoryLayout<section_64>.size
         }
 
         self.sections = sections
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.segment, .segment64]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .segmentCommand(SegmentCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

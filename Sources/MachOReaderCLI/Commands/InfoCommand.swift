@@ -42,50 +42,50 @@ struct InfoCommand: ParsableCommand {
         let expandedPath = (pathToBinary as NSString).expandingTildeInPath
         let url = URL(fileURLWithPath: expandedPath)
 
-        let reader = try MachOReader(binaryURL: url, arch: arch)
+        let file = try MachOFile(from: url, arch: arch)
 
         switch format {
         case .text:
-            printText(reader: reader)
+            try printText(file: file)
         case .json:
-            printJSON(reader: reader)
+            try printJSON(file: file)
         }
     }
 
     // MARK: - Text Output
 
-    private func printText(reader: MachOReader) {
+    private func printText(file: MachOFile) throws {
         let formatter = TextFormatter()
 
         // loadCommand takes higher priority than the rest
         if let loadCommandToInspect {
-            for loadCommand in reader.getLoadCommands(loadCommandToInspect) {
-                print(formatter.formatDetailed(loadCommand.commandType()))
+            for loadCommand in file.commands.getLoadCommands(loadCommandToInspect) {
+                try print(formatter.formatDetailed(loadCommand.commandType()))
             }
             return
         }
 
         // print the FAT header if specified and it exists in the binary
-        if fatHeader, let fatHeader = reader.getFatHeader() {
+        if fatHeader, let fatHeader = file.fatHeader {
             print(formatter.format(fatHeader))
             return
         }
 
         // print the header for a given architecture
         if header {
-            print(formatter.format(reader.getHeader()))
+            print(formatter.format(file.header))
             return
         }
 
         // print the build version if it exists
-        if buildVersion, let command = reader.getBuildVersionCommand() {
+        if buildVersion, let command = try file.commands.getBuildVersionCommand() {
             print(formatter.formatDetailed(command))
             return
         }
 
         // only print dylibs
         if dylibs {
-            for command in reader.getDylibCommands() {
+            for command in try file.commands.getDylibCommands() {
                 print(formatter.formatDetailed(command))
             }
             return
@@ -93,63 +93,63 @@ struct InfoCommand: ParsableCommand {
 
         // only print segments
         if segments {
-            for command in reader.getSegmentCommands() {
+            for command in try file.commands.getSegmentCommands() {
                 print(formatter.formatDetailed(command))
             }
             return
         }
 
         // print default information
-        print(formatter.format(reader.getParsedFile()))
+        try print(formatter.format(file))
     }
 
     // MARK: - JSON Output
 
-    private func printJSON(reader: MachOReader) {
+    private func printJSON(file: MachOFile) throws {
         let formatter = JSONFormatter()
 
         // loadCommand takes higher priority than the rest
         if let loadCommandToInspect {
-            let commands = reader.getLoadCommands(loadCommandToInspect).map {
-                formatter.format($0.commandType())
+            let commands = try file.commands.getLoadCommands(loadCommandToInspect).map {
+                try formatter.format($0.commandType())
             }
             print(formatter.toJSONString(commands))
             return
         }
 
         // print the FAT header if specified and it exists in the binary
-        if fatHeader, let fatHeader = reader.getFatHeader() {
+        if fatHeader, let fatHeader = file.fatHeader {
             print(formatter.toJSONString(formatter.format(fatHeader)))
             return
         }
 
         // print the header for a given architecture
         if header {
-            print(formatter.toJSONString(formatter.format(reader.getHeader())))
+            print(formatter.toJSONString(formatter.format(file.header)))
             return
         }
 
         // print the build version if it exists
-        if buildVersion, let command = reader.getBuildVersionCommand() {
+        if buildVersion, let command = try file.commands.getBuildVersionCommand() {
             print(formatter.toJSONString(formatter.format(command)))
             return
         }
 
         // only print dylibs
         if dylibs {
-            let commands = reader.getDylibCommands().map { formatter.format($0) }
+            let commands = try file.commands.getDylibCommands().map { formatter.format($0) }
             print(formatter.toJSONString(commands))
             return
         }
 
         // only print segments
         if segments {
-            let commands = reader.getSegmentCommands().map { formatter.format($0) }
+            let commands = try file.commands.getSegmentCommands().map { formatter.format($0) }
             print(formatter.toJSONString(commands))
             return
         }
 
         // print default information
-        print(formatter.toJSONString(formatter.format(reader.getParsedFile())))
+        try print(formatter.toJSONString(formatter.format(file)))
     }
 }

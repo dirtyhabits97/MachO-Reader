@@ -4,10 +4,9 @@ This file provides guidance for working with code in this repository.
 
 ## Project Overview
 
-MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Three targets:
+MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Two targets:
 - **MachOReaderLib** — the parsing library (no third-party deps; uses the system `MachO` module)
 - **MachOReaderCLI** — the `macho-reader` executable (depends on the lib + swift-argument-parser)
-- **Env** — a small standalone environment-variable utility used only by tests
 
 ## Build, Test, Lint
 
@@ -41,30 +40,30 @@ swift run macho-reader chained-fixups <path> --imports
 
 ### Parsing pipeline (the core flow)
 
-`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything:
-1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:)`), throwing `MachOFileError.invalidMagic` if unrecognized.
-2. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`). The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
-3. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations.
+`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything. Parsing is strict: malformed or truncated input throws `MachOFileError` (or a `BinaryDecodingError` from `BinaryDecoder`) rather than crashing.
+1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:) throws`), throwing `MachOFileError.invalidMagic` if unrecognized.
+2. **Resolve the requested arch** — an unrecognized `--arch` string throws `MachOFileError.unknownArch` before any parsing happens.
+3. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`); a fat binary with no matching slice throws `MachOFileError.archNotFound`, and a slice offset past the end of the file throws `MachOFileError.truncated`. A thin binary whose header `cputype` doesn't match an explicitly requested arch also throws `archNotFound`. The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
+4. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations. Each command's `cmdsize` is checked against the minimum `load_command` size and against the remaining data before it's trusted, throwing `MachOFileError.invalidLoadCommandSize` / `.truncated` otherwise.
 
 A `LoadCommand` (`Models/LoadCommand.swift`) holds only the common `cmd`/`cmdsize` plus the raw `data` slice and an `isSwapped` flag (set when the magic indicates opposite endianness — byte-swapping uses the system `swap_*` functions with `kByteSwapOrder`).
 
 ### Load-command type dispatch (extend the parser here)
 
-Load commands are parsed lazily into concrete types via `LoadCommand.commandType() -> LoadCommandType`. The `LoadCommandType` enum (`Models/LoadCommandType.swift`) has one case per supported command plus `.unspecified` for unknown ones. Dispatch is table-driven: its initializer iterates a list of `LoadCommandTypeRepresentable.Type`s and picks the first whose `allowedCmds` set contains this command's `cmd`.
+Load commands are parsed lazily into concrete types via `LoadCommand.commandType() throws -> LoadCommandType`. The `LoadCommandType` enum (`Models/LoadCommandType.swift`) has one case per supported command plus `.unspecified` for unknown ones. Dispatch is a plain `switch` over `loadCommand.cmd` in the enum's `throws` initializer: each case (or case group, e.g. `.segment, .segment64`) calls that model's own `throws` `init(from loadCommand:)`; unmatched cmds fall into `default: self = .unspecified(loadCommand)`.
 
-**To add support for a new load command**, create a type in `Models/LoadCommandTypes/` conforming to `LoadCommandModel` (= `LoadCommandTypeRepresentable & LoadCommandTransformable`), then register it in both the `LoadCommandType` enum's case list and its initializer's `commandTypes` array. The protocol contract:
-- `static var allowedCmds: Set<Cmd>` — which `LC_*` values this type handles
-- `static func build(from:) -> LoadCommandType` — wraps it in the enum
+**To add support for a new load command**, create a type in `Models/LoadCommandTypes/` conforming to `LoadCommandTransformable` with a throwing `init(from loadCommand: LoadCommand) throws`, then add a case to the `LoadCommandType` enum's case list and a matching `case` (mapping the relevant `Cmd` value(s)) to its initializer's `switch`. The protocol contract:
 - `func asLoadCommand() -> LoadCommand` — round-trips back to the raw command
+
+Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws `BinaryDecodingError` on truncated or malformed data instead of crashing. That error propagates through `commandType()` and every caller — `Array+Extensions.swift`'s `getDylibCommands()`/`getSegmentCommands()`/`getSymtabCommand()`/`getDyldChainedFixups()`, `MachOReader`'s accessors, the `Reports/`, and the CLI formatters/commands — so don't swallow it with `try?` on the parse path; let it surface to the CLI.
 
 ### Reports (higher-level analyses)
 
-Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
+Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of `throws` builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
 
-### Binary decoding — two layers, one deprecated
+### Binary decoding
 
-- **`BinaryDecoder`** (`BinaryDecoding/`) is the current, safe API: bounds-checked, alignment-aware, throws `BinaryDecodingError`. Use `data.decode(T.self, at:)`, `decode(count:)`, `decodeString()`, or conform a type to `BinaryDecodable` for custom decoding. **Prefer this for all new code.**
-- **`Data.extract(_:)` / `extractArray` / `extractString`** (`Extensions/Data+Extensions.swift`) is the older `@available(*, deprecated)` unsafe path (`withUnsafeBytes` loads, no bounds checks). Still used by existing models like `DylibCommand` and the `dyld_chained_*` structs (via `CustomExtractable`). Don't add new uses; migrate to `BinaryDecoder` when touching this code.
+**`BinaryDecoder`** (`BinaryDecoding/`) is the only decoding path: bounds-checked, alignment-aware, throws `BinaryDecodingError`. Use `data.decode(T.self, at:)` / `decode(count:at:)` / `decodeString(at:)` for fixed-layout C structs, or conform a type to `BinaryDecodable` (`init(from decoder: inout BinaryDecoder) throws`) for custom decoding — e.g. the `dyld_chained_starts_in_image`/`dyld_chained_starts_in_segment` structs in `CModels.swift` and the `DyldChainedPtr*` bitfield models in `Reports/DyldChainedFixupsReport/DyldChainedPtrModels.swift`. When decoding a `BinaryDecodable` type from a `Data`, construct a `BinaryDecoder(data:)` and call `.decode(_:at:)` on it directly (not the plain `Data.decode(_:at:)` convenience, which only resolves to the non-`BinaryDecodable` memory-layout overload). There is no unsafe fallback path — the old `Data.extract`/`extractArray`/`extractString`/`CustomExtractable` API has been removed.
 
 ### C struct models
 
@@ -76,7 +75,7 @@ Enum-like wrappers (`Magic`, `Cmd`, `CPUType`, `FileType`, `Platform`, …) in `
 
 ### CLI layer
 
-`MachOReader` (`MachOReaderLib/MachOReader.swift`) is a thin facade over `MachOFile` with `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`). The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
+`MachOFile` is the single entry point the CLI uses directly; `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`) live as a `public extension [LoadCommand]` in `MachOReaderLib/Extensions/Array+Extensions.swift`. The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
 
 ## Code Style
 

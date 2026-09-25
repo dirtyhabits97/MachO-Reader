@@ -6,29 +6,23 @@ final class VersionMinCommandTests: XCTestCase {
 
     // MARK: - Tests
 
-    func test_decodesVersionAndSdk_fromRawBytes() {
+    func test_decodesVersionAndSdk_fromRawBytes() throws {
         // major:12, minor:3, patch:1
         let versionRaw: UInt32 = (12 << 16) | (3 << 8) | 1
         // major:13, minor:0, patch:0
         let sdkRaw: UInt32 = 13 << 16
-        let loadCommand = makeVersionMinLoadCommand(cmd: .versionMinMacosx, version: versionRaw, sdk: sdkRaw)
+        let loadCommand = try makeVersionMinLoadCommand(cmd: .versionMinMacosx, version: versionRaw, sdk: sdkRaw)
 
-        let versionMinCommand = VersionMinCommand(from: loadCommand)
+        let versionMinCommand = try VersionMinCommand(from: loadCommand)
 
         XCTAssertEqual("\(versionMinCommand.version)", "12.3.1")
         XCTAssertEqual("\(versionMinCommand.sdk)", "13.0.0")
     }
 
-    func test_allowedCmds_containsAllVersionMinVariants() {
-        XCTAssertEqual(VersionMinCommand.allowedCmds, [
-            .versionMinMacosx, .versionMinIphoneos, .versionMinTvos, .versionMinWatchos,
-        ])
-    }
+    func test_commandType_buildsVersionMinCommand() throws {
+        let loadCommand = try makeVersionMinLoadCommand(cmd: .versionMinIphoneos, version: 1 << 16, sdk: 2 << 16)
 
-    func test_commandType_buildsVersionMinCommand() {
-        let loadCommand = makeVersionMinLoadCommand(cmd: .versionMinIphoneos, version: 1 << 16, sdk: 2 << 16)
-
-        guard case let .versionMinCommand(versionMinCommand) = loadCommand.commandType() else {
+        guard case let .versionMinCommand(versionMinCommand) = try loadCommand.commandType() else {
             XCTFail("Expected .versionMinCommand")
             return
         }
@@ -40,14 +34,14 @@ final class VersionMinCommandTests: XCTestCase {
 
 // MARK: - Helpers
 
-private func makeVersionMinLoadCommand(cmd: Cmd, version: UInt32, sdk: UInt32) -> LoadCommand {
+private func makeVersionMinLoadCommand(cmd: Cmd, version: UInt32, sdk: UInt32) throws -> LoadCommand {
     var bytes = [UInt8]()
     bytes.append(contentsOf: littleEndianBytes(cmd.rawValue))
     bytes.append(contentsOf: littleEndianBytes(16)) // sizeof(version_min_command)
     bytes.append(contentsOf: littleEndianBytes(version))
     bytes.append(contentsOf: littleEndianBytes(sdk))
 
-    return LoadCommand(from: Data(bytes), isSwapped: false)
+    return try LoadCommand(from: Data(bytes), isSwapped: false)
 }
 
 private func littleEndianBytes(_ value: UInt32) -> [UInt8] {

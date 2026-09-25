@@ -4,28 +4,25 @@ struct DyldChainedImportBuilder {
 
     let imports: [DyldChainedImport]
 
-    init(_ fixupsReport: DyldChainedFixupsReport) {
-        let dylibCommands = fixupsReport.file.commands.getDylibCommands()
+    init(_ fixupsReport: DyldChainedFixupsReport) throws {
+        let dylibCommands = try fixupsReport.file.commands.getDylibCommands()
         var imports: [DyldChainedImport] = []
 
         var offset = Int(fixupsReport.header.importsOffset)
         for _ in 0 ..< fixupsReport.header.importsCount {
-            let rawValue = fixupsReport.fixupData
-                .advanced(by: offset)
-                .extract(dyld_chained_import.self)
+            let rawValue = try fixupsReport.fixupData.decode(dyld_chained_import.self, at: offset)
             var chainedImport = DyldChainedImport(rawValue)
 
             chainedImport.dylibName = dylibCommands[Int(chainedImport.libOrdinal) - 1]
                 .dylib
                 .name
                 .split(separator: "/")
-                .last?
-                .toString()
+                .last
+                .map(String.init)
 
             let offsetToSymbolName = fixupsReport.header.symbolsOffset + chainedImport.nameOffset
-            chainedImport.symbolName = fixupsReport.fixupData
-                .advanced(by: Int(offsetToSymbolName))
-                .extractString()
+            chainedImport.symbolName = try BinaryDecoder(data: fixupsReport.fixupData)
+                .decodeString(at: Int(offsetToSymbolName))
 
             imports.append(chainedImport)
             offset += MemoryLayout.size(ofValue: rawValue)

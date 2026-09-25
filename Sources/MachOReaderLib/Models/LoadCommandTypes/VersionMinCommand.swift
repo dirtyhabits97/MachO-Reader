@@ -6,7 +6,7 @@ import MachO
  * binary was built to run for its platform (before LC_BUILD_VERSION
  * superseded it).
  */
-public struct VersionMinCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct VersionMinCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -17,21 +17,6 @@ public struct VersionMinCommand: LoadCommandTypeRepresentable, LoadCommandTransf
 
     // MARK: - Lifecycle
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(VersionMinCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(VersionMinCommand.allowedCmds)")
-
-        guard var versionMinCommand = try? loadCommand.data.decode(version_min_command.self, at: 0) else {
-            fatalError("Failed to decode version_min_command from data of size \(loadCommand.data.count)")
-        }
-
-        if loadCommand.isSwapped {
-            swap_version_min_command(&versionMinCommand, kByteSwapOrder)
-        }
-
-        self.init(versionMinCommand, loadCommand: loadCommand)
-    }
-
     /// struct version_min_command {
     ///     uint32_t	cmd;		/* LC_VERSION_MIN_MACOSX or
     ///              LC_VERSION_MIN_IPHONEOS or
@@ -41,21 +26,16 @@ public struct VersionMinCommand: LoadCommandTypeRepresentable, LoadCommandTransf
     ///     uint32_t	version;	/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
     ///     uint32_t	sdk;		/* X.Y.Z is encoded in nibbles xxxx.yy.zz */
     /// };
-    private init(_ versionMinCommand: version_min_command, loadCommand: LoadCommand) {
-        self.loadCommand = loadCommand
+    init(from loadCommand: LoadCommand) throws {
+        var versionMinCommand = try loadCommand.data.decode(version_min_command.self)
 
+        if loadCommand.isSwapped {
+            swap_version_min_command(&versionMinCommand, kByteSwapOrder)
+        }
+
+        self.loadCommand = loadCommand
         version = SemanticVersion(versionMinCommand.version)
         sdk = SemanticVersion(versionMinCommand.sdk)
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.versionMinMacosx, .versionMinIphoneos, .versionMinTvos, .versionMinWatchos]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .versionMinCommand(VersionMinCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

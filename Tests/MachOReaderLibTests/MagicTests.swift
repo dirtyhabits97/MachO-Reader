@@ -6,11 +6,11 @@ final class MagicTests: XCTestCase {
 
     // MARK: - Decoding Tests
 
-    func test_magic_decodesValidMagic64() {
+    func test_magic_decodesValidMagic64() throws {
         // MH_MAGIC_64 = 0xfeedfacf (little-endian bytes: cf fa ed fe)
         let data = Data([0xCF, 0xFA, 0xED, 0xFE])
 
-        let magic = Magic(peek: data)
+        let magic = try Magic(peek: data)
 
         XCTAssertEqual(magic.rawValue, MH_MAGIC_64)
         XCTAssertTrue(magic.isMagic64)
@@ -18,33 +18,33 @@ final class MagicTests: XCTestCase {
         XCTAssertFalse(magic.isFat)
     }
 
-    func test_magic_decodesValidMagic32() {
+    func test_magic_decodesValidMagic32() throws {
         // MH_MAGIC = 0xfeedface (little-endian bytes: ce fa ed fe)
         let data = Data([0xCE, 0xFA, 0xED, 0xFE])
 
-        let magic = Magic(peek: data)
+        let magic = try Magic(peek: data)
 
         XCTAssertEqual(magic.rawValue, MH_MAGIC)
         XCTAssertFalse(magic.isMagic64)
         XCTAssertFalse(magic.isSwapped)
     }
 
-    func test_magic_decodesFatMagic() {
+    func test_magic_decodesFatMagic() throws {
         // FAT_MAGIC = 0xcafebabe
         // When read as little-endian UInt32 from bytes [be, ba, fe, ca], we get 0xcafebabe
         let data = Data([0xBE, 0xBA, 0xFE, 0xCA])
 
-        let magic = Magic(peek: data)
+        let magic = try Magic(peek: data)
 
         XCTAssertEqual(magic.rawValue, FAT_MAGIC)
         XCTAssertTrue(magic.isFat)
     }
 
-    func test_magic_decodesSwappedMagic() {
+    func test_magic_decodesSwappedMagic() throws {
         // MH_CIGAM_64 = 0xcffaedfe (byte-swapped MH_MAGIC_64)
         let data = Data([0xFE, 0xED, 0xFA, 0xCF])
 
-        let magic = Magic(peek: data)
+        let magic = try Magic(peek: data)
 
         XCTAssertEqual(magic.rawValue, MH_CIGAM_64)
         XCTAssertTrue(magic.isMagic64)

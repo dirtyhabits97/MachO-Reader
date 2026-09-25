@@ -17,13 +17,11 @@ public struct MachOHeader {
 
     // MARK: - Lifecycle
 
-    init(from data: Data) {
-        let magic = Magic(peek: data)
+    init(from data: Data) throws {
+        let magic = try Magic(peek: data)
 
         if magic.isMagic64 {
-            guard var header = try? data.decode(mach_header_64.self, at: 0) else {
-                fatalError("Failed to decode mach_header_64 from data of size \(data.count)")
-            }
+            var header = try data.decode(mach_header_64.self, at: 0)
 
             if magic.isSwapped {
                 swap_mach_header_64(&header, kByteSwapOrder)
@@ -31,9 +29,7 @@ public struct MachOHeader {
 
             self.init(header, magic: magic)
         } else {
-            guard var header = try? data.decode(mach_header.self, at: 0) else {
-                fatalError("Failed to decode mach_header from data of size \(data.count)")
-            }
+            var header = try data.decode(mach_header.self, at: 0)
 
             if magic.isSwapped {
                 swap_mach_header(&header, kByteSwapOrder)

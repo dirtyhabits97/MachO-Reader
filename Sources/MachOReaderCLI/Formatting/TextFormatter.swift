@@ -7,17 +7,11 @@ final class TextFormatter {
 
     // MARK: - Properties
 
-    private let config: FormattingConfig
-
-    // MARK: - Lifecycle
-
-    init(config: FormattingConfig = .default) {
-        self.config = config
-    }
+    private let config = FormattingConfig.default
 
     // MARK: - MachOFile
 
-    func format(_ file: MachOFile) -> String {
+    func format(_ file: MachOFile) throws -> String {
         var output = [String]()
 
         if let fatHeader = file.fatHeader {
@@ -30,7 +24,7 @@ final class TextFormatter {
 
         for command in file.commands {
             output.append("\n")
-            output.append(formatSummary(command.commandType()))
+            try output.append(formatSummary(command.commandType()))
         }
 
         return output.joined()
