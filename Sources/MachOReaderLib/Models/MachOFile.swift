@@ -42,7 +42,7 @@ public struct MachOFile {
         try self.init(from: Data(contentsOf: url), arch: arch)
     }
 
-    init(from data: Data, arch: String?) throws {
+    public init(from data: Data, arch: String?) throws {
         // Validate magic before attempting to parse
         let magic = Magic(peek: data)
         guard magic.isValid else {

@@ -7,13 +7,7 @@ final class TextFormatter {
 
     // MARK: - Properties
 
-    private let config: FormattingConfig
-
-    // MARK: - Lifecycle
-
-    init(config: FormattingConfig = .default) {
-        self.config = config
-    }
+    private let config = FormattingConfig.default
 
     // MARK: - MachOFile
 
