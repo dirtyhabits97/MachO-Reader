@@ -27,6 +27,8 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
     /// The file does not contain an `LC_DYLD_EXPORTS_TRIE` load command, nor an
     /// `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command with an export blob.
     case missingExportTrie
+    /// The file does not contain an `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command.
+    case missingDyldInfo
 
     public var description: String {
         switch self {
@@ -47,6 +49,8 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
                 "\(cpuType.readableValue ?? String(cpuType.rawValue))."
         case .missingExportTrie:
             "This Mach-O binary does not contain an LC_DYLD_EXPORTS_TRIE or LC_DYLD_INFO(_ONLY) load command."
+        case .missingDyldInfo:
+            "This Mach-O binary does not contain an LC_DYLD_INFO or LC_DYLD_INFO_ONLY load command."
         }
     }
 }
@@ -170,5 +174,9 @@ public struct MachOFile {
 
     public func exportTrieReport() throws -> ExportTrieReport {
         try ExportTrieReport(file: self)
+    }
+
+    public func dyldInfoReport() throws -> DyldInfoReport {
+        try DyldInfoReport(file: self)
     }
 }

@@ -706,6 +706,68 @@ final class TextFormatter {
     func formatUnknown(_ value: Any) -> String {
         "<unable-to-format:\(type(of: value))>"
     }
+
+    // MARK: - Dyld Info
+
+    func format(_ report: DyldInfoReport) -> String {
+        [
+            formatRebases(report.rebases),
+            formatBinds(report.binds, title: "BINDS"),
+            formatBinds(report.weakBinds, title: "WEAK BINDS"),
+            formatBinds(report.lazyBinds, title: "LAZY BINDS"),
+        ].joined(separator: "\n\n")
+    }
+
+    func formatRebases(_ rebases: [RebaseEntry]) -> String {
+        var output = "REBASES (\(rebases.count)):"
+        for rebase in rebases {
+            output += "\n" + format(rebase)
+        }
+        return output
+    }
+
+    func format(_ rebase: RebaseEntry) -> String {
+        [
+            rebase.segmentName.padding(8),
+            config.fieldSeparator,
+            (rebase.sectionName ?? "").padding(18),
+            config.fieldSeparator,
+            String(hex: rebase.address),
+            config.fieldSeparator,
+            rebase.type.readableValue ?? String(rebase.type.rawValue),
+        ].joined()
+    }
+
+    func formatBinds(_ binds: [BindEntry], title: String) -> String {
+        var output = "\(title) (\(binds.count)):"
+        for bind in binds {
+            output += "\n" + format(bind)
+        }
+        return output
+    }
+
+    func format(_ bind: BindEntry) -> String {
+        var output = [
+            bind.segmentName.padding(8),
+            config.fieldSeparator,
+            (bind.sectionName ?? "").padding(18),
+            config.fieldSeparator,
+            String(hex: bind.address),
+            config.fieldSeparator,
+            (bind.type.readableValue ?? String(bind.type.rawValue)).padding(24),
+            config.fieldSeparator,
+            "\(bind.dylibName ?? String(bind.dylibOrdinal))/\(bind.symbolName)",
+        ]
+
+        if bind.addend != 0 {
+            output.append(" + \(bind.addend)")
+        }
+        if bind.isWeakImport {
+            output.append(" (weak)")
+        }
+
+        return output.joined()
+    }
 }
 
 // swiftlint:enable file_length type_body_length
