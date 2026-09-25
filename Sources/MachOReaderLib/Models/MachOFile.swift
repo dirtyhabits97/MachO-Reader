@@ -41,7 +41,7 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
         case let .invalidLoadCommandSize(cmdsize, minimum):
             "Invalid load command: cmdsize \(cmdsize) is smaller than the minimum of \(minimum) bytes."
         case let .unknownArch(arch):
-            "Unknown architecture \"\(arch)\". Expected one of: x86, x86_64, arm, arm64."
+            "Unknown architecture \"\(arch)\". Expected one of: x86, x86_64, arm, arm64, arm64e."
         case let .archNotFound(cpuType):
             "This Mach-O binary does not contain a slice for architecture " +
                 "\(cpuType.readableValue ?? String(cpuType.rawValue))."

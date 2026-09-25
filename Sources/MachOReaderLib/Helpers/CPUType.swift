@@ -45,7 +45,8 @@ extension CPUType: Readable {
         case "x86": self = .x86
         case "x86_64": self = .x86_64
         case "arm": self = .arm
-        case "arm64": self = .arm64
+        // ponytail: arm64e is a subtype; fat slices are selected by cputype so it maps to arm64.
+        case "arm64", "arm64e": self = .arm64
         default: return nil
         }
     }
