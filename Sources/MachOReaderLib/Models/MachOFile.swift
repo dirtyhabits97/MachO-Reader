@@ -13,6 +13,9 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
     /// The file does not contain an `LC_SYMTAB` load command.
     case missingSymbolTable
 
+    /// The file does not contain an `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` load command.
+    case missingDyldInfo
+
     public var description: String {
         switch self {
         case let .invalidMagic(value):
@@ -21,6 +24,8 @@ public enum MachOFileError: Error, Equatable, CustomStringConvertible {
             "This Mach-O binary does not contain an LC_DYLD_CHAINED_FIXUPS load command."
         case .missingSymbolTable:
             "This Mach-O binary does not contain an LC_SYMTAB load command."
+        case .missingDyldInfo:
+            "This Mach-O binary does not contain an LC_DYLD_INFO or LC_DYLD_INFO_ONLY load command."
         }
     }
 }
@@ -81,5 +86,9 @@ public struct MachOFile {
 
     public func symbolTableReport() throws -> SymbolTableReport {
         try SymbolTableReport(file: self)
+    }
+
+    public func dyldInfoReport() throws -> DyldInfoReport {
+        try DyldInfoReport(file: self)
     }
 }

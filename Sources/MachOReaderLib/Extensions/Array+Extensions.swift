@@ -22,6 +22,16 @@ extension [LoadCommand] {
             .first
     }
 
+    func getDyldInfoCommand() -> DyldInfoCommand? {
+        lazy
+            .filter { loadCommand in loadCommand.cmd == .dyldInfo || loadCommand.cmd == .dyldInfoOnly }
+            .compactMap { loadCommand -> DyldInfoCommand? in
+                guard case let .dyldInfoCommand(dyldInfoCommand) = loadCommand.commandType() else { return nil }
+                return dyldInfoCommand
+            }
+            .first
+    }
+
     func getDylibCommands() -> [DylibCommand] {
         compactMap { loadCommand -> DylibCommand? in
             guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }

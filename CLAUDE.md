@@ -59,7 +59,7 @@ Load commands are parsed lazily into concrete types via `LoadCommand.commandType
 
 ### Reports (higher-level analyses)
 
-Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
+Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info. `DyldInfoReport` (exposed via `dyldInfoReport()`) covers the older, still-common `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` format instead, decoding the rebase/bind/weak-bind/lazy-bind opcode streams at `file.base` + `rebase_off`/`bind_off`/etc. via `RebaseOpcodeStreamParser`/`BindOpcodeStreamParser` in `Reports/DyldInfoReport/DyldInfoReport.swift`.
 
 ### Binary decoding — two layers, one deprecated
 
