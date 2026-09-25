@@ -46,21 +46,21 @@ struct InfoCommand: ParsableCommand {
 
         switch format {
         case .text:
-            printText(reader: reader)
+            try printText(reader: reader)
         case .json:
-            printJSON(reader: reader)
+            try printJSON(reader: reader)
         }
     }
 
     // MARK: - Text Output
 
-    private func printText(reader: MachOReader) {
+    private func printText(reader: MachOReader) throws {
         let formatter = TextFormatter()
 
         // loadCommand takes higher priority than the rest
         if let loadCommandToInspect {
             for loadCommand in reader.getLoadCommands(loadCommandToInspect) {
-                print(formatter.formatDetailed(loadCommand.commandType()))
+                try print(formatter.formatDetailed(loadCommand.commandType()))
             }
             return
         }
@@ -78,14 +78,14 @@ struct InfoCommand: ParsableCommand {
         }
 
         // print the build version if it exists
-        if buildVersion, let command = reader.getBuildVersionCommand() {
+        if buildVersion, let command = try reader.getBuildVersionCommand() {
             print(formatter.formatDetailed(command))
             return
         }
 
         // only print dylibs
         if dylibs {
-            for command in reader.getDylibCommands() {
+            for command in try reader.getDylibCommands() {
                 print(formatter.formatDetailed(command))
             }
             return
@@ -93,25 +93,25 @@ struct InfoCommand: ParsableCommand {
 
         // only print segments
         if segments {
-            for command in reader.getSegmentCommands() {
+            for command in try reader.getSegmentCommands() {
                 print(formatter.formatDetailed(command))
             }
             return
         }
 
         // print default information
-        print(formatter.format(reader.getParsedFile()))
+        try print(formatter.format(reader.getParsedFile()))
     }
 
     // MARK: - JSON Output
 
-    private func printJSON(reader: MachOReader) {
+    private func printJSON(reader: MachOReader) throws {
         let formatter = JSONFormatter()
 
         // loadCommand takes higher priority than the rest
         if let loadCommandToInspect {
-            let commands = reader.getLoadCommands(loadCommandToInspect).map {
-                formatter.format($0.commandType())
+            let commands = try reader.getLoadCommands(loadCommandToInspect).map {
+                try formatter.format($0.commandType())
             }
             print(formatter.toJSONString(commands))
             return
@@ -130,26 +130,26 @@ struct InfoCommand: ParsableCommand {
         }
 
         // print the build version if it exists
-        if buildVersion, let command = reader.getBuildVersionCommand() {
+        if buildVersion, let command = try reader.getBuildVersionCommand() {
             print(formatter.toJSONString(formatter.format(command)))
             return
         }
 
         // only print dylibs
         if dylibs {
-            let commands = reader.getDylibCommands().map { formatter.format($0) }
+            let commands = try reader.getDylibCommands().map { formatter.format($0) }
             print(formatter.toJSONString(commands))
             return
         }
 
         // only print segments
         if segments {
-            let commands = reader.getSegmentCommands().map { formatter.format($0) }
+            let commands = try reader.getSegmentCommands().map { formatter.format($0) }
             print(formatter.toJSONString(commands))
             return
         }
 
         // print default information
-        print(formatter.toJSONString(formatter.format(reader.getParsedFile())))
+        try print(formatter.toJSONString(formatter.format(reader.getParsedFile())))
     }
 }

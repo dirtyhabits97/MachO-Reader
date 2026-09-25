@@ -31,7 +31,7 @@ public struct MachOFatHeader {
 
         guard magic.isFat else { return nil }
 
-        var fatHeader = data.extract(fat_header.self)
+        guard var fatHeader = try? data.decode(fat_header.self) else { return nil }
         if magic.isSwapped {
             swap_fat_header(&fatHeader, kByteSwapOrder)
         }
@@ -53,14 +53,14 @@ public struct MachOFatHeader {
 
         for _ in 0 ..< fatHeader.nfat_arch {
             if magic.isMagic64 {
-                var fatArch = data.advanced(by: offset).extract(fat_arch_64.self)
+                guard var fatArch = try? data.decode(fat_arch_64.self, at: offset) else { break }
                 if magic.isSwapped {
                     swap_fat_arch_64(&fatArch, 1, kByteSwapOrder)
                 }
                 offset += MemoryLayout.size(ofValue: fatArch)
                 archs.append(Architecture(fatArch))
             } else {
-                var fatArch = data.advanced(by: offset).extract(fat_arch.self)
+                guard var fatArch = try? data.decode(fat_arch.self, at: offset) else { break }
                 if magic.isSwapped {
                     swap_fat_arch(&fatArch, 1, kByteSwapOrder)
                 }

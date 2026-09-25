@@ -9,7 +9,7 @@ import MachO
  * This struct is also used for the LC_DYLD_ENVIRONMENT load command and
  * contains string for dyld to treat like environment variable.
  */
-public struct DylinkerCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct DylinkerCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -18,26 +18,19 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
 
     // MARK: - Lifecycle
 
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(DylinkerCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(DylinkerCommand.allowedCmds)")
-
-        var dylinkerCommand = loadCommand.data.extract(dylinker_command.self)
-
-        if loadCommand.isSwapped {
-            swap_dylinker_command(&dylinkerCommand, kByteSwapOrder)
-        }
-
-        self.init(dylinkerCommand, loadCommand: loadCommand)
-    }
-
     /// struct dylinker_command {
     ///   uint32_t	cmd;		/* LC_ID_DYLINKER, LC_LOAD_DYLINKER or
     ///              LC_DYLD_ENVIRONMENT */
     ///   uint32_t	cmdsize;	/* includes pathname string */
     ///   union lc_str    name;		/* dynamic linker's path name */
     /// };
-    private init(_ dylinkerCommand: dylinker_command, loadCommand: LoadCommand) {
+    init(from loadCommand: LoadCommand) throws {
+        var dylinkerCommand = try loadCommand.data.decode(dylinker_command.self)
+
+        if loadCommand.isSwapped {
+            swap_dylinker_command(&dylinkerCommand, kByteSwapOrder)
+        }
+
         self.loadCommand = loadCommand
 
         let offset = Int(dylinkerCommand.name.offset)
@@ -47,16 +40,6 @@ public struct DylinkerCommand: LoadCommandTypeRepresentable, LoadCommandTransfor
         name = String(data: data[..<length], encoding: .utf8)?
             .trimmingCharacters(in: .controlCharacters)
             ?? ""
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.idDylinker, .loadDylinker, .dyldEnvironment]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .dylinkerCommand(DylinkerCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable
