@@ -2,18 +2,15 @@ import Foundation
 
 public struct SemanticVersion {
 
-    let major: Int
-    let minor: Int
-    let patch: Int
+    public let major: Int
+    public let minor: Int
+    public let patch: Int
 
     init(_ value: UInt32) {
-        let mask: UInt32 = 0b1111
-        // get the last 8 bytes
-        patch = Int(value & mask)
-        // get bytes 9-16
-        minor = Int((value >> 8) & mask)
-        // get bytes 17-32
-        major = Int((value >> 16))
+        // Packed as xxxx.yy.zz: 16 bits major, 8 bits minor, 8 bits patch.
+        patch = Int(value & 0xFF)
+        minor = Int((value >> 8) & 0xFF)
+        major = Int(value >> 16)
     }
 }
 
