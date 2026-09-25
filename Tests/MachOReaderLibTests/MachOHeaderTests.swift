@@ -7,10 +7,12 @@ final class MachOHeaderTests: XCTestCase {
         url(for: "helloworld")
     }
 
-    func test_defaultHeader_whenInvalidArch() throws {
+    func test_throws_whenUnknownArch() throws {
         guard let url = helloWorldURL else { return }
 
-        XCTAssertNoThrow(try MachOFile(from: url, arch: "invalid_arch"))
+        XCTAssertThrowsError(try MachOFile(from: url, arch: "invalid_arch")) { error in
+            XCTAssertEqual(error as? MachOFileError, .unknownArch("invalid_arch"))
+        }
     }
 
     func test_oneHeader_whenOnlyOneArchIsSupported() throws {

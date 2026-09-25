@@ -4,10 +4,9 @@ This file provides guidance for working with code in this repository.
 
 ## Project Overview
 
-MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Three targets:
+MachO-Reader is a Swift package for parsing the Mach-O binary format used by macOS/iOS executables. It is a learning playground, not a production tool. Two targets:
 - **MachOReaderLib** — the parsing library (no third-party deps; uses the system `MachO` module)
 - **MachOReaderCLI** — the `macho-reader` executable (depends on the lib + swift-argument-parser)
-- **Env** — a small standalone environment-variable utility used only by tests
 
 ## Build, Test, Lint
 
@@ -41,10 +40,11 @@ swift run macho-reader chained-fixups <path> --imports
 
 ### Parsing pipeline (the core flow)
 
-`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything:
-1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:)`), throwing `MachOFileError.invalidMagic` if unrecognized.
-2. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`). The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
-3. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations.
+`MachOFile.init` (`Models/MachOFile.swift`) is the entry point and drives everything. Parsing is strict: malformed or truncated input throws `MachOFileError` (or a `BinaryDecodingError` from `BinaryDecoder`) rather than crashing.
+1. **Validate magic** by peeking the first `UInt32` (`Magic(peek:) throws`), throwing `MachOFileError.invalidMagic` if unrecognized.
+2. **Resolve the requested arch** — an unrecognized `--arch` string throws `MachOFileError.unknownArch` before any parsing happens.
+3. **Handle fat binaries** — if a `MachOFatHeader` is present, advance `data` to the slice matching the requested `arch` (a `CPUType`); a fat binary with no matching slice throws `MachOFileError.archNotFound`, and a slice offset past the end of the file throws `MachOFileError.truncated`. A thin binary whose header `cputype` doesn't match an explicitly requested arch also throws `archNotFound`. The chosen slice's start is stored as `base` (needed later because chained-fixups offsets are relative to it).
+4. **Parse the header** into `MachOHeader`, then **walk load commands**: starting at `header.size`, decode each `LoadCommand` and advance by its `cmdsize` for `header.ncmds` iterations. Each command's `cmdsize` is checked against the minimum `load_command` size and against the remaining data before it's trusted, throwing `MachOFileError.invalidLoadCommandSize` / `.truncated` otherwise.
 
 A `LoadCommand` (`Models/LoadCommand.swift`) holds only the common `cmd`/`cmdsize` plus the raw `data` slice and an `isSwapped` flag (set when the magic indicates opposite endianness — byte-swapping uses the system `swap_*` functions with `kByteSwapOrder`).
 
@@ -75,7 +75,7 @@ Enum-like wrappers (`Magic`, `Cmd`, `CPUType`, `FileType`, `Platform`, …) in `
 
 ### CLI layer
 
-`MachOReader` (`MachOReaderLib/MachOReader.swift`) is a thin facade over `MachOFile` with `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`). The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
+`MachOFile` is the single entry point the CLI uses directly; `getDylibCommands()`-style convenience accessors (each a `compactMap` + `guard case` over `commands`) live as a `public extension [LoadCommand]` in `MachOReaderLib/Extensions/Array+Extensions.swift`. The CLI (`Commands/`) is structured as a router + subcommands: `MachOReaderCommand` (the `@main` entry, `Commands/MachOReaderCommand.swift`) declares **no arguments of its own** — it only lists `subcommands` and sets `defaultSubcommand: InfoCommand.self`. The actual work lives in the subcommands, `InfoCommand` (default) and `DyldChainedFixupsCommand`. (This split is required: a parent command that owns a required positional argument can't coexist with subcommands — swift-argument-parser would consume the subcommand name as the positional.) Each subcommand parses its args, then routes to one of two formatters (`Formatting/TextFormatter`, `JSONFormatter`) based on `--format`. Both follow the same shape: a flag selects a sub-view (`--header`, `--dylibs`, `--imports`, …) and dispatches to `printText`/`printJSON`.
 
 ## Code Style
 

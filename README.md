@@ -1,13 +1,65 @@
 # MachO-Reader
 
-Playground project to learn more about the Mach-O file format.
+Playground project to learn more about the Mach-O file format. It parses Mach-O
+binaries (including fat/universal ones) into headers, load commands, and a few
+higher-level reports (symbol table, dyld chained fixups), and exposes them
+through both a library and a `macho-reader` CLI.
 
-## How to run
+## Install
 
-`swift run macho-reader <path-to-binary>`
+```bash
+make install    # builds a release binary and installs it into $HOME/bin (no sudo)
+make uninstall   # removes it again
+```
+
+## CLI
+
+The `macho-reader` executable has three subcommands. `info` is the default,
+so a bare path is equivalent to `macho-reader info <path>`.
+
+```bash
+swift run macho-reader <path-to-binary>                        # info (default): header + load commands
+swift run macho-reader chained-fixups <path-to-binary>          # LC_DYLD_CHAINED_FIXUPS: imports, segments, pages
+swift run macho-reader symbols <path-to-binary>                 # LC_SYMTAB entries
+```
+
+Each subcommand supports `--format json` for machine-readable output, e.g.
+`swift run macho-reader <path> --header --format json`.
 
 You should see a similar output:
 ![image](./images/example.png)
+
+## Library
+
+Add the package as a dependency:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/<owner>/MachO-Reader", from: "1.0.0"),
+]
+```
+
+Then parse a binary and walk its load commands:
+
+```swift
+import MachOReaderLib
+
+let file = try MachOFile(from: URL(fileURLWithPath: "/bin/ls"), arch: nil)
+
+print(file.header)
+
+for command in file.commands {
+    switch command.commandType() {
+    case let .dylibCommand(dylib):
+        print(dylib.dylib.name)
+    default:
+        break
+    }
+}
+
+let symbols = try file.symbolTableReport().symbols
+print(symbols.count)
+```
 
 ## Sources
 

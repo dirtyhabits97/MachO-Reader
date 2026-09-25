@@ -27,9 +27,7 @@ public struct MachOFatHeader {
     // MARK: - Lifecycle
 
     init?(from data: Data) {
-        let magic = Magic(peek: data)
-
-        guard magic.isFat else { return nil }
+        guard let magic = try? Magic(peek: data), magic.isFat else { return nil }
 
         guard var fatHeader = try? data.decode(fat_header.self) else { return nil }
         if magic.isSwapped {
@@ -74,10 +72,13 @@ public struct MachOFatHeader {
 
     // MARK: - Methods
 
-    func offset(for cputype: CPUType? = nil) -> UInt64 {
-        archs.first(where: { $0.cputype == cputype })?.offset
-            ?? archs.first?.offset
-            ?? 0
+    /// Returns the file offset of the slice matching `cputype`, or the first slice when `cputype` is `nil`.
+    /// Returns `nil` if `cputype` was given but no matching slice exists.
+    func offset(for cputype: CPUType?) -> UInt64? {
+        guard let cputype else {
+            return archs.first?.offset
+        }
+        return archs.first(where: { $0.cputype == cputype })?.offset
     }
 }
 

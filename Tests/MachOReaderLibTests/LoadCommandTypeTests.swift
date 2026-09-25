@@ -18,7 +18,7 @@ final class LoadCommandTypeTests: XCTestCase {
         withUnsafeBytes(of: &cmd) { data.append(contentsOf: $0) }
         withUnsafeBytes(of: &cmdsize) { data.append(contentsOf: $0) }
 
-        let loadCommand = LoadCommand(from: data, isSwapped: false)
+        let loadCommand = try LoadCommand(from: data, isSwapped: false)
 
         XCTAssertThrowsError(try loadCommand.commandType())
     }

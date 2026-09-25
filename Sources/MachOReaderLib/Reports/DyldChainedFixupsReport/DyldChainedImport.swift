@@ -17,8 +17,8 @@ struct DyldChainedImportBuilder {
                 .dylib
                 .name
                 .split(separator: "/")
-                .last?
-                .toString()
+                .last
+                .map(String.init)
 
             let offsetToSymbolName = fixupsReport.header.symbolsOffset + chainedImport.nameOffset
             chainedImport.symbolName = try BinaryDecoder(data: fixupsReport.fixupData)
