@@ -37,15 +37,15 @@ struct DyldChainedFixupsCommand: ParsableCommand {
 
         switch format {
         case .text:
-            printText(report: report)
+            try printText(report: report)
         case .json:
-            printJSON(report: report)
+            try printJSON(report: report)
         }
     }
 
     // MARK: - Text Output
 
-    private func printText(report: DyldChainedFixupsReport) {
+    private func printText(report: DyldChainedFixupsReport) throws {
         let formatter = TextFormatter()
 
         if chainedHeader {
@@ -61,7 +61,7 @@ struct DyldChainedFixupsCommand: ParsableCommand {
         }
 
         if pages {
-            for (segmentInfo, pages) in zip(report.segmentInfo, report.pageInfo()) {
+            for (segmentInfo, pages) in try zip(report.segmentInfo, report.pageInfo()) {
                 print(formatter.format(segmentInfo))
                 print(formatter.format(pages))
             }
@@ -73,7 +73,7 @@ struct DyldChainedFixupsCommand: ParsableCommand {
 
     // MARK: - JSON Output
 
-    private func printJSON(report: DyldChainedFixupsReport) {
+    private func printJSON(report: DyldChainedFixupsReport) throws {
         let formatter = JSONFormatter()
 
         if chainedHeader {
@@ -89,7 +89,7 @@ struct DyldChainedFixupsCommand: ParsableCommand {
 
         if pages {
             var result: [[String: Any]] = []
-            for (segmentInfo, pages) in zip(report.segmentInfo, report.pageInfo()) {
+            for (segmentInfo, pages) in try zip(report.segmentInfo, report.pageInfo()) {
                 var segmentDict = formatter.format(segmentInfo)
                 segmentDict["pages"] = formatter.format(pages)
                 result.append(segmentDict)

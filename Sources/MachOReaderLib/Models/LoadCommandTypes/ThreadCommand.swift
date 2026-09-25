@@ -22,7 +22,7 @@ import Foundation
  * created (based on the shell's limit for the stack size).  Command arguments
  * and environment variables are copied onto that stack.
  */
-public struct ThreadCommand: LoadCommandTypeRepresentable, LoadCommandTransformable {
+public struct ThreadCommand: LoadCommandTransformable {
 
     // MARK: - Properties
 
@@ -30,19 +30,6 @@ public struct ThreadCommand: LoadCommandTypeRepresentable, LoadCommandTransforma
     private let loadCommand: LoadCommand
 
     // MARK: - Lifecycle
-
-    init(from loadCommand: LoadCommand) {
-        assert(loadCommand.is(ThreadCommand.self),
-               "\(loadCommand.cmd) doesn't match any of \(ThreadCommand.allowedCmds)")
-
-        var threadCommand = loadCommand.data.extract(thread_command.self)
-
-        if loadCommand.isSwapped {
-            swap_thread_command(&threadCommand, kByteSwapOrder)
-        }
-
-        self.init(threadCommand, loadCommand: loadCommand)
-    }
 
     /// struct thread_command {
     ///   uint32_t	cmd;		/* LC_THREAD or  LC_UNIXTHREAD */
@@ -52,19 +39,15 @@ public struct ThreadCommand: LoadCommandTypeRepresentable, LoadCommandTransforma
     ///   /* struct XXX_thread_state state   thread state for this flavor */
     ///   /* ... */
     /// };
-    private init(_ threadCommand: thread_command, loadCommand: LoadCommand) {
+    init(from loadCommand: LoadCommand) throws {
+        var threadCommand = try loadCommand.data.decode(thread_command.self)
+
+        if loadCommand.isSwapped {
+            swap_thread_command(&threadCommand, kByteSwapOrder)
+        }
+
         self.loadCommand = loadCommand
         underlyingValue = threadCommand
-    }
-
-    // MARK: - LoadCommandTypeRepresentable
-
-    static var allowedCmds: Set<Cmd> {
-        [.thread, .unixthread]
-    }
-
-    static func build(from loadCommand: LoadCommand) -> LoadCommandType {
-        .threadCommand(ThreadCommand(from: loadCommand))
     }
 
     // MARK: - LoadCommandTransformable

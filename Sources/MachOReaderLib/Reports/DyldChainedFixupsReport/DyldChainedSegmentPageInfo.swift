@@ -7,7 +7,7 @@ struct DyldChainedSegmentPageInfoBuilder {
 
     var pageInfo: [Pages] = []
 
-    init(_ fixupsReport: DyldChainedFixupsReport) {
+    init(_ fixupsReport: DyldChainedFixupsReport) throws {
         var result: [Pages] = []
 
         for segmentInfo in fixupsReport.segmentInfo {
@@ -36,7 +36,7 @@ struct DyldChainedSegmentPageInfoBuilder {
                 while !done {
                     let data = fixupsReport.file.base.advanced(by: Int(chainedOffset))
 
-                    guard let bindOrRebase = DyldChainedPtrBindOrRebase(
+                    guard let bindOrRebase = try DyldChainedPtrBindOrRebase(
                         from: data,
                         pointerFormat: startsInSegment.pointerFormat,
                     ) else {

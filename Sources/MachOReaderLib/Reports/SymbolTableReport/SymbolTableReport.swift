@@ -15,7 +15,7 @@ public final class SymbolTableReport {
     // MARK: - Lifecycle
 
     init(file: MachOFile) throws {
-        guard let symtab = file.commands.getSymtabCommand() else {
+        guard let symtab = try file.commands.getSymtabCommand() else {
             throw MachOFileError.missingSymbolTable
         }
         self.file = file
