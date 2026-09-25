@@ -61,6 +61,8 @@ Load commands are parsed lazily into concrete types via `LoadCommand.commandType
 
 Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
 
+`ExportTrieReport` (exposed via `exportTrieReport()`) reads the export trie from `LC_DYLD_EXPORTS_TRIE`, falling back to the `export_off`/`export_size` blob of `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` on older binaries, and walks it depth-first (`ExportTrieBuilder`) into a sorted list of `ExportedSymbol`s — an `nm -gU`/`dyld_info -exports`-style view of a binary's exports.
+
 ### Binary decoding — two layers, one deprecated
 
 - **`BinaryDecoder`** (`BinaryDecoding/`) is the current, safe API: bounds-checked, alignment-aware, throws `BinaryDecodingError`. Use `data.decode(T.self, at:)`, `decode(count:)`, `decodeString()`, or conform a type to `BinaryDecodable` for custom decoding. **Prefer this for all new code.**

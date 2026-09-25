@@ -12,6 +12,26 @@ extension [LoadCommand] {
             .first
     }
 
+    func getDyldExportsTrie() -> LinkedItDataCommand? {
+        lazy
+            .filter { loadCommand in loadCommand.cmd == .dyldExportsTrie }
+            .compactMap { loadCommand -> LinkedItDataCommand? in
+                guard case let .linkedItDataCommand(linkedItDataCommand) = loadCommand.commandType() else { return nil }
+                return linkedItDataCommand
+            }
+            .first
+    }
+
+    func getDyldInfoCommand() -> DyldInfoCommand? {
+        lazy
+            .filter { loadCommand in loadCommand.cmd == .dyldInfo || loadCommand.cmd == .dyldInfoOnly }
+            .compactMap { loadCommand -> DyldInfoCommand? in
+                guard case let .dyldInfoCommand(dyldInfoCommand) = loadCommand.commandType() else { return nil }
+                return dyldInfoCommand
+            }
+            .first
+    }
+
     func getSymtabCommand() -> SymtabCommand? {
         lazy
             .filter { loadCommand in loadCommand.cmd == .symtab }
