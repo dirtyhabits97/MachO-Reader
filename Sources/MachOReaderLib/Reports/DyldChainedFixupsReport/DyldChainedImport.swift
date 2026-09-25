@@ -19,8 +19,8 @@ struct DyldChainedImportBuilder {
                 .dylib
                 .name
                 .split(separator: "/")
-                .last?
-                .toString()
+                .last
+                .map(String.init)
 
             let offsetToSymbolName = fixupsReport.header.symbolsOffset + chainedImport.nameOffset
             chainedImport.symbolName = fixupsReport.fixupData

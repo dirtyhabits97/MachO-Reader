@@ -1,6 +1,6 @@
 import Foundation
 
-extension [LoadCommand] {
+public extension [LoadCommand] {
 
     func getDyldChainedFixups() -> LinkedItDataCommand? {
         lazy
@@ -22,6 +22,15 @@ extension [LoadCommand] {
             .first
     }
 
+    func getBuildVersionCommand() -> BuildVersionCommand? {
+        lazy
+            .compactMap { loadCommand -> BuildVersionCommand? in
+                guard case let .buildVersionCommand(buildVersionCommand) = loadCommand.commandType() else { return nil }
+                return buildVersionCommand
+            }
+            .first
+    }
+
     func getDylibCommands() -> [DylibCommand] {
         compactMap { loadCommand -> DylibCommand? in
             guard case let .dylibCommand(dylibCommand) = loadCommand.commandType() else { return nil }
@@ -34,5 +43,9 @@ extension [LoadCommand] {
             guard case let .segmentCommand(segmentCommand) = loadCommand.commandType() else { return nil }
             return segmentCommand
         }
+    }
+
+    func getLoadCommands(_ name: String) -> [LoadCommand] {
+        filter { $0.cmd.readableValue == name }
     }
 }
