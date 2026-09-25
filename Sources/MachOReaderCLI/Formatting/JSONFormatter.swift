@@ -108,6 +108,8 @@ final class JSONFormatter {
             format(cmd)
         case let .linkedItDataCommand(cmd):
             format(cmd)
+        case let .rpathCommand(cmd):
+            format(cmd)
         case let .segmentCommand(cmd):
             format(cmd)
         case let .sourceVersionCommand(cmd):
@@ -117,6 +119,8 @@ final class JSONFormatter {
         case let .threadCommand(cmd):
             format(cmd)
         case let .uuidCommand(cmd):
+            format(cmd)
+        case let .versionMinCommand(cmd):
             format(cmd)
         case let .unspecified(cmd):
             format(cmd)
@@ -214,6 +218,14 @@ final class JSONFormatter {
         return result
     }
 
+    // MARK: - Rpath Command
+
+    func format(_ command: RpathCommand) -> [String: Any] {
+        var result = format(command.asLoadCommand())
+        result["path"] = command.path
+        return result
+    }
+
     // MARK: - Segment Command
 
     func format(_ command: SegmentCommand) -> [String: Any] {
@@ -227,7 +239,9 @@ final class JSONFormatter {
         result["fileoff_hex"] = String(hex: command.fileoff)
         result["filesize"] = command.filesize
         result["maxprot"] = command.maxprot
+        result["maxprot_readable"] = readableVMProt(command.maxprot)
         result["initprot"] = command.initprot
+        result["initprot_readable"] = readableVMProt(command.initprot)
         result["nsects"] = command.nsects
         result["flags"] = command.flags
         result["sections"] = command.sections.map { format($0) }
@@ -236,7 +250,7 @@ final class JSONFormatter {
     }
 
     func format(_ section: SegmentCommand.Section) -> [String: Any] {
-        [
+        var result: [String: Any] = [
             "sectname": section.sectname,
             "segname": section.segname,
             "addr": section.addr,
@@ -248,7 +262,14 @@ final class JSONFormatter {
             "nreloc": section.nreloc,
             "flags": section.flags,
             "flags_hex": String.flags(section.flags),
+            "attributes": section.attributes,
         ]
+
+        if let type = section.type {
+            result["type"] = type
+        }
+
+        return result
     }
 
     // MARK: - Source Version Command
@@ -285,6 +306,15 @@ final class JSONFormatter {
     func format(_ command: UUIDCommand) -> [String: Any] {
         var result = format(command.asLoadCommand())
         result["uuid"] = command.uuid.uuidString
+        return result
+    }
+
+    // MARK: - Version Min Command
+
+    func format(_ command: VersionMinCommand) -> [String: Any] {
+        var result = format(command.asLoadCommand())
+        result["version"] = "\(command.version)"
+        result["sdk"] = "\(command.sdk)"
         return result
     }
 

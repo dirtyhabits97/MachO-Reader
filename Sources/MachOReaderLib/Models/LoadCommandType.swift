@@ -9,11 +9,13 @@ public enum LoadCommandType {
     case dysymtabCommand(DysymtabCommand)
     case entryPointCommand(EntryPointCommand)
     case linkedItDataCommand(LinkedItDataCommand)
+    case rpathCommand(RpathCommand)
     case segmentCommand(SegmentCommand)
     case sourceVersionCommand(SourceVersionCommand)
     case symtabCommand(SymtabCommand)
     case threadCommand(ThreadCommand)
     case uuidCommand(UUIDCommand)
+    case versionMinCommand(VersionMinCommand)
 
     case unspecified(LoadCommand)
 
@@ -24,7 +26,7 @@ public enum LoadCommandType {
             self = try .buildVersionCommand(BuildVersionCommand(from: loadCommand))
         case .dyldInfo, .dyldInfoOnly:
             self = try .dyldInfoCommand(DyldInfoCommand(from: loadCommand))
-        case .idDylib, .loadDylib, .loadWeakDylib, .reexportDylib:
+        case .idDylib, .loadDylib, .loadWeakDylib, .reexportDylib, .loadUpwardDylib, .lazyLoadDylib:
             self = try .dylibCommand(DylibCommand(from: loadCommand))
         case .idDylinker, .loadDylinker, .dyldEnvironment:
             self = try .dylinkerCommand(DylinkerCommand(from: loadCommand))
@@ -45,6 +47,10 @@ public enum LoadCommandType {
             self = try .threadCommand(ThreadCommand(from: loadCommand))
         case .uuid:
             self = try .uuidCommand(UUIDCommand(from: loadCommand))
+        case .rpath:
+            self = try .rpathCommand(RpathCommand(from: loadCommand))
+        case .versionMinMacosx, .versionMinIphoneos, .versionMinTvos, .versionMinWatchos:
+            self = try .versionMinCommand(VersionMinCommand(from: loadCommand))
         default:
             self = .unspecified(loadCommand)
         }
