@@ -61,6 +61,8 @@ Because parsing is bounds-checked (see below), `init(from loadCommand:)` throws 
 
 Beyond per-command parsing, `Reports/` holds multi-step analyses. `DyldChainedFixupsReport` (`Models/MachOFile.swift` exposes it via `dyldChainedFixupsReport()`) reads the `LC_DYLD_CHAINED_FIXUPS` payload from `__LINKEDIT` (using `file.base` + `dataoff`), then runs a set of `throws` builder types (`DyldChainedImportBuilder`, `DyldChainedStartsInSegmentBuilder`, `DyldChainedSegmentPageInfoBuilder`) to produce imports, segment info, and page info.
 
+`DyldInfoReport` (exposed via `dyldInfoReport()`) covers the older, still-common `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` format instead, decoding the rebase/bind/weak-bind/lazy-bind opcode streams at `file.base` + `rebase_off`/`bind_off`/etc. via `RebaseOpcodeStreamParser`/`BindOpcodeStreamParser` in `Reports/DyldInfoReport/DyldInfoReport.swift`.
+
 `ExportTrieReport` (exposed via `exportTrieReport()`) reads the export trie from `LC_DYLD_EXPORTS_TRIE`, falling back to the `export_off`/`export_size` blob of `LC_DYLD_INFO`/`LC_DYLD_INFO_ONLY` on older binaries, and walks it depth-first (`ExportTrieBuilder`) into a sorted list of `ExportedSymbol`s — an `nm -gU`/`dyld_info -exports`-style view of a binary's exports.
 
 ### Binary decoding
