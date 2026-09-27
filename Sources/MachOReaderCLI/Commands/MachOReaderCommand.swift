@@ -9,6 +9,7 @@ struct MachOReaderCommand: ParsableCommand {
                                                         InfoCommand.self,
                                                         DyldChainedFixupsCommand.self,
                                                         SymbolsCommand.self,
+                                                        ExportsCommand.self,
                                                     ],
                                                     defaultSubcommand: InfoCommand.self)
 }

@@ -18,6 +18,22 @@ public extension [LoadCommand] {
         return nil
     }
 
+    func getDyldExportsTrie() throws -> LinkedItDataCommand? {
+        for loadCommand in self where loadCommand.cmd == .dyldExportsTrie {
+            guard case let .linkedItDataCommand(linkedItDataCommand) = try loadCommand.commandType() else { continue }
+            return linkedItDataCommand
+        }
+        return nil
+    }
+
+    func getDyldInfoCommand() throws -> DyldInfoCommand? {
+        for loadCommand in self where loadCommand.cmd == .dyldInfo || loadCommand.cmd == .dyldInfoOnly {
+            guard case let .dyldInfoCommand(dyldInfoCommand) = try loadCommand.commandType() else { continue }
+            return dyldInfoCommand
+        }
+        return nil
+    }
+
     func getBuildVersionCommand() throws -> BuildVersionCommand? {
         for loadCommand in self where loadCommand.cmd == .buildVersion {
             guard case let .buildVersionCommand(buildVersionCommand) = try loadCommand.commandType() else { continue }
